@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════════════
+   HABITMON RPG — GLOBAL STYLES
+   Palette: Neutral GBA / DS inspired
+   ═══════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --gb-light:    #F8F8F8;
+  --gb-mid:      #D0D0D0;
+  --gb-dark:     #505050;
+  --gb-darker:   #303030;
+  --gb-black:    #101010;
+
+  --blue-main:   #3048a8;
+  --red-main:    #e4000f;
+  --green-ok:    #4caf50;
+  --yellow-warn: #f0c020;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Press Start 2P', cursive;
+  -webkit-font-smoothing: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--gb-black);
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  /* Desktop: caja de aspecto móvil */
+  max-width: 480px;
+  max-height: 860px;
+  background-color: var(--gb-light);
+  color: var(--gb-black);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0,0,0,0.7);
+}
+
+/* En móviles reales: ocupa toda la pantalla */
+@media (max-width: 500px), (max-height: 700px) {
+  #root {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  body {
+    align-items: flex-start;
+  }
+}
+
+/* ── UI Shared Components ── */
+.gb-box {
+  border: 3px solid var(--gb-darker);
+  background-color: var(--gb-light);
+  box-shadow: inset -3px -3px 0 var(--gb-dark);
+}
+
+.gb-button {
+  border: 3px solid var(--gb-darker);
+  background-color: var(--gb-light);
+  color: var(--gb-black);
+  padding: 10px 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(8px, 2vw, 11px);
+  line-height: 1.5;
+  outline: none;
+  box-shadow: inset -3px -3px 0 var(--gb-dark);
+  transition: transform 0.08s, box-shadow 0.08s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gb-button:active {
+  box-shadow: inset 3px 3px 0 var(--gb-dark);
+  transform: translate(2px, 2px);
+}
+
+.gb-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Animations ── */
+@keyframes blinkAnim {
+  to { visibility: hidden; }
+}
+.blink { animation: blinkAnim 1s steps(2, start) infinite; }
+
+@keyframes shakeAnim {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+.shake { animation: shakeAnim 0.3s steps(4) 2; }
+
+@keyframes flashAnim {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(8) invert(1); }
+  100% { filter: brightness(1); }
+}
+.flash { animation: flashAnim 0.15s steps(2) 3; }
+
+/* ── Image rendering ── */
+img, canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ── Touch Controls ── */
+.touch-controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2000;
+}
+
+.joystick-base {
+  position: absolute;
+  bottom: 50px;
+  left: 24px;
+  width: 90px;
+  height: 90px;
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.35);
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.joystick-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.55);
+  border: 2px solid rgba(255,255,255,0.9);
+  border-radius: 50%;
+  transform: translate(calc(-50% + var(--jx, 0px)), calc(-50% + var(--jy, 0px)));
+  pointer-events: none;
+  transition: transform 0.05s;
+}
+
+.action-buttons {
+  position: absolute;
+  bottom: 50px;
+  right: 24px;
+  display: flex;
+  gap: 14px;
+  pointer-events: auto;
+}
+
+.a-btn, .b-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.35);
+}
+
+.b-btn { background: rgba(50,50,50,0.65); }
+.a-btn { background: rgba(160,40,70,0.70); }
+
+.a-btn:active, .b-btn:active {
+  transform: scale(0.88);
+}
+
+/* ── scrollable lists ── */
+.setup-list::-webkit-scrollbar { width: 4px; }
+.setup-list::-webkit-scrollbar-track { background: transparent; }
+.setup-list::-webkit-scrollbar-thumb { background: var(--gb-mid); border-radius: 2px; }
