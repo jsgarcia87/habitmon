@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
-import { SpriteAvatar } from './BattleScreen';
+import { SpriteAvatar } from '../components/GBSprite';
 
 const RegisterScreen = ({ onNavigate }) => {
   const { register } = useGame();

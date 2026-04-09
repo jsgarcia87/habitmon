@@ -1,6 +1,6 @@
 <?php
 // Database Configuration
-$db_host = 'localhost';
+$db_host = '127.0.0.1';
 $db_name = 'habitmon_db';
 $db_user = 'Sangar'; // Cambiado por tu usuario
 $db_pass = 'SangarBD'; // Cambiado por tu contraseña

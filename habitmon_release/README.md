@@ -2,12 +2,16 @@
 
 ## Estructura
 - Root: Contiene los archivos estáticos del juego (React).
-- `/backend`: Contiene la lógica del servidor Flask.
+- `/api`: Backend para servidores **PHP** (Apache/MariaDB).
+- `/backend`: Backend para servidores **Python/Flask**.
 
-## Instalación en Producción
-1. Sube el contenido de la raíz a tu servidor de archivos estáticos.
-2. Configura tu servidor para servir `index.html` en todas las rutas (SPA).
-3. En el servidor de aplicaciones:
-   - Instala las dependencias: `pip install -r backend/requirements.txt`
-   - Ejecuta la API: `python backend/app.py`
-4. Asegúrate de configurar las variables de entorno o la base de datos según sea necesario.
+## Instalación en Producción (Opción PHP - Recomendada para Apache)
+1. Sube todo el contenido de la carpeta de lanzamiento a tu servidor.
+2. Asegúrate de que la carpeta `/api` tenga permisos de lectura.
+3. Configura tus datos de acceso en **`api/db.php`**.
+4. Importa **`api/habitmon_setup.sql`** en tu base de datos MariaDB.
+
+## Instalación en Producción (Opción Python/Flask)
+1. Instala las dependencias: `pip install -r backend/requirements.txt`
+2. Configura tu base de datos en `backend/app.py`.
+3. Ejecuta la API: `python backend/app.py`

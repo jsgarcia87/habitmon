@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useGame } from '../context/GameContext';
-import { SpriteAvatar } from './BattleScreen';
+import { SpriteAvatar } from '../components/GBSprite';
 
 
 const ProfileScreen = ({ onNavigate }) => {
-  const { user, progress, coleccion, logout, fetchColeccion } = useGame();
+  const { user, progress, coleccion, logout, fetchColeccion, setPartner } = useGame();
 
   useEffect(() => {
     if (user) fetchColeccion(user.id);
@@ -36,22 +36,39 @@ const ProfileScreen = ({ onNavigate }) => {
           </div>
         </div>
 
-        <div style={sectionTitleStyle}>🏆 COLECCIÓN</div>
+        <div style={sectionTitleStyle}>🏆 COLECCIÓN & COMPAÑERO</div>
         <div style={collectionGridStyle}>
           {coleccion.length === 0 ? (
             <p style={emptyStyle}>Vence un gimnasio para capturar Pokémon.</p>
           ) : (
-            coleccion.map((p, idx) => (
-              <div key={idx} style={pkCardStyle}>
-                <img
-                  src={`Graphics/battlers/${String(p.pokemon_id).padStart(3, '0')}.png`}
-                  style={pkImgStyle}
-                  alt={p.pokemon_nombre}
-                  onError={(e) => { e.target.src = `Graphics/pokemon/${String(p.pokemon_id).padStart(3, '0')}.png`; }}
-                />
-                <span style={pkNameStyle}>{p.pokemon_nombre}</span>
-              </div>
-            ))
+            coleccion.map((p, idx) => {
+              const currentXp = p.xp || 0;
+              const currentLevel = p.nivel || 5;
+              const xpPercent = currentXp % 100;
+              const isPartner = parseInt(p.is_partner) === 1;
+
+              return (
+                <div key={idx} style={{...pkCardStyle, borderColor: isPartner ? '#f39c12' : '#333'}}>
+                  {isPartner && <div style={partnerBadge}>★ COMPAÑERO</div>}
+                  <img
+                    src={`Graphics/battlers/${String(p.pokemon_id).padStart(3, '0')}.png`}
+                    style={pkImgStyle}
+                    alt={p.pokemon_nombre}
+                    onError={(e) => { e.target.src = `Graphics/pokemon/${String(p.pokemon_id).padStart(3, '0')}.png`; }}
+                  />
+                  <div style={pkInfoStyle}>
+                    <span style={pkNameStyle}>{p.pokemon_nombre}</span>
+                    <span style={pkLevelStyle}>Nv. {currentLevel}</span>
+                  </div>
+                  <div style={xpBarContainer}>
+                     <div style={{...xpBarFill, width: `${xpPercent}%`}} />
+                  </div>
+                  {!isPartner && (
+                     <button style={btnPartner} onClick={() => setPartner(p.id)}>ELEGIR</button>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
       </div>
@@ -97,10 +114,29 @@ const emptyStyle = {
 const pkCardStyle = {
   border: '2px solid #333', padding: '8px',
   display: 'flex', flexDirection: 'column',
-  alignItems: 'center', gap: '4px', backgroundColor: '#f9f9f9',
+  alignItems: 'center', gap: '4px', backgroundColor: '#f9f9f9', position: 'relative',
 };
-const pkImgStyle = { width: '54px', height: '54px', imageRendering: 'pixelated' };
-const pkNameStyle = { fontSize: 'clamp(5px, 1.5vw, 8px)', textAlign: 'center' };
+const pkImgStyle = { width: '48px', height: '48px', imageRendering: 'pixelated' };
+const pkInfoStyle = { display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '5px' };
+const pkNameStyle = { fontWeight: 'bold' };
+const pkLevelStyle = { color: '#2980b9' };
+
+const xpBarContainer = {
+  width: '100%', height: '4px', backgroundColor: '#ccc',
+  border: '1px solid #666', marginTop: '2px', overflow: 'hidden'
+};
+const xpBarFill = { height: '100%', backgroundColor: '#4caf50' };
+
+const partnerBadge = {
+  position: 'absolute', top: -5, left: -5, backgroundColor: '#f39c12',
+  color: '#fff', fontSize: '5px', padding: '2px 4px', border: '1px solid #333'
+};
+const btnPartner = {
+  marginTop: '4px', fontSize: '5px', padding: '4px',
+  backgroundColor: '#3048a8', color: '#fff', border: 'none',
+  cursor: 'pointer', fontFamily: '"Press Start 2P"', width: '100%'
+};
+
 const logoutStyle = {
   marginTop: '12px', color: '#ff1111',
   fontSize: 'clamp(7px, 1.8vw, 9px)', background: 'none',

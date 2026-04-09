@@ -1,0 +1,27 @@
+
+> habitmon-react@1.0.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 43 modules transformed.
+x Build failed in 199ms
+error during build:
+src/screens/ProfileScreen.jsx (3:9): "SpriteAvatar" is not exported by "src/screens/BattleScreen.jsx", imported by "src/screens/ProfileScreen.jsx".
+file: /Users/sangar/Downloads/rutinas.pokemon/react-app/src/screens/ProfileScreen.jsx:3:9
+
+1: import React, { useEffect } from 'react';
+2: import { useGame } from '../context/GameContext';
+3: import { SpriteAvatar } from './BattleScreen';
+            ^
+
+    at getRollupError (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/parseAst.js:406:41)
+    at error (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/parseAst.js:402:42)
+    at Module.error (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:17380:16)
+    at Module.traceVariable (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:17813:29)
+    at ModuleScope.findVariable (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:15403:39)
+    at ReturnValueScope.findVariable (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:5676:38)
+    at FunctionBodyScope.findVariable (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:5676:38)
+    at Identifier.bind (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:5450:40)
+    at CallExpression.bind (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:2828:28)
+    at CallExpression.bind (file:///Users/sangar/Downloads/rutinas.pokemon/react-app/node_modules/rollup/dist/es/shared/node-entry.js:12512:15)

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -9,11 +9,36 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///habitmon.db'
+# Configuración de la base de datos (MySQL para producción con fallback a SQLite local)
+# Configuración de la base de datos (MySQL para producción con fallback a SQLite local)
+MYSQL_URL = "mysql+pymysql://Sangar:SangarBD@127.0.0.1/habitmon_db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', MYSQL_URL)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'habitmon-super-secret' # Change this in production
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
+
+# Test de conexión al inicio
+with app.app_context():
+    try:
+        from sqlalchemy import text
+        db.session.execute(text('SELECT 1'))
+        print(" [DB CHECK] SUCCESS: Conexión establecida con MySQL.")
+    except Exception as e:
+        print(f" [DB CHECK] ERROR: No se pudo conectar a la base de datos: {str(e)}")
+
+# Serve static game assets
+@app.route('/Data/<path:filename>')
+def serve_data(filename):
+    return send_from_directory('Data', filename)
+
+@app.route('/Graphics/<path:filename>')
+def serve_graphics(filename):
+    return send_from_directory('Graphics', filename)
+
+@app.route('/data_json')
+def get_data_json():
+    return send_from_directory('Data', 'gamedata.json')
 
 # --- Gym Templates ---
 GIMNASIOS_TEMPLATE = [
@@ -193,6 +218,8 @@ class Usuario(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     avatar = db.Column(db.Integer, default=0)
+    pokemon_inicial_id = db.Column(db.String(10), nullable=True)
+    pokemon_inicial_nombre = db.Column(db.String(50), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class PokemonColeccion(db.Model):
@@ -201,8 +228,11 @@ class PokemonColeccion(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     pokemon_id = db.Column(db.String(10), nullable=False)
     pokemon_nombre = db.Column(db.String(50))
-    fecha_captura = db.Column(db.Date, default=date.today)
     gimnasio_origen = db.Column(db.String(50))
+    xp = db.Column(db.Integer, default=0)
+    nivel = db.Column(db.Integer, default=5)
+    is_partner = db.Column(db.Boolean, default=False)
+    fecha_captura = db.Column(db.Date, default=date.today)
 
 class Habito(db.Model):
     __tablename__ = 'habitos'
@@ -227,30 +257,84 @@ class ProgresoDiario(db.Model):
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
-    data = request.json
-    if Usuario.query.filter_by(email=data['email']).first():
-        return jsonify({"success": False, "error": "Email already exists"}), 400
-    
-    new_user = Usuario(
-        username=data['username'],
-        email=data['email'],
-        password_hash=generate_password_hash(data['password'], method='pbkdf2:sha256'),
-        avatar=data.get('avatar', 0)
-    )
-    db.session.add(new_user)
-    db.session.commit()
-    
-    token = create_access_token(identity=str(new_user.id))
-    return jsonify({"success": True, "token": token, "usuario": {"id": new_user.id, "username": new_user.username, "avatar": new_user.avatar}})
+    try:
+        data = request.json
+        if Usuario.query.filter_by(email=data['email']).first():
+            return jsonify({"success": False, "error": "El email ya está registrado"}), 400
+        
+        new_user = Usuario(
+            username=data['username'],
+            email=data['email'],
+            password_hash=generate_password_hash(data['password'], method='pbkdf2:sha256'),
+            avatar=data.get('avatar', 0)
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        token = create_access_token(identity=str(new_user.id))
+        return jsonify({"success": True, "token": token, "usuario": {
+            "id": new_user.id, 
+            "username": new_user.username, 
+            "avatar": new_user.avatar,
+            "pokemon_inicial_id": new_user.pokemon_inicial_id
+        }})
+    except Exception as e:
+        print(f"ERROR en register: {str(e)}")
+        return jsonify({"success": False, "error": "Error de conexión con la base de datos"}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
+    try:
+        data = request.json
+        user = Usuario.query.filter_by(email=data['email']).first()
+        if user and check_password_hash(user.password_hash, data['password']):
+            token = create_access_token(identity=str(user.id))
+            return jsonify({"success": True, "token": token, "usuario": {
+                "id": user.id, 
+                "username": user.username, 
+                "avatar": user.avatar,
+                "pokemon_inicial_id": user.pokemon_inicial_id
+            }})
+        return jsonify({"success": False, "error": "Credenciales inválidas"}), 401
+    except Exception as e:
+        print(f"ERROR en login: {str(e)}")
+        return jsonify({"success": False, "error": "Error de conexión con la base de datos"}), 500
+
+@app.route('/api/auth/elegir-starter', methods=['POST'])
+@jwt_required()
+def elegir_starter():
+    user_id = int(get_jwt_identity())
     data = request.json
-    user = Usuario.query.filter_by(email=data['email']).first()
-    if user and check_password_hash(user.password_hash, data['password']):
-        token = create_access_token(identity=str(user.id))
-        return jsonify({"success": True, "token": token, "usuario": {"id": user.id, "username": user.username, "avatar": user.avatar}})
-    return jsonify({"success": False, "error": "Invalid credentials"}), 401
+    
+    user = Usuario.query.get(user_id)
+    if not user:
+        return jsonify({"success": False}), 404
+    
+    user.pokemon_inicial_id = data['pokemon_id']
+    user.pokemon_inicial_nombre = data['pokemon_nombre']
+    
+    try:
+        # Añadir a la colección
+        starter = PokemonColeccion(
+            usuario_id=user_id,
+            pokemon_id=data['pokemon_id'],
+            pokemon_nombre=data['pokemon_nombre'],
+            gimnasio_origen='starter',
+            nivel=5,
+            xp=0,
+            is_partner=True
+        )
+        db.session.add(starter)
+        db.session.commit()
+        print(f"DEBUG: Starter {data['pokemon_nombre']} asignado a usuario {user_id}")
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERROR en elegir_starter: {str(e)}")
+        return jsonify({"success": False, "error": "Error de base de datos en el servidor"}), 500
+    
+    return jsonify({"success": True, 
+                   "mensaje": f"¡{data['pokemon_nombre']} es tu compañero!",
+                   "pokemon_inicial_id": data['pokemon_id']})
 
 # --- Gameplay Routes ---
 

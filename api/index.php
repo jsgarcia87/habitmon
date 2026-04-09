@@ -30,12 +30,19 @@ function get_json_input() {
 // Simple JWT-like auth check (for this demo, we'll use a Bearer token that is just the user_id)
 // In production, use a real JWT library
 function get_user_id() {
+    $auth = null;
     $headers = getallheaders();
+    
     if (isset($headers['Authorization'])) {
         $auth = $headers['Authorization'];
-        if (preg_match('/Bearer\s(\d+)/', $auth, $matches)) {
-            return (int)$matches[1];
-        }
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $auth = $_SERVER['HTTP_AUTHORIZATION'];
+    } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        $auth = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+    }
+    
+    if ($auth && preg_match('/Bearer\s(\d+)/', $auth, $matches)) {
+        return (int)$matches[1];
     }
     return null;
 }
@@ -53,15 +60,52 @@ try {
         $stmt = $pdo->prepare("INSERT INTO usuarios (username, email, password_hash, avatar) VALUES (?, ?, ?, ?)");
         $stmt->execute([$data['username'], $data['email'], $data['password'], $data['avatar'] ?? 0]);
         $id = $pdo->lastInsertId();
-        echo json_encode(["success" => true, "token" => create_token($id), "usuario" => ["id" => $id, "username" => $data['username'], "avatar" => $data['avatar'] ?? 0]]);
+        
+        echo json_encode([
+            "success" => true, 
+            "token" => create_token($id), 
+            "usuario" => [
+                "id" => $id, 
+                "username" => $data['username'], 
+                "avatar" => $data['avatar'] ?? 0,
+                "pokemon_inicial_id" => null
+            ]
+        ]);
     } 
+    elseif (strpos($relative_path, 'auth/elegir-starter') !== false && $method === 'POST') {
+        $user_id = get_user_id();
+        if (!$user_id) { http_response_code(401); exit(json_encode(["error" => "No auth"])); }
+        
+        $data = get_json_input();
+        $pkmnId = $data['pokemon_id'] ?? '001';
+        $pkmnNombre = $data['pokemon_nombre'] ?? 'Bulbasaur';
+        
+        // Actualizar usuario
+        $stmtUser = $pdo->prepare("UPDATE usuarios SET pokemon_inicial_id = ?, pokemon_inicial_nombre = ? WHERE id = ?");
+        $stmtUser->execute([$pkmnId, $pkmnNombre, $user_id]);
+        
+        // Añadir a colección (7 columnas: usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, xp, nivel, is_partner)
+        $stmtPoke = $pdo->prepare("INSERT INTO pokemon_coleccion (usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, xp, nivel, is_partner) VALUES (?, ?, ?, 'starter', 0, 5, 1)");
+        $stmtPoke->execute([$user_id, $pkmnId, $pkmnNombre]);
+        
+        echo json_encode(["success" => true]);
+    }
     elseif (strpos($relative_path, 'auth/login') !== false && $method === 'POST') {
         $data = get_json_input();
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ? AND password_hash = ?");
         $stmt->execute([$data['email'], $data['password']]);
         $user = $stmt->fetch();
         if ($user) {
-            echo json_encode(["success" => true, "token" => create_token($user['id']), "usuario" => ["id" => $user['id'], "username" => $user['username'], "avatar" => $user['avatar']]]);
+            echo json_encode([
+                "success" => true, 
+                "token" => create_token($user['id']), 
+                "usuario" => [
+                    "id" => $user['id'], 
+                    "username" => $user['username'], 
+                    "avatar" => $user['avatar'],
+                    "pokemon_inicial_id" => $user['pokemon_inicial_id']
+                ]
+            ]);
         } else {
             http_response_code(401);
             echo json_encode(["success" => false, "error" => "Invalid credentials"]);
@@ -77,24 +121,37 @@ try {
     }
 
     elseif (strpos($relative_path, 'habitos/template') !== false) {
-        // Return same template as Flask
-        $template = [
-            ["gym_id" => "gym_vestirse", "gym_nombre" => "Gimnasio Vestirse", "pokemon" => [
-                ["nombre" => "Quitarse Ropa", "id" => "052", "tasks" => [["id" => "q_pant", "nombre" => "Quitar pantalones"], ["id" => "q_cam", "nombre" => "Quitar camiseta"]]],
-                ["nombre" => "Ponerse Ropa", "id" => "143", "tasks" => [["id" => "p_pant", "nombre" => "Ponerse pantalones"], ["id" => "p_cam", "nombre" => "Ponerse camiseta"]]]
-            ]],
-            ["gym_id" => "gym_desayuno", "gym_nombre" => "Gimnasio Desayuno", "pokemon" => [
-                ["nombre" => "Desayuno", "id" => "094", "tasks" => [["id" => "d_leche", "nombre" => "Tomar leche"], ["id" => "d_tosta", "nombre" => "Comer tostadas"]]]
-            ]],
-            ["gym_id" => "gym_higiene", "gym_nombre" => "Gimnasio Higiene", "pokemon" => [
-                ["nombre" => "Dientes", "id" => "019", "tasks" => [["id" => "h_dientes", "nombre" => "Lavarse los dientes"]]],
-                ["nombre" => "Cara", "id" => "025", "tasks" => [["id" => "h_cara", "nombre" => "Lavarse la cara"]]]
-            ]],
-            ["gym_id" => "gym_orden", "gym_nombre" => "Gimnasio Orden", "pokemon" => [
-                ["nombre" => "Habitación", "id" => "066", "tasks" => [["id" => "o_cuarto", "nombre" => "Recoger habitación"]]],
-                ["nombre" => "Cama", "id" => "143", "tasks" => [["id" => "o_cama", "nombre" => "Hacer la cama"]]]
-            ]]
-        ];
+        $stmtG = $pdo->query("SELECT * FROM gimnasios_template ORDER BY orden ASC");
+        $gyms = $stmtG->fetchAll();
+        
+        $template = [];
+        foreach ($gyms as $g) {
+            $stmtP = $pdo->prepare("SELECT * FROM pokemon_template WHERE gym_id = ? ORDER BY orden_en_gym ASC");
+            $stmtP->execute([$g['gym_id']]);
+            $pks = $stmtP->fetchAll();
+            
+            $pokemonList = [];
+            foreach ($pks as $p) {
+                $stmtH = $pdo->prepare("SELECT * FROM habitos_template WHERE pokemon_template_id = ?");
+                $stmtH->execute([$p['id']]);
+                $habitos = $stmtH->fetchAll();
+                
+                $pokemonList[] = [
+                    "nombre" => $p['nombre'],
+                    "id" => $p['pokemon_id'],
+                    "nivel" => (int)$p['nivel'],
+                    "habitos" => $habitos
+                ];
+            }
+            
+            $template[] = [
+                "gym_id" => $g['gym_id'],
+                "gym_nombre" => $g['gym_nombre'],
+                "tiempo" => $g['tiempo'],
+                "battleback" => $g['battleback'],
+                "pokemon" => $pokemonList
+            ];
+        }
         echo json_encode(["success" => true, "template" => $template]);
     }
 
@@ -137,8 +194,8 @@ try {
             $gyms[] = $data['gimnasio_id'];
             $pdo->prepare("UPDATE progreso_diario SET gimnasios_completados = ? WHERE usuario_id = ? AND fecha = ?")->execute([json_encode($gyms), $user_id, $today]);
             
-            $pdo->prepare("INSERT INTO pokemon_coleccion (usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, fecha_captura) VALUES (?, ?, ?, ?, ?)")
-                ->execute([$user_id, $data['pokemon_id'], $data['pokemon_nombre'], $data['gimnasio_id'], $today]);
+            $pdo->prepare("INSERT INTO pokemon_coleccion (usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, fecha_captura, xp, nivel, is_partner) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+                ->execute([$user_id, $data['pokemon_id'], $data['pokemon_nombre'], $data['gimnasio_id'], $today, 0, 5, 0]);
             
             echo json_encode(["success" => true, "pokemon_ganado" => $data['pokemon_nombre']]);
         }
@@ -166,6 +223,31 @@ try {
                 "habitos" => $habitos
             ]);
         }
+    }
+
+    elseif (strpos($relative_path, 'pokemon/gain_xp') !== false && $method === 'POST') {
+        $user_id = get_user_id();
+        $data = get_json_input();
+        
+        $stmt = $pdo->prepare("UPDATE pokemon_coleccion SET xp = xp + ?, nivel = FLOOR((xp + ?)/100) + 5 WHERE id = ? AND usuario_id = ?");
+        $stmt->execute([$data['amount'], $data['amount'], $data['pokemon_db_id'], $user_id]);
+        echo json_encode(["success" => true]);
+    }
+
+    elseif (strpos($relative_path, 'pokemon/set_partner') !== false && $method === 'POST') {
+        $user_id = get_user_id();
+        $data = get_json_input();
+        
+        $pdo->prepare("UPDATE pokemon_coleccion SET is_partner = 0 WHERE usuario_id = ?")->execute([$user_id]);
+        $pdo->prepare("UPDATE pokemon_coleccion SET is_partner = 1 WHERE id = ? AND usuario_id = ?")->execute([$data['pokemon_db_id'], $user_id]);
+        echo json_encode(["success" => true]);
+    }
+
+    elseif (strpos($relative_path, 'coleccion/') !== false && $method === 'GET') {
+        $user_id = get_user_id();
+        $stmt = $pdo->prepare("SELECT * FROM pokemon_coleccion WHERE usuario_id = ?");
+        $stmt->execute([$user_id]);
+        echo json_encode(["success" => true, "pokemon" => $stmt->fetchAll()]);
     }
 
 } catch (Exception $e) {

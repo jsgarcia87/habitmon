@@ -1,85 +1,46 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '../context/GameContext';
 
-const T = 32;
-const tsCols = 8;
-const MOVE_DURATION = 180;
+const T = 32;        // Tile size px
+const tsCols = 8;    // Tileset columns
+const MOVE_DURATION = 180; // ms per tile move
 
-// ── Time-of-day config ─────────────────────────────────────────────────────
-// Tileset names must match the actual PNG filename (lowercase) in Graphics/tilesets/
-const TIME_CONFIG = {
-  morning: {
-    mapId: 'Map002',
-    tileset: 'gsc overworld johto morning',  // overrides map's tileset_id
-    overlay: null,
-    bgColor: '#E8C870',
-    startX: 13, startY: 15,
-  },
-  day: {
-    mapId: 'Map008',
-    tileset: 'gsc national park day',
-    overlay: null,
-    bgColor: '#7EC850',
-    startX: 10, startY: 12,
-  },
-  night: {
-    mapId: 'Map002',                         // reuse Map002 with night tileset
-    tileset: 'gsc overworld johto nite',
-    overlay: 'rgba(0, 0, 30, 0.35)',
-    bgColor: '#1A1A3E',
-    startX: 13, startY: 15,
-  },
-};
-
-const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
+const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, timeOfDay = 'day', starters = [], onTrigger }) => {
   const { user } = useGame();
-  const canvasRef        = useRef(null);
-  const mapDataRef       = useRef(null);
-  const tilesetPassRef   = useRef([]);
-  const tilesetImgRef    = useRef(null);
-  const playerImgRef     = useRef(null);
-  const npcImgsRef       = useRef({});
-  const autotileImgsRef  = useRef({});
+  const canvasRef = useRef(null);
+  const mapDataRef = useRef(null);       // usar ref en vez de state para el loop
+  const tilesetPassagesRef = useRef([]); // igual
   const [ready, setReady] = useState(false);
-  const configRef        = useRef(TIME_CONFIG[timeOfDay] || TIME_CONFIG.morning);
+
+  const tilesetImgRef = useRef(null);
+  const playerImgRef = useRef(null);
+  const npcImgsRef = useRef({});
+  const starterImgsRef = useRef({});
+  const autotileImgsRef = useRef({});
 
   const playerState = useRef({
-    x: configRef.current.startX,
-    y: configRef.current.startY,
-    dir: 0, frame: 0,
-    isMoving: false, moveProgress: 0,
-    targetX: configRef.current.startX,
-    targetY: configRef.current.startY,
-    isInteracting: false, nearEvent: null,
+    x: startX, y: startY,
+    dir: startDir,   // 0=abajo 1=izq 2=der 3=arriba
+    frame: 0,
+    isMoving: false,
+    moveProgress: 0,
+    targetX: startX, targetY: startY,
+    isInteracting: false
   });
 
   const keys = useRef({});
 
-  // ── Load assets when timeOfDay or user.avatar changes ─────────────────────
+  // ─── CARGA ASSETS ────────────────────────────────────────────────────────────
   useEffect(() => {
-    const cfg = TIME_CONFIG[timeOfDay] || TIME_CONFIG.morning;
-    configRef.current = cfg;
-
-    // Reset player to map start
-    const p = playerState.current;
-    p.x = cfg.startX; p.y = cfg.startY;
-    p.targetX = cfg.startX; p.targetY = cfg.startY;
-    p.isMoving = false; p.frame = 0;
-
-    setReady(false);
-    tilesetImgRef.current  = null;
-    npcImgsRef.current     = {};
-    autotileImgsRef.current = {};
-
     let assetsReady = 0;
     const tryReady = () => { assetsReady++; if (assetsReady >= 2) setReady(true); };
 
-    // ── Load map JSON ───────────────────────────────────────────────────────
-    fetch(`Data/${cfg.mapId}.json`)
+    // Cargar mapa
+    fetch(`Data/${mapId}.json`)
       .then(r => r.json())
       .then(mapJson => {
         const rawTable = mapJson.data?.['@data'] || mapJson.data || [];
-        const width  = mapJson.width;
+        const width = mapJson.width;
         const height = mapJson.height;
         const offset = 20;
         const getTile = (x, y, z) => {
@@ -89,9 +50,9 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
         };
         mapDataRef.current = { ...mapJson, getTile };
 
-        // Load NPC sprites
+        // NPCs
         Object.values(mapJson.events || {}).forEach(ev => {
-          const name = ev?.pages?.[0]?.graphic?.character_name;
+          const name = ev.pages?.[0]?.graphic?.character_name;
           if (name && !npcImgsRef.current[name]) {
             const img = new Image();
             img.src = `Graphics/characters/${encodeURIComponent(name.toLowerCase())}.png`;
@@ -99,52 +60,25 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
           }
         });
 
-        // ── Load TILESET — use cfg.tileset override instead of map's tileset_id ─
-        const img = new Image();
-        img.src = `Graphics/tilesets/${encodeURIComponent(cfg.tileset)}.png`;
-        img.onload = () => { tilesetImgRef.current = img; tryReady(); };
-        img.onerror = () => {
-          // Fallback: try the original tileset from Tilesets.json
-          fetch('Data/Tilesets.json')
-            .then(r => r.json())
-            .then(tsData => {
-              const tsList = Array.isArray(tsData) ? tsData : Object.values(tsData);
-              const ts = tsList.find(t => t && t.id === mapJson.tileset_id);
-              if (ts) {
-                const fb = new Image();
-                fb.src = `Graphics/tilesets/${ts.tileset_name.toLowerCase()}.png`;
-                fb.onload = () => { tilesetImgRef.current = fb; tryReady(); };
-                fb.onerror = tryReady;
-                // Passages
-                const rawP = ts.passages?.['@data'] || [];
-                const passes = [];
-                for (let i = 20; i < rawP.length; i += 2)
-                  passes.push((rawP[i] ?? 0) | ((rawP[i + 1] ?? 0) << 8));
-                tilesetPassRef.current = passes;
-                // Autotiles
-                ts.autotile_names?.forEach((name, i) => {
-                  if (!name) return;
-                  const ai = new Image();
-                  ai.src = `Graphics/autotiles/${name.toLowerCase()}.png`;
-                  ai.onload = () => { autotileImgsRef.current[i] = ai; };
-                });
-              } else tryReady();
-            })
-            .catch(tryReady);
-        };
-
-        // Load passages from Tilesets.json for the main tileset
+        // Tileset
         fetch('Data/Tilesets.json')
           .then(r => r.json())
           .then(tsData => {
-            const tsList = Array.isArray(tsData) ? tsData : Object.values(tsData);
-            const ts = tsList.find(t => t && t.id === mapJson.tileset_id);
-            if (!ts) return;
+            const ts = tsData.find(t => t && t.id === mapJson.tileset_id);
+            if (!ts) { tryReady(); return; }
+
+            const img = new Image();
+            img.src = `Graphics/tilesets/${ts.tileset_name.toLowerCase()}.png`;
+            img.onload = () => { tilesetImgRef.current = img; tryReady(); };
+            img.onerror = () => tryReady();
+
             const rawP = ts.passages?.['@data'] || [];
-            const passes = [];
-            for (let i = 20; i < rawP.length; i += 2)
-              passes.push((rawP[i] ?? 0) | ((rawP[i + 1] ?? 0) << 8));
-            tilesetPassRef.current = passes;
+            const passages = [];
+            const pOffset = 20; // Correct: Skip Table header
+            for (let i = pOffset; i < rawP.length; i += 2)
+              passages.push((rawP[i] ?? 0) | ((rawP[i + 1] ?? 0) << 8));
+            tilesetPassagesRef.current = passages;
+
             ts.autotile_names?.forEach((name, i) => {
               if (!name) return;
               const ai = new Image();
@@ -152,170 +86,235 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
               ai.onload = () => { autotileImgsRef.current[i] = ai; };
             });
           })
-          .catch(() => {});
-
-        tryReady();
+          .catch(() => tryReady());
       })
-      .catch(tryReady);
+      .catch(() => tryReady());
 
-    // ── Load player sprite ─────────────────────────────────────────────────
+    // Jugador
     const pImg = new Image();
     pImg.src = `Graphics/characters/trchar00${user?.avatar ?? 0}.png`;
     pImg.onload = () => { playerImgRef.current = pImg; tryReady(); };
-    pImg.onerror = tryReady;
+    pImg.onerror = () => tryReady();
 
-    // ── Keyboard ────────────────────────────────────────────────────────────
-    const onDown = e => {
+    // Starters
+    starters.forEach(st => {
+       if (!starterImgsRef.current[st.id]) {
+          const img = new Image();
+          img.src = st.sprite;
+          img.onload = () => { starterImgsRef.current[st.id] = img; };
+       }
+    });
+
+    // Teclado
+    const onDown = (e) => {
       keys.current[e.key] = true;
-      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','z',' ','Enter'].includes(e.key))
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
+           'w','a','s','d','z',' ','Enter'].includes(e.key))
         e.preventDefault();
     };
-    const onUp = e => { keys.current[e.key] = false; };
+    const onUp = (e) => { keys.current[e.key] = false; };
     window.addEventListener('keydown', onDown);
     window.addEventListener('keyup', onUp);
     return () => {
       window.removeEventListener('keydown', onDown);
       window.removeEventListener('keyup', onUp);
     };
-  }, [timeOfDay, user?.avatar]);
+  }, [mapId, user]);
 
-  // ── Resize ────────────────────────────────────────────────────────────────
+  // ─── RESIZE ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas?.parentElement) return;
-    const update = (w, h) => { canvas.width = Math.floor(w); canvas.height = Math.floor(h); };
-    const rect = canvas.parentElement.getBoundingClientRect();
-    if (rect.width > 0) update(rect.width, rect.height);
+    if (!canvas) return;
     const ro = new ResizeObserver(entries => {
-      for (const e of entries) if (e.contentRect.width > 0) update(e.contentRect.width, e.contentRect.height);
+      for (const e of entries) {
+        canvas.width  = Math.floor(e.contentRect.width);
+        canvas.height = Math.floor(e.contentRect.height);
+      }
     });
     ro.observe(canvas.parentElement);
     return () => ro.disconnect();
   }, []);
 
-  // ── Game loop ─────────────────────────────────────────────────────────────
+  // ─── GAME LOOP ────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!ready || !canvasRef.current) return;
-    const canvas  = canvasRef.current;
-    const cfg     = configRef.current;
-    let frameId;
-    let lastTime  = null;
 
-    // isSolid
-    const isSolid = (x, y, dx, dy) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    let frameId;
+    // ⚠️  FIX PRINCIPAL: iniciar lastTime a null para ignorar el primer delta
+    let lastTime = null;
+
+    // ── isSolid ────────────────────────────────────────────────────────────────
+    const isSolid = (nx, ny, dx, dy) => {
       const map = mapDataRef.current;
       if (!map) return true;
-      if (x < 0 || x >= map.width || y < 0 || y >= map.height) return true;
-      const p    = playerState.current;
-      const ev   = Object.values(map.events || {})
-        .find(e => e?.x === x && e?.y === y && !e?.pages?.[0]?.through);
+      if (nx < 0 || nx >= map.width || ny < 0 || ny >= map.height) return true;
+
+      const p = playerState.current;
+
+      // Eventos sólidos (destino)
+      const ev = Object.values(map.events || {})
+        .find(e => e.x === nx && e.y === ny && !e.pages?.[0]?.through);
       if (ev) return true;
-      const passes = tilesetPassRef.current;
-      if (!passes.length) return false;
+
+      const passages = tilesetPassagesRef.current;
+      if (!passages.length) return false;
+
       for (let z = 0; z < 3; z++) {
-        const tid = map.getTile(x, y, z);
-        if (tid === 0) continue;
-        const pass = tid < 384 ? (passes[Math.floor((tid-48)/48)] ?? 0) : (passes[tid] ?? 0);
-        if (z === 0 && pass === 0) continue;
-        if (dy ===  1 && (pass & 0x01)) return true;
-        if (dy === -1 && (pass & 0x08)) return true;
-        if (dx === -1 && (pass & 0x02)) return true;
-        if (dx ===  1 && (pass & 0x04)) return true;
-        if ((pass & 0x0f) === 0x0f) return true;
-      }
-      for (let z = 0; z < 3; z++) {
-        const tid = map.getTile(p.x, p.y, z);
-        if (tid === 0) continue;
-        const pass = tid < 384 ? (passes[Math.floor((tid-48)/48)] ?? 0) : (passes[tid] ?? 0);
-        if (dy ===  1 && (pass & 0x01)) return true;
-        if (dy === -1 && (pass & 0x08)) return true;
-        if (dx === -1 && (pass & 0x02)) return true;
-        if (dx ===  1 && (pass & 0x04)) return true;
+        const currentTid = map.getTile(p.x, p.y, z);
+        const targetTid = map.getTile(nx, ny, z);
+        
+        const currentPass = passages[currentTid] ?? 0;
+        const targetPass = passages[targetTid] ?? 0;
+        
+        // Bloqueo total (X)
+        if ((targetPass & 0x10)) return true;
+
+        // RPG Maker XP Directional Passages:
+        // 0x01: Down, 0x02: Left, 0x04: Right, 0x08: Up
+        
+        if (dy ===  1) { // Moviendo abajo
+          if (currentPass & 0x01) return true; // No puede salir de actual hacia abajo
+          if (targetPass & 0x08) return true;  // No puede entrar a destino desde arriba
+        }
+        if (dy === -1) { // Moviendo arriba
+          if (currentPass & 0x08) return true; // No puede salir de actual hacia arriba
+          if (targetPass & 0x01) return true;  // No puede entrar a destino desde abajo
+        }
+        if (dx === -1) { // Moviendo izquierda
+          if (currentPass & 0x02) return true; // No puede salir de actual hacia izquierda
+          if (targetPass & 0x04) return true;  // No puede entrar a destino desde derecha
+        }
+        if (dx ===  1) { // Moviendo derecha
+          if (currentPass & 0x04) return true; // No puede salir de actual hacia derecha
+          if (targetPass & 0x02) return true;  // No puede entrar a destino desde izquierda
+        }
       }
       return false;
     };
 
+    // ── checkTrigger ───────────────────────────────────────────────────────────
     const checkTrigger = (x, y) => {
       const map = mapDataRef.current;
       if (!map || !onTrigger) return;
-      const ev = Object.values(map.events || {}).find(e => e?.x === x && e?.y === y);
-      if (ev) onTrigger(ev.name.toLowerCase().replace(/\s/g, '_'));
+      const ev = Object.values(map.events || {}).find(e => e.x === x && e.y === y);
+      if (ev) {
+        // Interpret Map Transfer (201)
+        const transferCmd = ev.pages?.[0]?.list?.find(c => c.code === 201);
+        if (transferCmd && transferCmd.parameters[0] === 0) {
+          const [direct, targetMapId, tx, ty, tdir] = transferCmd.parameters;
+          // If direction is 0 (retain), keep current
+          const finalDir = tdir > 0 ? (tdir/2)-1 : playerState.current.dir; 
+          onTrigger({
+            type: 'TRANSFER',
+            mapId: `Map${String(targetMapId).padStart(3, '0')}`,
+            x: tx, y: ty, dir: finalDir
+          });
+          return;
+        }
+
+        // Generic event step
+        onTrigger({ type: 'INTERACT', name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); 
+        return; 
+      }
+      // Puertas genéricas visuales sin evento transfer explícito
+      for (let z = 0; z < 3; z++) {
+        const tid = map.getTile(x, y, z);
+        if (tid > 0 && tid < 48) { onTrigger({ type: 'INTERACT', name: 'puerta_' + tid }); return; }
+      }
     };
 
+    // ── checkInteraction ───────────────────────────────────────────────────────
     const checkInteraction = () => {
       const p = playerState.current;
       const ix = p.x + (p.dir === 2 ? 1 : p.dir === 1 ? -1 : 0);
       const iy = p.y + (p.dir === 0 ? 1 : p.dir === 3 ? -1 : 0);
       const map = mapDataRef.current;
       if (!map || !onTrigger) return;
-      const ev = Object.values(map.events || {}).find(e => e?.x === ix && e?.y === iy);
-      if (ev) onTrigger(ev.name.toLowerCase().replace(/\s/g, '_'));
+
+      // Check map events
+      const ev = Object.values(map.events || {}).find(e => e.x === ix && e.y === iy);
+      if (ev) { onTrigger({ type: 'INTERACT', name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); return; }
+
+      // Check external starters
+      const starter = starters.find(s => s.tileX === ix && s.tileY === iy);
+      if (starter) onTrigger(`starter_${starter.id}`);
     };
 
+    // ── update ─────────────────────────────────────────────────────────────────
     const update = (dt) => {
       const p = playerState.current;
+
       if (p.isMoving) {
         p.moveProgress += dt;
         if (p.moveProgress >= MOVE_DURATION) {
-          p.x = p.targetX; p.y = p.targetY;
-          p.isMoving = false; p.moveProgress = 0; p.frame = 0;
+          p.x = p.targetX;
+          p.y = p.targetY;
+          p.isMoving = false;
+          p.moveProgress = 0;
+          p.frame = 0;
           checkTrigger(p.x, p.y);
         } else {
-          p.frame = p.moveProgress / MOVE_DURATION < 0.5 ? 1 : 3;
+          const t = p.moveProgress / MOVE_DURATION;
+          p.frame = t < 0.5 ? 1 : 3;
         }
-        return;
+        return; // no leer teclado mientras se mueve
       }
+
+      // Leer dirección
       let dx = 0, dy = 0;
       if      (keys.current['ArrowUp']    || keys.current['w']) { dy = -1; p.dir = 3; }
       else if (keys.current['ArrowDown']  || keys.current['s']) { dy =  1; p.dir = 0; }
       else if (keys.current['ArrowLeft']  || keys.current['a']) { dx = -1; p.dir = 1; }
       else if (keys.current['ArrowRight'] || keys.current['d']) { dx =  1; p.dir = 2; }
+
       if (dx !== 0 || dy !== 0) {
         const nx = p.x + dx, ny = p.y + dy;
         if (!isSolid(nx, ny, dx, dy)) {
-          p.targetX = nx; p.targetY = ny;
-          p.isMoving = true; p.moveProgress = 0;
+          p.targetX = nx;
+          p.targetY = ny;
+          p.isMoving = true;
+          p.moveProgress = 0;
         }
-        p.frame = 1;
-      } else { p.frame = 0; }
-      const ix  = p.x + (p.dir === 2 ? 1 : p.dir === 1 ? -1 : 0);
-      const iy  = p.y + (p.dir === 0 ? 1 : p.dir === 3 ? -1 : 0);
-      const map = mapDataRef.current;
-      p.nearEvent = Object.values(map?.events || {})
-        .find(e => e?.x === ix && e?.y === iy) || null;
-      if ((keys.current['z'] || keys.current[' '] || keys.current['Enter']) && !p.isInteracting) {
+        p.frame = 1; // pie levantado aunque esté bloqueado
+      } else {
+        p.frame = 0; // quieto
+      }
+
+      // Interacción
+      if ((keys.current['z'] || keys.current[' '] || keys.current['Enter'])
+          && !p.isInteracting) {
         p.isInteracting = true;
         checkInteraction();
         setTimeout(() => { p.isInteracting = false; }, 300);
       }
     };
 
+    // ── draw ───────────────────────────────────────────────────────────────────
     const draw = () => {
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = false;
       const map = mapDataRef.current;
       if (!map) return;
       const W = canvas.width, H = canvas.height;
-
-      // Background fill
-      ctx.fillStyle = cfg.bgColor;
-      ctx.fillRect(0, 0, W, H);
+      ctx.clearRect(0, 0, W, H);
 
       const p = playerState.current;
       const t = p.isMoving ? p.moveProgress / MOVE_DURATION : 0;
-      const interX = p.x + (p.targetX - p.x) * t;
-      const interY = p.y + (p.targetY - p.y) * t;
-      const camX   = interX * T + T / 2 - W / 2;
-      const camY   = interY * T + T / 2 - H / 2;
-      const ox     = -Math.round(camX);
-      const oy     = -Math.round(camY);
+      const interpX = p.x + (p.targetX - p.x) * t;
+      const interpY = p.y + (p.targetY - p.y) * t;
 
+      const camX = interpX * T + T / 2 - W / 2;
+      const camY = interpY * T + T / 2 - H / 2;
+      const ox = -Math.round(camX);
+      const oy = -Math.round(camY);
+
+      // Tiles visibles
       const startX = Math.max(0, Math.floor(camX / T));
       const startY = Math.max(0, Math.floor(camY / T));
       const endX   = Math.min(map.width  - 1, Math.ceil((camX + W) / T));
       const endY   = Math.min(map.height - 1, Math.ceil((camY + H) / T));
 
-      // Draw tiles
       for (let z = 0; z < 3; z++) {
         for (let my = startY; my <= endY; my++) {
           for (let mx = startX; mx <= endX; mx++) {
@@ -324,22 +323,23 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
             const dx = mx * T + ox, dy = my * T + oy;
             if (tid < 384) {
               const atId = Math.floor((tid - 48) / 48);
-              const img  = autotileImgsRef.current[atId];
+              const img = autotileImgsRef.current[atId];
               if (img) ctx.drawImage(img, 0, 0, 32, 32, dx, dy, T, T);
-            } else if (tilesetImgRef.current) {
+            } else {
               const lid = tid - 384;
-              ctx.drawImage(tilesetImgRef.current,
-                (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 32, 32,
-                dx, dy, T, T);
+              if (tilesetImgRef.current)
+                ctx.drawImage(tilesetImgRef.current,
+                  (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 32, 32,
+                  dx, dy, T, T);
             }
           }
         }
 
-        // Sprites between layer 1 and 2
+        // NPCs y jugador entre capas
         if (z === 1) {
           // NPCs
           Object.values(map.events || {}).forEach(ev => {
-            const g = ev?.pages?.[0]?.graphic;
+            const g = ev.pages?.[0]?.graphic;
             if (!g?.character_name) return;
             const img = npcImgsRef.current[g.character_name];
             if (!img) return;
@@ -348,39 +348,9 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
                       : g.direction === 6 ? 2 : 3;
             ctx.drawImage(img, (g.pattern ?? 0) * fw, row * fh, fw, fh,
               ev.x * T + ox, ev.y * T + oy - (fh - T), T, fh * (T / fw));
-
-            // ── Medal over completed gym ───────────────────────────────────
-            const evName = ev.name?.toLowerCase().replace(/\s/g, '_') || '';
-            const isGymEvent = evName.startsWith('gym_');
-            if (isGymEvent && completedGyms.length > 0) {
-              // Match event name to gym_id: "gym_vestirse" → "vestirse", also "higiene_m"
-              const evBase = evName.replace('gym_', '');
-              const isDone = completedGyms.some(gid => {
-                const evKey = gid.replace('_m', '').replace('_n', '');
-                return gid === evBase || evKey === evBase;
-              });
-              if (isDone) {
-                const bx = ev.x * T + ox + T / 2;
-                const by = ev.y * T + oy - 18;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(bx, by, 10, 0, Math.PI * 2);
-                ctx.fillStyle = '#f0c020';
-                ctx.fill();
-                ctx.strokeStyle = '#8a6000';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 10px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('✓', bx, by);
-                ctx.restore();
-              }
-            }
           });
 
-          // Player — always centered
+          // Jugador — siempre en el centro exacto de la pantalla
           const img = playerImgRef.current;
           if (img) {
             const fw = img.width / 4, fh = img.height / 4;
@@ -389,31 +359,48 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
               Math.round(H / 2 - T / 2 - (fh - T)),
               T, fh * (T / fw));
           }
+        }
 
-          // Interaction indicator
-          if (p.nearEvent) {
-            const ev   = p.nearEvent;
-            const floatY = Math.sin(Date.now() / 200) * 4;
-            ctx.fillStyle = 'rgba(0,0,0,0.65)';
-            ctx.beginPath();
-            ctx.roundRect(ev.x * T + ox + 6, ev.y * T + oy - 25 + floatY, 20, 20, 4);
-            ctx.fill();
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Z', ev.x * T + ox + 16, ev.y * T + oy - 11 + floatY);
-          }
+        // Starters Layer (on top of map, under/over player depending on Y, but let's keep it simple at layer 2)
+        if (z === 1) {
+          starters.forEach(st => {
+            const img = starterImgsRef.current[st.id];
+            if (!img) return;
+            const sx = st.tileX * T + ox;
+            const sy = st.tileY * T + oy;
+            
+            // Draw Pokemon (48x48) - Centered on 32px tile
+            const sz = 48;
+            const offset = (sz - T) / 2;
+            ctx.drawImage(img, sx - offset, sy - offset, sz, sz);
+
+            // Proximity indicator
+            const dist = Math.sqrt(Math.pow(p.x - st.tileX, 2) + Math.pow(p.y - st.tileY, 2));
+            if (dist < 2) {
+               ctx.fillStyle = '#fff';
+               ctx.font = '12px "Press Start 2P"';
+               const bounce = Math.sin(Date.now() / 200) * 3;
+               ctx.fillText('▼', sx + T/2 - 6, sy - 10 + bounce);
+            }
+          });
         }
       }
 
-      // ── Night overlay ──────────────────────────────────────────────────────
-      if (cfg.overlay) {
-        ctx.fillStyle = cfg.overlay;
+      // ── Tinte / Clima estilo GBA (Time of Day) ────────────────────────────────
+      // Aplicamos un overlay global imitando el paso del tiempo de Pokémon Oro/Plata
+      if (timeOfDay === 'morning') {
+        ctx.fillStyle = 'rgba(255, 140, 50, 0.15)'; // Tinte amanecer cálido/naranja
+        ctx.fillRect(0, 0, W, H);
+      } else if (timeOfDay === 'night') {
+        ctx.fillStyle = 'rgba(0, 0, 40, 0.45)'; // Tinte noche oscura con azul
         ctx.fillRect(0, 0, W, H);
       }
+      // 'day' no requiere tinte, se ve natural
     };
 
+    // ── loop ───────────────────────────────────────────────────────────────────
     const loop = (timestamp) => {
+      // ⚠️  Primer frame: lastTime=null → dt=0, no hay salto
       const dt = lastTime === null ? 0 : Math.min(timestamp - lastTime, 50);
       lastTime = timestamp;
       update(dt);
@@ -423,22 +410,21 @@ const TileMap = ({ onTrigger, timeOfDay = 'morning', completedGyms = [] }) => {
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [ready, onTrigger, completedGyms]);
+  }, [ready, onTrigger, timeOfDay]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%',
-                  overflow: 'hidden', backgroundColor: configRef.current.bgColor }}>
+                  overflow: 'hidden', backgroundColor: '#000' }}>
       <canvas
         ref={canvasRef}
+        width={480} height={320}
         style={{ width: '100%', height: '100%', imageRendering: 'pixelated', display: 'block' }}
       />
       {!ready && (
         <div style={{
           position: 'absolute', inset: 0, display: 'flex',
           alignItems: 'center', justifyContent: 'center',
-          fontFamily: '"Press Start 2P"', fontSize: 10,
-          color: configRef.current.bgColor === '#1A1A3E' ? '#a0b0ff' : '#9BBC0F',
-          background: configRef.current.bgColor,
+          fontFamily: '"Press Start 2P"', fontSize: 10, color: '#9BBC0F'
         }}>
           CARGANDO...
         </div>

@@ -4,6 +4,7 @@ import { useGame } from '../context/GameContext';
 const DailySetupScreen = ({ onNavigate }) => {
   const { template, fetchTemplate, setupDay } = useGame();
   const [selectedHabits, setSelectedHabits] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchTemplate();
@@ -22,6 +23,7 @@ const DailySetupScreen = ({ onNavigate }) => {
                   pokemon_index: pkIdx,
                   habito_id: task.id,
                   habito_nombre: task.nombre,
+                  daño: task.daño,
                   active: true
                 });
               });
@@ -40,101 +42,171 @@ const DailySetupScreen = ({ onNavigate }) => {
   };
 
   const handleStart = async () => {
+    setLoading(true);
     const activeOnes = selectedHabits.filter(h => h.active);
     await setupDay(activeOnes);
-    onNavigate('MAP');
+    setTimeout(() => {
+      onNavigate('MAP');
+    }, 500);
   };
 
-  if (!template || !Array.isArray(template)) return <div style={screenStyle}>CARGANDO...</div>;
+  if (!template || !Array.isArray(template)) return <div style={S.screen}>CARGANDO DESAFÍOS...</div>;
 
   return (
-    <div className="setup-screen" style={screenStyle}>
-      <div style={headerStyle}>
-        <h2 style={h2Style}>AJUSTE DIARIO</h2>
-        <p style={subStyle}>Selecciona lo que harás hoy</p>
+    <div className="setup-screen" style={S.screen}>
+      <div style={S.header}>
+        <h2 style={S.h2}>TARJETA DE DESAFÍO</h2>
+        <p style={S.sub}>Prepara tus ataques para la aventura de hoy</p>
       </div>
       
-      <div className="setup-list" style={listStyle}>
+      <div className="setup-list" style={S.list}>
         {template.map(gym => (
-          <div key={gym.gym_id} style={gymBoxStyle}>
-            <div style={gymHeaderStyle}>
-               <span style={gymIconStyle}>🏆</span>
-               <h3 style={gymH3Style}>{gym.gym_nombre}</h3>
+          <div key={gym.gym_id} style={S.gymCard}>
+            <div style={S.gymHeader}>
+               <div style={S.gymBadge}>🏆</div>
+               <div style={S.gymInfo}>
+                 <h3 style={S.gymName}>{gym.gym_nombre.toUpperCase()}</h3>
+                 <span style={S.gymTime}>{gym.tiempo === 'morning' ? '☀️ MAÑANA' : gym.tiempo === 'night' ? '🌙 NOCHE' : '☁️ DÍA'}</span>
+               </div>
             </div>
-            {gym.pokemon && Array.isArray(gym.pokemon) && gym.pokemon.map((pk, pkIdx) => (
-              <div key={pk.nombre || pkIdx} style={pkStyle}>
-                <div style={pkInfoStyle}>
-                   <img src={`Graphics/pokemon/${pk.id}.png`} style={pkIconStyle} alt=""/>
-                   <span style={pkNameStyle}>{pk.nombre}</span>
+
+            <div style={S.pkSection}>
+              {gym.pokemon && Array.isArray(gym.pokemon) && gym.pokemon.map((pk, pkIdx) => (
+                <div key={pkIdx} style={S.pkRow}>
+                  <div style={S.pkAvatar}>
+                    <img src={`Graphics/pokemon/${pk.id}.png`} style={S.pkImg} alt=""/>
+                  </div>
+                  <div style={S.habitsGrid}>
+                    {pk.habitos && Array.isArray(pk.habitos) && pk.habitos.map(task => {
+                      const isSelected = selectedHabits.find(h => h.gym_id === gym.gym_id && h.habito_id === task.id)?.active;
+                      return (
+                        <div 
+                          key={task.id} 
+                          onClick={() => toggleHabit(gym.gym_id, task.id)}
+                          style={{
+                            ...S.habitItem,
+                            backgroundColor: isSelected ? '#3D5AFE' : '#f5f5f5',
+                            color: isSelected ? '#fff' : '#444',
+                            transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                            boxShadow: isSelected ? '0 4px 12px rgba(61,90,254,0.3)' : 'none'
+                          }}
+                        >
+                          <span style={S.habitIcon}>{task.icono || '⚔️'}</span>
+                          <div style={S.habitDetails}>
+                            <span style={S.habitName}>{task.nombre}</span>
+                            <span style={{...S.habitDmg, color: isSelected ? '#A1CAFF' : '#888'}}>PWR: {task.daño}</span>
+                          </div>
+                          <div style={{...S.check, opacity: isSelected ? 1 : 0.2}}>
+                            {isSelected ? '●' : '○'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div style={habitsGridStyle}>
-                  {pk.habitos && Array.isArray(pk.habitos) && pk.habitos.map(task => {
-                    const isSelected = selectedHabits.find(h => h.gym_id === gym.gym_id && h.habito_id === task.id)?.active;
-                    return (
-                      <div 
-                        key={task.id} 
-                        onClick={() => toggleHabit(gym.gym_id, task.id)}
-                        style={{
-                          ...habitCardStyle,
-                          backgroundColor: isSelected ? '#3048a8' : '#fff',
-                          color: isSelected ? '#fff' : '#333',
-                          borderColor: isSelected ? '#203070' : '#ccc'
-                        }}
-                      >
-                        <span style={habitIconStyle}>{task.icono || '🐾'}</span>
-                        <span style={habitLabelStyle}>{task.nombre}</span>
-                        {isSelected && <span style={checkMarkStyle}>✔</span>}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         ))}
       </div>
 
-      <button onClick={handleStart} className="gb-button" style={buttonStyle}>
-        ¡COMENZAR AVENTURA!
-      </button>
+      <div style={S.footer}>
+        <button 
+          onClick={handleStart} 
+          disabled={loading}
+          style={{
+            ...S.mainBtn,
+            opacity: loading ? 0.7 : 1,
+            transform: loading ? 'scale(0.98)' : 'scale(1)'
+          }}
+        >
+          {loading ? 'SINCRONIZANDO...' : '¡COMENZAR DESAFÍO!'}
+        </button>
+      </div>
+
+      <style>{CSS}</style>
     </div>
   );
 };
 
-// --- Estilos Mejorados ---
-const screenStyle = { 
-  width: '100%', height: '100%', backgroundColor: '#e0e0e0', 
-  display: 'flex', flexDirection: 'column', padding: '15px', 
-  fontFamily: '"Press Start 2P"', boxSizing: 'border-box'
+const S = {
+  screen: {
+    width: '100%', height: '100%', 
+    background: 'linear-gradient(135deg, #1a237e 0%, #121858 100%)', 
+    display: 'flex', flexDirection: 'column', 
+    padding: '12px', boxSizing: 'border-box',
+    fontFamily: '"Outfit", "Roboto", sans-serif',
+    color: '#fff',
+    overflow: 'hidden'
+  },
+  header: {
+    textAlign: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px'
+  },
+  h2: { 
+    margin: 0, fontSize: '18px', fontWeight: 800, letterSpacing: '1px', color: '#ffea00' 
+  },
+  sub: { 
+    margin: '4px 0 0 0', fontSize: '11px', opacity: 0.7, fontWeight: 300 
+  },
+  list: {
+    flex: 1, overflowY: 'auto', paddingRight: '4px'
+  },
+  gymCard: {
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: '16px',
+    padding: '16px',
+    marginBottom: '16px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    backdropFilter: 'blur(10px)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+  },
+  gymHeader: {
+    display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'
+  },
+  gymBadge: {
+    width: '40px', height: '40px', background: 'linear-gradient(45deg, #FFD600, #FFA000)',
+    borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '20px', boxShadow: '0 4px 15px rgba(255,160,0,0.4)'
+  },
+  gymInfo: { display: 'flex', flexDirection: 'column' },
+  gymName: { margin: 0, fontSize: '14px', fontWeight: 700, color: '#fff' },
+  gymTime: { fontSize: '10px', opacity: 0.6, fontWeight: 500 },
+  
+  pkSection: { display: 'flex', flexDirection: 'column', gap: '16px' },
+  pkRow: { display: 'flex', gap: '12px', alignItems: 'flex-start' },
+  pkAvatar: {
+    width: '48px', height: '48px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+  },
+  pkImg: { width: '40px', height: '40px', imageRendering: 'pixelated' },
+  
+  habitsGrid: { flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' },
+  habitItem: {
+    display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
+    borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    userSelect: 'none'
+  },
+  habitIcon: { fontSize: '18px' },
+  habitDetails: { flex: 1, display: 'flex', flexDirection: 'column' },
+  habitName: { fontSize: '12px', fontWeight: 600 },
+  habitDmg: { fontSize: '9px', fontWeight: 700, marginTop: '2px' },
+  check: { fontSize: '14px', fontWeight: 900 },
+  
+  footer: { marginTop: '12px' },
+  mainBtn: {
+    width: '100%', padding: '16px', borderRadius: '14px', border: 'none',
+    background: 'linear-gradient(45deg, #00C853, #64DD17)', color: '#fff',
+    fontSize: '14px', fontWeight: 800, cursor: 'pointer',
+    boxShadow: '0 6px 20px rgba(0,200,83,0.3)', transition: 'all 0.2s',
+    fontFamily: '"Outfit", sans-serif'
+  }
 };
-const headerStyle = { marginBottom: '20px', textAlign: 'center' };
-const h2Style = { fontSize: '12px', color: '#333', margin: '0 0 8px 0' };
-const subStyle = { fontSize: '8px', color: '#666', margin: 0 };
-const listStyle = { flex: 1, overflowY: 'auto', marginBottom: '15px', paddingRight: '5px' };
-const gymBoxStyle = { 
-  border: '4px solid #333', backgroundColor: '#fff', padding: '12px', 
-  marginBottom: '15px', borderRadius: '4px', boxShadow: '4px 4px 0 #999' 
-};
-const gymHeaderStyle = { display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid #eee', paddingBottom: '8px', marginBottom: '12px' };
-const gymIconStyle = { fontSize: '14px' };
-const gymH3Style = { fontSize: '10px', color: '#3048a8', margin: 0 };
-const pkStyle = { marginBottom: '15px' };
-const pkInfoStyle = { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' };
-const pkIconStyle = { width: '32px', height: '32px', imageRendering: 'pixelated' };
-const pkNameStyle = { fontSize: '9px', color: '#ff1111' };
-const habitsGridStyle = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const habitCardStyle = { 
-  display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', 
-  border: '2px solid', cursor: 'pointer', transition: 'all 0.1s',
-  borderRadius: '4px', position: 'relative'
-};
-const habitIconStyle = { fontSize: '16px', minWidth: '24px', textAlign: 'center' };
-const habitLabelStyle = { fontSize: '8px', flex: 1, lineHeight: '1.4' };
-const checkMarkStyle = { fontSize: '10px', fontWeight: 'bold' };
-const buttonStyle = { 
-  padding: '18px', backgroundColor: '#e4000f', color: '#fff', 
-  border: '4px solid #8b0000', cursor: 'pointer', fontSize: '10px',
-  boxShadow: '0 4px 0 #8b0000', activeShadow: 'none', transform: 'translateY(0)'
-};
+
+const CSS = `
+  .setup-list::-webkit-scrollbar { width: 6px; }
+  .setup-list::-webkit-scrollbar-track { background: transparent; }
+  .setup-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); borderRadius: 10px; }
+  .setup-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+`;
 
 export default DailySetupScreen;

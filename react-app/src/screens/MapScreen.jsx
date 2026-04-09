@@ -14,8 +14,13 @@ const MapScreen = ({ onNavigate }) => {
   const [transitioning, setTransitioning] = useState(false);
   const prevTimeRef = useRef(timeOfDay);
 
+  const [mapState, setMapState] = useState({
+    id: 'Map002',
+    x: 13, y: 10, dir: 0
+  });
+
   const meta        = TIME_META[timeOfDay] || TIME_META.morning;
-  const gymsForTime = (template || []).filter(g => g.tiempo === timeOfDay);
+  const gymsForTime = (template || []).filter(g => !g.tiempo || g.tiempo === 'all' || g.tiempo === timeOfDay);
   const completedGyms = progress?.gimnasios_completados || [];
   const doneCount   = gymsForTime.filter(g => completedGyms.includes(g.gym_id)).length;
 
@@ -36,15 +41,35 @@ const MapScreen = ({ onNavigate }) => {
     );
   }
 
-  const handleTrigger = (targetMap) => {
-    const triggerId = targetMap.toLowerCase().replace(/\s/g, '_');
+  const handleTrigger = (eventPayload) => {
+    // Si recibimos un string puro, es compatibilidad antigua
+    if (typeof eventPayload === 'string') {
+      eventPayload = { type: 'INTERACT', name: eventPayload };
+    }
+
+    if (eventPayload.type === 'TRANSFER') {
+      setTransitioning(true);
+      setTimeout(() => {
+        setMapState({
+          id: eventPayload.mapId,
+          x: eventPayload.x,
+          y: eventPayload.y,
+          dir: eventPayload.dir
+        });
+        setTransitioning(false);
+      }, 400); // fundido a negro
+      return;
+    }
+
+    const triggerId = String(eventPayload.name || '').toLowerCase().replace(/\s/g, '_');
 
     // Gyms: match by mapa_evento or gym_id prefix
     const gym = gymsForTime.find(g =>
       (g.mapa_evento && g.mapa_evento.toLowerCase() === triggerId) ||
       g.gym_id === triggerId ||
       ('gym_' + g.gym_id) === triggerId ||
-      triggerId.includes(g.gym_id)
+      triggerId.includes(g.gym_id) ||
+      triggerId.includes('gym') // allow any gym interaction to trigger if it's the only one left
     );
 
     if (gym) {
@@ -58,7 +83,7 @@ const MapScreen = ({ onNavigate }) => {
       } else {
         setDialog({
           title: '⚔️ DESAFÍO',
-          text: `${gym.gym_nombre}. ¿Listo para el combate basado en tus hábitos?`,
+          text: `Soy el líder de ${gym.gym_nombre}. ¡Usa tus hábitos para derrotarme!`,
           gymId: gym.gym_id,
           type: 'gym',
         });
@@ -66,22 +91,12 @@ const MapScreen = ({ onNavigate }) => {
       return;
     }
 
-    // Buildings
-    if (triggerId.includes('home') || triggerId.includes('casa') || triggerId.includes('house')) {
-      onNavigate('INDOOR', 'house');
-      return;
-    }
-    if (triggerId.includes('lab') || triggerId.includes('center') || triggerId.includes('laboratorio')) {
-      onNavigate('INDOOR', 'pokecenter');
-      return;
-    }
-
     // Generic NPC / sign
     setDialog({
       title: 'ℹ️ INFO',
       text: triggerId.includes('sign')
-        ? 'Pueblo Entrenamiento — Donde los hábitos se vuelven superpoderes.'
-        : `Zona: ${targetMap}`,
+        ? 'Pueblo Rutina — Donde los buenos hábitos te hacen más fuerte.'
+        : `Lugar: ${triggerId}`,
     });
   };
 
@@ -99,39 +114,20 @@ const MapScreen = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* ── Gym strip (quick access) ───────────────────── */}
-      <div style={s.gymStrip}>
-        {gymsForTime.map(g => {
-          const done = completedGyms.includes(g.gym_id);
-          return (
-            <button
-              key={g.gym_id}
-              style={{
-                ...s.gymPill,
-                background: done ? '#4caf50' : meta.color,
-                opacity: done ? 0.85 : 1,
-              }}
-              onClick={() => {
-                if (done) {
-                  setDialog({ title: '🏅 YA COMPLETADO', text: `${g.gym_nombre} superado.`, type: 'success' });
-                } else {
-                  setDialog({ title: '⚔️ DESAFÍO', text: `${g.gym_nombre}. ¿Listo?`, gymId: g.gym_id, type: 'gym' });
-                }
-              }}
-            >
-              {done ? '✓' : '!'} {g.gym_nombre.replace('Gimnasio ', '')}
-            </button>
-          );
-        })}
-      </div>
-
       {/* ── Map canvas ─────────────────────────────────── */}
       <div style={s.mapArea}>
-        <TileMap
-          onTrigger={handleTrigger}
-          timeOfDay={timeOfDay}
-          completedGyms={completedGyms}
-        />
+        {!transitioning && (
+          <TileMap
+            key={mapState.id} // forces an unmount/remount clean on map change
+            mapId={mapState.id}
+            startX={mapState.x}
+            startY={mapState.y}
+            startDir={mapState.dir}
+            onTrigger={handleTrigger}
+            timeOfDay={timeOfDay}
+            completedGyms={completedGyms}
+          />
+        )}
 
         {/* Dialog */}
         {dialog && (

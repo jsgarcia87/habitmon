@@ -8,15 +8,17 @@ import RegisterScreen from './screens/RegisterScreen';
 import DailySetupScreen from './screens/DailySetupScreen';
 import IndoorScreen from './screens/IndoorScreen';
 import HabitEditScreen from './screens/HabitEditScreen';
+import LabScreen from './screens/LabScreen';
+import StarterScreen from './screens/StarterScreen';
 
 const AppContent = () => {
-  const { token, progress, user } = useGame();
+  const { token, progress, user, coleccion } = useGame();
   const [currentScreen, setCurrentScreen] = useState('MAP');
   const [activeGymId, setActiveGymId] = useState(null);
   const [buildingType, setBuildingType] = useState('house');
 
   // Touch controls only on MAP
-  const showTouchControls = currentScreen === 'MAP';
+  const showTouchControls = ['MAP', 'STARTER', 'INDOOR', 'LAB'].includes(currentScreen);
   // Footer nav only on MAP / PROFILE
   const showFooter = currentScreen === 'MAP' || currentScreen === 'PROFILE';
 
@@ -74,12 +76,14 @@ const AppContent = () => {
   useEffect(() => {
     if (!token) {
       if (currentScreen !== 'REGISTER') setCurrentScreen('LOGIN');
+    } else if (user && !user.pokemon_inicial_id && currentScreen !== 'STARTER') {
+      setCurrentScreen('STARTER');
     } else if (progress?.setup_required) {
       setCurrentScreen('SETUP');
-    } else if (['LOGIN', 'REGISTER', 'SETUP'].includes(currentScreen)) {
+    } else if (['LOGIN', 'REGISTER', 'SETUP', 'LAB'].includes(currentScreen)) {
       setCurrentScreen('MAP');
     }
-  }, [token, progress]);
+  }, [token, user, progress, coleccion, currentScreen]);
 
   const navigateTo = (screen, gymId = null) => {
     if (screen === 'BATTLE' && gymId !== null) setActiveGymId(gymId);
@@ -93,7 +97,7 @@ const AppContent = () => {
       : <LoginScreen onNavigate={navigateTo} />;
   }
 
-  if (progress?.setup_required) {
+  if (progress?.setup_required && currentScreen !== 'EDIT_HABITS') {
     return <DailySetupScreen onNavigate={navigateTo} />;
   }
 
@@ -104,6 +108,8 @@ const AppContent = () => {
       {currentScreen === 'PROFILE'     && <ProfileScreen     onNavigate={navigateTo} />}
       {currentScreen === 'INDOOR'      && <IndoorScreen      buildingType={buildingType} onNavigate={navigateTo} />}
       {currentScreen === 'EDIT_HABITS' && <HabitEditScreen   onNavigate={navigateTo} />}
+      {currentScreen === 'LAB'         && <LabScreen         onNavigate={navigateTo} />}
+      {currentScreen === 'STARTER'     && <StarterScreen     onNavigate={navigateTo} />}
 
       {/* Touch Controls — solo en el Mapa */}
       {showTouchControls && (

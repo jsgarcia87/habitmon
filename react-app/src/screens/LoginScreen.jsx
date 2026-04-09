@@ -2,60 +2,64 @@ import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 
 const LoginScreen = ({ onNavigate }) => {
-  const { login } = useGame();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+    const { login, loginAsGuest } = useGame();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      const result = await login(email, password);
+      if (!result.success) {
+        setError(result.error);
+      }
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const result = await login(email, password);
-    if (!result.success) {
-      setError(result.error);
-    }
-    // Context will update so App.jsx will redirect automatically
+    const handleGuest = async () => {
+      await loginAsGuest();
+    };
+  
+    return (
+      <div className="login-screen" style={screenStyle}>
+        <div className="title-logo" style={titleStyle}>
+          <h1 style={h1Style}>HABITMON</h1>
+          <p style={pStyle}>EDICIÓN HÁBITOS</p>
+        </div>
+  
+        <div className="auth-box" style={boxStyle}>
+          <h2 style={h2Style}>ENTRAR</h2>
+          <form onSubmit={handleSubmit} style={formStyle}>
+            <div style={inputGroupStyle}>
+               <label style={labelStyle}>EMAIL:</label>
+               <input 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  style={inputStyle}
+                  required
+               />
+            </div>
+            <div style={inputGroupStyle}>
+               <label style={labelStyle}>PASSWORD:</label>
+               <input 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  style={inputStyle}
+                  required
+               />
+            </div>
+            {error && <p style={errorStyle}>{error}</p>}
+            <button type="submit" className="gb-button" style={buttonStyle}>ENTRAR</button>
+            <button type="button" onClick={handleGuest} className="gb-button guest" style={{...buttonStyle, backgroundColor: '#9bc60b', borderColor: '#6b8c06', boxShadow: '0 3px 0 #6b8c06'}}>MODO INVITADO ⚡</button>
+          </form>
+          <button onClick={() => onNavigate('REGISTER')} style={linkButtonStyle}>
+              ¿No tienes cuenta? REGÍSTRATE
+          </button>
+        </div>
+      </div>
+    );
   };
-
-  return (
-    <div className="login-screen" style={screenStyle}>
-      <div className="title-logo" style={titleStyle}>
-        <h1 style={h1Style}>HABITMON</h1>
-        <p style={pStyle}>EDICIÓN HÁBITOS</p>
-      </div>
-
-      <div className="auth-box" style={boxStyle}>
-        <h2 style={h2Style}>ENTRAR</h2>
-        <form onSubmit={handleSubmit} style={formStyle}>
-          <div style={inputGroupStyle}>
-             <label style={labelStyle}>EMAIL:</label>
-             <input 
-                type="email" 
-                value={email} 
-                onChange={e => setEmail(e.target.value)} 
-                style={inputStyle}
-                required
-             />
-          </div>
-          <div style={inputGroupStyle}>
-             <label style={labelStyle}>PASSWORD:</label>
-             <input 
-                type="password" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
-                style={inputStyle}
-                required
-             />
-          </div>
-          {error && <p style={errorStyle}>{error}</p>}
-          <button type="submit" className="gb-button" style={buttonStyle}>ENTRAR</button>
-        </form>
-        <button onClick={() => onNavigate('REGISTER')} style={linkButtonStyle}>
-            ¿No tienes cuenta? REGÍSTRATE
-        </button>
-      </div>
-    </div>
-  );
-};
 
 const screenStyle = {
   width: '100%', height: '100%',
