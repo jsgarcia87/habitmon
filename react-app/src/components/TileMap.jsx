@@ -1,15 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '../context/GameContext';
+import { WORLDS } from '../data/worlds';
+import { BUILDING_TEMPLATES } from '../data/buildingTemplates';
 
 const T = 32;        // Tile size px
 const tsCols = 8;    // Tileset columns
 const MOVE_DURATION = 180; // ms per tile move
 
-const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, timeOfDay = 'day', starters = [], onTrigger }) => {
-  const { user } = useGame();
+const TileMap = ({ 
+  mapId = 'Map002', 
+  worldId = null,
+  startX = 13, 
+  startY = 10, 
+  startDir = 0, 
+  timeOfDay = 'day', 
+  starters = [], 
+  onTrigger 
+}) => {
+  const { user, progress } = useGame();
+  const activeWorld = WORLDS.find(w => w.mapId === mapId || w.world_id === worldId);
   const canvasRef = useRef(null);
-  const mapDataRef = useRef(null);       // usar ref en vez de state para el loop
-  const tilesetPassagesRef = useRef([]); // igual
+  const mapDataRef = useRef(null);
+  const tilesetPassagesRef = useRef([]);
   const [ready, setReady] = useState(false);
 
   const tilesetImgRef = useRef(null);
@@ -17,6 +29,16 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
   const npcImgsRef = useRef({});
   const starterImgsRef = useRef({});
   const autotileImgsRef = useRef({});
+  
+  // World Specific Refs
+  const worldNpcsRef = useRef([]);
+  const gymPositionRef = useRef(null);
+  const gymTriggerFired = useRef(false);
+  const onTriggerRef = useRef(onTrigger);
+
+  useEffect(() => {
+    onTriggerRef.current = onTrigger;
+  }, [onTrigger]);
 
   const playerState = useRef({
     x: startX, y: startY,
@@ -30,96 +52,321 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
 
   const keys = useRef({});
 
-  // ─── CARGA ASSETS ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    let assetsReady = 0;
-    const tryReady = () => { assetsReady++; if (assetsReady >= 2) setReady(true); };
+  const [mapData, setMapData] = useState(null);
 
-    // Cargar mapa
-    fetch(`Data/${mapId}.json`)
-      .then(r => r.json())
-      .then(mapJson => {
-        const rawTable = mapJson.data?.['@data'] || mapJson.data || [];
-        const width = mapJson.width;
-        const height = mapJson.height;
-        const offset = 20;
-        const getTile = (x, y, z) => {
-          if (x < 0 || x >= width || y < 0 || y >= height) return 0;
-          const idx = offset + (x + y * width + z * width * height) * 2;
-          return (rawTable[idx] ?? 0) | ((rawTable[idx + 1] ?? 0) << 8);
-        };
-        mapDataRef.current = { ...mapJson, getTile };
+  // ─── GAME LOGIC (TOP LEVEL FOR SCOPE) ───────────────────────────────────────
+  
+  const isSolid = (nx, ny, dx, dy) => {
+    const map = mapDataRef.current;
+    if (!map) return true;
+    if (nx < 0 || nx >= map.width || ny < 0 || ny >= map.height) return true;
 
-        // NPCs
-        Object.values(mapJson.events || {}).forEach(ev => {
-          const name = ev.pages?.[0]?.graphic?.character_name;
-          if (name && !npcImgsRef.current[name]) {
-            const img = new Image();
-            img.src = `Graphics/characters/${encodeURIComponent(name.toLowerCase())}.png`;
-            img.onload = () => { npcImgsRef.current[name] = img; };
-          }
+    const p = playerState.current;
+
+    // NPCs del mundo sólidos
+    const worldNpc = worldNpcsRef.current.find(n => n.posicion.x === nx && n.posicion.y === ny);
+    if (worldNpc) return true;
+
+    // Colisión de Edificios Dinámicos (Templates)
+    const checkBuildingSolid = (tx, ty, template, isGym = false) => {
+      const dx = nx - tx;
+      const dy = ny - ty;
+      if (dx >= 0 && dx < template[0].length && dy >= 0 && dy < template.length) {
+        // En GSC, la puerta suele estar en la fila inferior, centro
+        // Simplificamos: Si es la fila inferior y centro, no es sólido (puerta)
+        const isDoorRow = dy === template.length - 1;
+        const isDoorCol = dx === Math.floor(template[0].length / 2);
+        if (isDoorRow && isDoorCol) return false;
+        return true;
+      }
+      return false;
+    };
+
+    if (activeWorld?.gym_position) {
+      if (checkBuildingSolid(activeWorld.gym_position.x - 1, activeWorld.gym_position.y - 1, BUILDING_TEMPLATES.gym, true)) return true;
+    }
+
+    if (mapId === 'Map001') {
+      if (checkBuildingSolid(5, 5, BUILDING_TEMPLATES.pokemon_center)) return true;
+      if (checkBuildingSolid(20, 5, BUILDING_TEMPLATES.pokemart)) return true;
+      if (checkBuildingSolid(5, 20, BUILDING_TEMPLATES.house)) return true;
+      if (checkBuildingSolid(20, 20, BUILDING_TEMPLATES.house)) return true;
+    }
+
+    // Eventos del mapa sólidos
+    const ev = Object.values(map.events || {})
+      .find(e => e.x === nx && e.y === ny && !e.pages?.[0]?.through);
+    if (ev) return true;
+
+    const passages = tilesetPassagesRef.current;
+    // If no passages data available, allow movement to avoid being stuck
+    if (!passages || passages.length === 0) return false;
+
+    for (let z = 0; z < 3; z++) {
+      const currentTid = map.getTile(p.x, p.y, z);
+      const targetTid = map.getTile(nx, ny, z);
+      const currentPass = passages[currentTid] ?? 0;
+      const targetPass = passages[targetTid] ?? 0;
+      
+      // If target is blocked in ALL directions (0x0F)
+      if ((targetPass & 0x0F) === 0x0F) return true;
+      
+      // Directional blocking
+      if (dy ===  1 && (targetPass & 0x08)) return true; // Blocked from above
+      if (dy === -1 && (targetPass & 0x01)) return true; // Blocked from below
+      if (dx === -1 && (targetPass & 0x04)) return true; // Blocked from right
+      if (dx ===  1 && (targetPass & 0x02)) return true; // Blocked from left
+    }
+    return false;
+  };
+
+  const checkTrigger = (x, y) => {
+    const map = mapDataRef.current;
+    if (!map || !onTriggerRef.current) return;
+
+    // Check for Gym entry
+    if (activeWorld?.gym_position && x === activeWorld.gym_position.x && y === activeWorld.gym_position.y) {
+       onTriggerRef.current('gym_enter', { gym_id: activeWorld?.gym_id, gym_nombre: activeWorld?.nombre });
+       return;
+    }
+
+    // Check for other building entries (Map001)
+    if (mapId === 'Map001') {
+      if (x === 7 && y === 8) { // Puerta PC
+        onTriggerRef.current('transfer', { mapId: 'Map006', x: 8, y: 12, dir: 3 });
+        return;
+      }
+      if (x === 22 && y === 8) { // Puerta Mart
+        onTriggerRef.current('transfer', { mapId: 'Map007', x: 8, y: 12, dir: 3 });
+        return;
+      }
+    }
+
+    const ev = Object.values(map.events || {}).find(e => e.x === x && e.y === y);
+    if (ev) {
+      const transferCmd = ev.pages?.[0]?.list?.find(c => c.code === 201);
+      if (transferCmd && transferCmd.parameters[0] === 0) {
+        const [direct, targetMapId, tx, ty, tdir] = transferCmd.parameters;
+        const finalDir = tdir > 0 ? (tdir/2)-1 : playerState.current.dir; 
+        onTriggerRef.current('transfer', {
+          mapId: `Map${String(targetMapId).padStart(3, '0')}`,
+          x: tx, y: ty, dir: finalDir
         });
+        return;
+      }
+      onTriggerRef.current?.('interact', { name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); 
+      return; 
+    }
+  };
 
-        // Tileset
-        fetch('Data/Tilesets.json')
-          .then(r => r.json())
-          .then(tsData => {
-            const ts = tsData.find(t => t && t.id === mapJson.tileset_id);
-            if (!ts) { tryReady(); return; }
+  // ─── CARGA DE DATOS DEL MAPA ──────────────────────────────────────────────
 
-            const img = new Image();
-            img.src = `Graphics/tilesets/${ts.tileset_name.toLowerCase()}.png`;
-            img.onload = () => { tilesetImgRef.current = img; tryReady(); };
-            img.onerror = () => tryReady();
+  useEffect(() => {
+    setReady(false);
+    mapDataRef.current = null;
+    tilesetImgRef.current = null;
 
-            const rawP = ts.passages?.['@data'] || [];
-            const passages = [];
-            const pOffset = 20; // Correct: Skip Table header
-            for (let i = pOffset; i < rawP.length; i += 2)
-              passages.push((rawP[i] ?? 0) | ((rawP[i + 1] ?? 0) << 8));
-            tilesetPassagesRef.current = passages;
+    if (String(mapId).startsWith('virtual_')) {
+      const vKey = mapId.replace('virtual_', '');
+      import('../data/interiors').then(({ INTERIORS }) => {
+        const vMap = INTERIORS[vKey];
+        if (vMap) {
+          const width = vMap.width;
+          const height = vMap.height;
+          const getTile = (x, y, z) => {
+            if (z > 0) return 0;
+            if (x < 0 || x >= width || y < 0 || y >= height) return 0;
+            return vMap.data[y][x];
+          };
+          const data = { ...vMap, getTile };
+          mapDataRef.current = data;
+          setMapData(data);
+          worldNpcsRef.current = vMap.npcs || [];
+        }
+      });
+    } else {
+      const world = WORLDS.find(w => w.world_id === worldId || w.mapId === mapId);
+      if (world) {
+        worldNpcsRef.current = world.npcs || [];
+        gymPositionRef.current = world.gym_position;
+      }
 
-            ts.autotile_names?.forEach((name, i) => {
-              if (!name) return;
-              const ai = new Image();
-              ai.src = `Graphics/autotiles/${name.toLowerCase()}.png`;
-              ai.onload = () => { autotileImgsRef.current[i] = ai; };
-            });
-          })
-          .catch(() => tryReady());
-      })
-      .catch(() => tryReady());
+      fetch(`Data/${mapId}.json`)
+        .then(async r => {
+          const text = await r.text();
+          // Detect corrupted Ruby placeholder files
+          if (text.startsWith('"#<RPG::Map')) {
+            throw new Error(`Map ${mapId}.json contains Ruby object placeholder, not valid JSON.`);
+          }
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            throw new Error(`Failed to parse ${mapId}.json: ${e.message}`);
+          }
+        })
+        .then(mapJson => {
+          const rawTable = mapJson.data?.['@data'] || mapJson.data || [];
+          const width = mapJson.width || 20;
+          const height = mapJson.height || 20;
+          const offset = 20;
+          const getTile = (x, y, z) => {
+            if (x < 0 || x >= width || y < 0 || y >= height) return 0;
+            const idx = offset + (x + y * width + z * width * height) * 2;
+            return (rawTable[idx] ?? 0) | ((rawTable[idx + 1] ?? 0) << 8);
+          };
+          const data = { ...mapJson, width, height, getTile };
+          mapDataRef.current = data;
+          setMapData(data);
+        })
+        .catch(err => {
+          console.error("Critical: Error loading map JSON:", err);
+          // Fallback to minimal valid map to avoid total freeze
+          const fallbackData = {
+            width: 20, height: 20,
+            getTile: () => 0,
+            tileset_id: 1,
+            events: {}
+          };
+          mapDataRef.current = fallbackData;
+          setMapData(fallbackData);
+        });
+    }
+  }, [mapId, worldId]);
 
-    // Jugador
+  // ─── CARGA DE IMÁGENES ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (!mapData) return;
+
+    let loaded = 0;
+    const toLoad = 2; // Tileset + Player
+    const checkReady = () => { loaded++; if (loaded >= toLoad) setReady(true); };
+
+    // 1. Tileset
+    const loadTileset = (tsName, tsId) => {
+      const img = new Image();
+      let finalName = tsName.toLowerCase();
+      if (mapId === 'Map001') {
+        if (timeOfDay === 'morning') finalName = 'gsc overworld johto morning';
+        else if (timeOfDay === 'night') finalName = 'gsc overworld johto nite';
+        else finalName = 'gsc overworld johto day';
+      }
+      img.src = `Graphics/tilesets/${encodeURIComponent(finalName)}.png`;
+      img.onload = () => { tilesetImgRef.current = img; checkReady(); };
+      img.onerror = () => {
+        console.warn("Retrying original tileset name:", tsName);
+        img.src = `Graphics/tilesets/${encodeURIComponent(tsName.toLowerCase())}.png`;
+        img.onerror = () => { 
+          console.error("Critical: Tileset failed to load.");
+          checkReady(); // Continue anyway to avoid being stuck
+        };
+      };
+    };
+
+    if (String(mapId).startsWith('virtual_')) {
+      loadTileset(mapData.tileset_name);
+    } else {
+      fetch('Data/Tilesets.json').then(r => r.json()).then(tsData => {
+        const ts = tsData.find(t => t && t.id === mapData.tileset_id);
+        if (ts) {
+          loadTileset(ts.tileset_name);
+          // Passages
+          const rawP = ts.passages?.['@data'] || [];
+          const passages = [];
+          for (let i = 20; i < rawP.length; i += 2)
+            passages.push((rawP[i] ?? 0) | ((rawP[i + 1] ?? 0) << 8));
+          tilesetPassagesRef.current = passages;
+        } else checkReady();
+      });
+    }
+
+    // 2. Player
     const pImg = new Image();
     pImg.src = `Graphics/characters/trchar00${user?.avatar ?? 0}.png`;
-    pImg.onload = () => { playerImgRef.current = pImg; tryReady(); };
-    pImg.onerror = () => tryReady();
+    pImg.onload = () => { playerImgRef.current = pImg; checkReady(); };
+    pImg.onerror = () => checkReady();
 
-    // Starters
+    // 3. NPCs (Lazy load)
+    const loadNPC = (name) => {
+      if (!name || npcImgsRef.current[name]) return;
+      const img = new Image();
+      img.src = `Graphics/characters/${encodeURIComponent(name.toLowerCase())}.png`;
+      img.onload = () => { npcImgsRef.current[name] = img; };
+    };
+    worldNpcsRef.current?.forEach(n => loadNPC(n.sprite));
+    Object.values(mapData.events || {}).forEach(ev => loadNPC(ev.pages?.[0]?.graphic?.character_name));
+
+    // 4. Starters (Pokémon Icons)
     starters.forEach(st => {
-       if (!starterImgsRef.current[st.id]) {
-          const img = new Image();
-          img.src = st.sprite;
-          img.onload = () => { starterImgsRef.current[st.id] = img; };
-       }
+      const img = new Image();
+      // Usamos el icono o el sprite del Pokémon inicial
+      const path = st.sprite?.startsWith('Graphics/') ? st.sprite : `Graphics/icons/${st.id}.png`;
+      img.src = path;
+      img.onload = () => { starterImgsRef.current[st.id] = img; };
     });
 
-    // Teclado
+    // Cleanup listeners
     const onDown = (e) => {
-      keys.current[e.key] = true;
-      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
-           'w','a','s','d','z',' ','Enter'].includes(e.key))
+      // Map keys to normalized strings
+      const key = e.key;
+      keys.current[key] = true;
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','z',' ','Enter', 'Escape'].includes(key))
         e.preventDefault();
     };
-    const onUp = (e) => { keys.current[e.key] = false; };
-    window.addEventListener('keydown', onDown);
-    window.addEventListener('keyup', onUp);
-    return () => {
-      window.removeEventListener('keydown', onDown);
-      window.removeEventListener('keyup', onUp);
+    const onUp = (e) => { 
+      keys.current[e.key] = false; 
     };
-  }, [mapId, user]);
+
+    window.addEventListener('keydown', onDown, { capture: true });
+    window.addEventListener('keyup', onUp, { capture: true });
+
+    return () => {
+      window.removeEventListener('keydown', onDown, { capture: true });
+      window.removeEventListener('keyup', onUp, { capture: true });
+    };
+  }, [mapData, user, timeOfDay]);
+
+  // Auto-unstuck
+  useEffect(() => {
+    if (!ready) return;
+    setTimeout(() => {
+      const p = playerState.current;
+      if (isSolid(p.x, p.y, 0, 0)) {
+        for(let d=1; d<5; d++) {
+          if (!isSolid(p.x+d, p.y, 0, 0)) { p.x += d; p.targetX += d; break; }
+          if (!isSolid(p.x-d, p.y, 0, 0)) { p.x -= d; p.targetX -= d; break; }
+          if (!isSolid(p.x, p.y+d, 0, 0)) { p.y += d; p.targetY += d; break; }
+          if (!isSolid(p.x, p.y-d, 0, 0)) { p.y -= d; p.targetY -= d; break; }
+        }
+      }
+    }, 500);
+  }, [ready]);
+
+  // ── checkInteraction ───────────────────────────────────────────────────────
+  const checkInteraction = () => {
+    const p = playerState.current;
+    const ix = p.x + (p.dir === 2 ? 1 : p.dir === 1 ? -1 : 0);
+    const iy = p.y + (p.dir === 0 ? 1 : p.dir === 3 ? -1 : 0);
+    
+    const nearNpc = worldNpcsRef.current.find(npc => {
+      const dx = Math.abs(p.x - npc.posicion.x);
+      const dy = Math.abs(p.y - npc.posicion.y);
+      return (dx <= 1 && dy === 0) || (dy <= 1 && dx === 0);
+    });
+
+    if (nearNpc) {
+      onTriggerRef.current?.('npc_dialogue', { npc: nearNpc, messages: nearNpc.mensajes });
+      return;
+    }
+
+    const map = mapDataRef.current;
+    if (map) {
+      const ev = Object.values(map.events || {}).find(e => e.x === ix && e.y === iy);
+      if (ev) { onTriggerRef.current?.('interact', { name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); return; }
+    }
+
+    const starter = starters.find(s => s.tileX === ix && s.tileY === iy);
+    if (starter) onTriggerRef.current?.(`starter_${starter.id}`);
+  };
 
   // ─── RESIZE ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -143,105 +390,7 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     let frameId;
-    // ⚠️  FIX PRINCIPAL: iniciar lastTime a null para ignorar el primer delta
     let lastTime = null;
-
-    // ── isSolid ────────────────────────────────────────────────────────────────
-    const isSolid = (nx, ny, dx, dy) => {
-      const map = mapDataRef.current;
-      if (!map) return true;
-      if (nx < 0 || nx >= map.width || ny < 0 || ny >= map.height) return true;
-
-      const p = playerState.current;
-
-      // Eventos sólidos (destino)
-      const ev = Object.values(map.events || {})
-        .find(e => e.x === nx && e.y === ny && !e.pages?.[0]?.through);
-      if (ev) return true;
-
-      const passages = tilesetPassagesRef.current;
-      if (!passages.length) return false;
-
-      for (let z = 0; z < 3; z++) {
-        const currentTid = map.getTile(p.x, p.y, z);
-        const targetTid = map.getTile(nx, ny, z);
-        
-        const currentPass = passages[currentTid] ?? 0;
-        const targetPass = passages[targetTid] ?? 0;
-        
-        // Bloqueo total (X)
-        if ((targetPass & 0x10)) return true;
-
-        // RPG Maker XP Directional Passages:
-        // 0x01: Down, 0x02: Left, 0x04: Right, 0x08: Up
-        
-        if (dy ===  1) { // Moviendo abajo
-          if (currentPass & 0x01) return true; // No puede salir de actual hacia abajo
-          if (targetPass & 0x08) return true;  // No puede entrar a destino desde arriba
-        }
-        if (dy === -1) { // Moviendo arriba
-          if (currentPass & 0x08) return true; // No puede salir de actual hacia arriba
-          if (targetPass & 0x01) return true;  // No puede entrar a destino desde abajo
-        }
-        if (dx === -1) { // Moviendo izquierda
-          if (currentPass & 0x02) return true; // No puede salir de actual hacia izquierda
-          if (targetPass & 0x04) return true;  // No puede entrar a destino desde derecha
-        }
-        if (dx ===  1) { // Moviendo derecha
-          if (currentPass & 0x04) return true; // No puede salir de actual hacia derecha
-          if (targetPass & 0x02) return true;  // No puede entrar a destino desde izquierda
-        }
-      }
-      return false;
-    };
-
-    // ── checkTrigger ───────────────────────────────────────────────────────────
-    const checkTrigger = (x, y) => {
-      const map = mapDataRef.current;
-      if (!map || !onTrigger) return;
-      const ev = Object.values(map.events || {}).find(e => e.x === x && e.y === y);
-      if (ev) {
-        // Interpret Map Transfer (201)
-        const transferCmd = ev.pages?.[0]?.list?.find(c => c.code === 201);
-        if (transferCmd && transferCmd.parameters[0] === 0) {
-          const [direct, targetMapId, tx, ty, tdir] = transferCmd.parameters;
-          // If direction is 0 (retain), keep current
-          const finalDir = tdir > 0 ? (tdir/2)-1 : playerState.current.dir; 
-          onTrigger({
-            type: 'TRANSFER',
-            mapId: `Map${String(targetMapId).padStart(3, '0')}`,
-            x: tx, y: ty, dir: finalDir
-          });
-          return;
-        }
-
-        // Generic event step
-        onTrigger({ type: 'INTERACT', name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); 
-        return; 
-      }
-      // Puertas genéricas visuales sin evento transfer explícito
-      for (let z = 0; z < 3; z++) {
-        const tid = map.getTile(x, y, z);
-        if (tid > 0 && tid < 48) { onTrigger({ type: 'INTERACT', name: 'puerta_' + tid }); return; }
-      }
-    };
-
-    // ── checkInteraction ───────────────────────────────────────────────────────
-    const checkInteraction = () => {
-      const p = playerState.current;
-      const ix = p.x + (p.dir === 2 ? 1 : p.dir === 1 ? -1 : 0);
-      const iy = p.y + (p.dir === 0 ? 1 : p.dir === 3 ? -1 : 0);
-      const map = mapDataRef.current;
-      if (!map || !onTrigger) return;
-
-      // Check map events
-      const ev = Object.values(map.events || {}).find(e => e.x === ix && e.y === iy);
-      if (ev) { onTrigger({ type: 'INTERACT', name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); return; }
-
-      // Check external starters
-      const starter = starters.find(s => s.tileX === ix && s.tileY === iy);
-      if (starter) onTrigger(`starter_${starter.id}`);
-    };
 
     // ── update ─────────────────────────────────────────────────────────────────
     const update = (dt) => {
@@ -250,8 +399,7 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
       if (p.isMoving) {
         p.moveProgress += dt;
         if (p.moveProgress >= MOVE_DURATION) {
-          p.x = p.targetX;
-          p.y = p.targetY;
+          p.x = p.targetX; p.y = p.targetY;
           p.isMoving = false;
           p.moveProgress = 0;
           p.frame = 0;
@@ -260,10 +408,9 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
           const t = p.moveProgress / MOVE_DURATION;
           p.frame = t < 0.5 ? 1 : 3;
         }
-        return; // no leer teclado mientras se mueve
+        return;
       }
 
-      // Leer dirección
       let dx = 0, dy = 0;
       if      (keys.current['ArrowUp']    || keys.current['w']) { dy = -1; p.dir = 3; }
       else if (keys.current['ArrowDown']  || keys.current['s']) { dy =  1; p.dir = 0; }
@@ -273,19 +420,15 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
       if (dx !== 0 || dy !== 0) {
         const nx = p.x + dx, ny = p.y + dy;
         if (!isSolid(nx, ny, dx, dy)) {
-          p.targetX = nx;
-          p.targetY = ny;
-          p.isMoving = true;
-          p.moveProgress = 0;
+          p.targetX = nx; p.targetY = ny;
+          p.isMoving = true; p.moveProgress = 0;
         }
-        p.frame = 1; // pie levantado aunque esté bloqueado
+        p.frame = 1;
       } else {
-        p.frame = 0; // quieto
+        p.frame = 0;
       }
 
-      // Interacción
-      if ((keys.current['z'] || keys.current[' '] || keys.current['Enter'])
-          && !p.isInteracting) {
+      if ((keys.current['z'] || keys.current[' '] || keys.current['Enter']) && !p.isInteracting) {
         p.isInteracting = true;
         checkInteraction();
         setTimeout(() => { p.isInteracting = false; }, 300);
@@ -309,15 +452,31 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
       const ox = -Math.round(camX);
       const oy = -Math.round(camY);
 
-      // Tiles visibles
-      const startX = Math.max(0, Math.floor(camX / T));
-      const startY = Math.max(0, Math.floor(camY / T));
-      const endX   = Math.min(map.width  - 1, Math.ceil((camX + W) / T));
-      const endY   = Math.min(map.height - 1, Math.ceil((camY + H) / T));
+      // ── Helper: drawBuilding ──
+      const drawBuilding = (tx, ty, buildingTemplate) => {
+        if (!tilesetImgRef.current) return;
+        const tsImg = tilesetImgRef.current;
+        buildingTemplate.forEach((templateRow, dy) => {
+          templateRow.forEach((tid, dx) => {
+            if (tid === 0) return;
+            const lid = tid - 384;
+            const sx = (tx + dx) * T + ox;
+            const sy = (ty + dy) * T + oy;
+            if (sx > -T && sx < W && sy > -T && sy < H) {
+              ctx.drawImage(tsImg, (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 32, 32, sx, sy, T, T);
+            }
+          });
+        });
+      };
+
+      const sX_v = Math.max(0, Math.floor(camX / T));
+      const sY_v = Math.max(0, Math.floor(camY / T));
+      const eX_v = Math.min(map.width  - 1, Math.ceil((camX + W) / T));
+      const eY_v = Math.min(map.height - 1, Math.ceil((camY + H) / T));
 
       for (let z = 0; z < 3; z++) {
-        for (let my = startY; my <= endY; my++) {
-          for (let mx = startX; mx <= endX; mx++) {
+        for (let my = sY_v; my <= eY_v; my++) {
+          for (let mx = sX_v; mx <= eX_v; mx++) {
             const tid = map.getTile(mx, my, z);
             if (tid === 0) continue;
             const dx = mx * T + ox, dy = my * T + oy;
@@ -328,89 +487,129 @@ const TileMap = ({ mapId = 'Map002', startX = 13, startY = 10, startDir = 0, tim
             } else {
               const lid = tid - 384;
               if (tilesetImgRef.current)
-                ctx.drawImage(tilesetImgRef.current,
-                  (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 32, 32,
-                  dx, dy, T, T);
+                ctx.drawImage(tilesetImgRef.current, (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 32, 32, dx, dy, T, T);
             }
           }
         }
 
-        // NPCs y jugador entre capas
         if (z === 1) {
-          // NPCs
+          // 1. Draw RPG Maker Events
           Object.values(map.events || {}).forEach(ev => {
             const g = ev.pages?.[0]?.graphic;
             if (!g?.character_name) return;
             const img = npcImgsRef.current[g.character_name];
             if (!img) return;
             const fw = img.width / 4, fh = img.height / 4;
-            const row = g.direction === 2 ? 0 : g.direction === 4 ? 1
-                      : g.direction === 6 ? 2 : 3;
-            ctx.drawImage(img, (g.pattern ?? 0) * fw, row * fh, fw, fh,
-              ev.x * T + ox, ev.y * T + oy - (fh - T), T, fh * (T / fw));
+            const row = g.direction === 2 ? 0 : g.direction === 4 ? 1 : g.direction === 6 ? 2 : 3;
+            ctx.drawImage(img, (g.pattern ?? 0) * fw, row * fh, fw, fh, ev.x * T + ox, ev.y * T + oy - (fh - T), T, fh * (T / fw));
           });
 
-          // Jugador — siempre en el centro exacto de la pantalla
-          const img = playerImgRef.current;
-          if (img) {
-            const fw = img.width / 4, fh = img.height / 4;
-            ctx.drawImage(img, p.frame * fw, p.dir * fh, fw, fh,
-              Math.round(W / 2 - T / 2),
-              Math.round(H / 2 - T / 2 - (fh - T)),
-              T, fh * (T / fw));
-          }
-        }
+          // 2. Draw World NPCs from worlds.js
+          worldNpcsRef.current?.forEach(npc => {
+            const sx = npc.posicion.x * T + ox;
+            const sy = npc.posicion.y * T + oy;
+            
+            if (npc.sprite && npcImgsRef.current[npc.sprite]) {
+              const img = npcImgsRef.current[npc.sprite];
+              const fw = img.width / 4, fh = img.height / 4;
+              ctx.drawImage(img, fw, 0, fw, fh, sx, sy - (fh - T), T, fh * (T / fw));
+            } else if (!npc.sprite) {
+              // NPC objeto (!):
+              ctx.fillStyle = '#FFD700'; ctx.fillRect(sx + 8, sy - 8, 16, 20);
+              ctx.fillStyle = '#111'; ctx.font = 'bold 14px monospace'; ctx.fillText('!', sx + 14, sy + 8);
+            }
 
-        // Starters Layer (on top of map, under/over player depending on Y, but let's keep it simple at layer 2)
-        if (z === 1) {
+            // Chat pulse indicator
+            const dist = Math.abs(p.x - npc.posicion.x) + Math.abs(p.y - npc.posicion.y);
+            if (dist <= 1.5) {
+              const blink = Math.floor(Date.now()/500) % 2;
+              if (blink) {
+                ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.roundRect(sx-4, sy-28, 40, 16, 4); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#111'; ctx.font = '8px "Press Start 2P"'; ctx.fillText('!', sx+16, sy-15);
+              }
+            }
+          });
+
+          // 3. Draw Player
+          const pImg = playerImgRef.current;
+          if (pImg) {
+            const fw = pImg.width / 4, fh = pImg.height / 4;
+            ctx.drawImage(pImg, p.frame * fw, p.dir * fh, fw, fh, Math.round(W / 2 - T / 2), Math.round(H / 2 - T / 2 - (fh - T)), T, fh * (T / fw));
+          }
+
+          // 4. Dibujar Edificios Dinámicos (Task 2)
+          
+          // Dibujar Gimnasio si aplica
+          if (activeWorld?.gym_position) {
+            drawBuilding(activeWorld.gym_position.x - 1, activeWorld.gym_position.y - 1, BUILDING_TEMPLATES.gym);
+          }
+
+          // Otros edificios si estamos en el mapa exterior
+          if (mapId === 'Map001') {
+            drawBuilding(5, 5, BUILDING_TEMPLATES.pokemon_center);
+            drawBuilding(20, 5, BUILDING_TEMPLATES.pokemart);
+            drawBuilding(5, 20, BUILDING_TEMPLATES.house);
+            drawBuilding(20, 20, BUILDING_TEMPLATES.house);
+          }
+
+          // 5. Starters
           starters.forEach(st => {
             const img = starterImgsRef.current[st.id];
             if (!img) return;
-            const sx = st.tileX * T + ox;
-            const sy = st.tileY * T + oy;
-            
-            // Draw Pokemon (48x48) - Centered on 32px tile
-            const sz = 48;
-            const offset = (sz - T) / 2;
+            const sx = st.tileX * T + ox, sy = st.tileY * T + oy;
+            const sz = 48; const offset = (sz - T) / 2;
             ctx.drawImage(img, sx - offset, sy - offset, sz, sz);
-
-            // Proximity indicator
             const dist = Math.sqrt(Math.pow(p.x - st.tileX, 2) + Math.pow(p.y - st.tileY, 2));
             if (dist < 2) {
-               ctx.fillStyle = '#fff';
-               ctx.font = '12px "Press Start 2P"';
+               ctx.fillStyle = '#fff'; ctx.font = '12px "Press Start 2P"';
                const bounce = Math.sin(Date.now() / 200) * 3;
                ctx.fillText('▼', sx + T/2 - 6, sy - 10 + bounce);
             }
           });
         }
+        // 5. Overlay Graphics / Indicators
+        if (z === 2) {
+          if (activeWorld && activeWorld.gym_position) {
+            const gymPos = activeWorld.gym_position;
+            const gymScreenX = gymPos.x * T + ox;
+            const gymScreenY = gymPos.y * T + oy;
+
+            // Sello COMPLETADO / Flecha de indicador
+            const gymCompletado = progress?.gimnasios_completados?.includes(world.gym_id);
+            if (gymCompletado) {
+              ctx.fillStyle = 'rgba(0,180,0,0.8)';
+              ctx.fillRect(gymScreenX - 30, gymScreenY - 48, 60, 14);
+              ctx.fillStyle = '#fff'; ctx.font = '6px "Press Start 2P"';
+              ctx.textAlign = 'center'; ctx.fillText('MEDALLA 🏅', gymScreenX + T/2, gymScreenY - 38);
+              ctx.textAlign = 'start';
+            } else {
+              const dist = Math.sqrt(Math.pow(p.x - gymPos.x, 2) + Math.pow(p.y - gymPos.y, 2));
+              if (dist < 4) {
+                const blink = Math.floor(Date.now() / 400) % 2;
+                if (blink) {
+                  ctx.fillStyle = '#FF4444'; ctx.font = '16px serif';
+                  ctx.textAlign = 'center'; ctx.fillText('▼', gymScreenX + T/2, gymScreenY - 24);
+                  ctx.textAlign = 'start';
+                }
+              }
+            }
+          }
+        }
       }
 
-      // ── Tinte / Clima estilo GBA (Time of Day) ────────────────────────────────
-      // Aplicamos un overlay global imitando el paso del tiempo de Pokémon Oro/Plata
-      if (timeOfDay === 'morning') {
-        ctx.fillStyle = 'rgba(255, 140, 50, 0.15)'; // Tinte amanecer cálido/naranja
-        ctx.fillRect(0, 0, W, H);
-      } else if (timeOfDay === 'night') {
-        ctx.fillStyle = 'rgba(0, 0, 40, 0.45)'; // Tinte noche oscura con azul
-        ctx.fillRect(0, 0, W, H);
-      }
-      // 'day' no requiere tinte, se ve natural
+      if (timeOfDay === 'morning') { ctx.fillStyle = 'rgba(255, 140, 50, 0.15)'; ctx.fillRect(0, 0, W, H); }
+      else if (timeOfDay === 'night') { ctx.fillStyle = 'rgba(0, 0, 40, 0.45)'; ctx.fillRect(0, 0, W, H); }
     };
 
-    // ── loop ───────────────────────────────────────────────────────────────────
     const loop = (timestamp) => {
-      // ⚠️  Primer frame: lastTime=null → dt=0, no hay salto
       const dt = lastTime === null ? 0 : Math.min(timestamp - lastTime, 50);
-      lastTime = timestamp;
-      update(dt);
-      draw();
-      frameId = requestAnimationFrame(loop);
+      lastTime = timestamp; update(dt); draw(); frameId = requestAnimationFrame(loop);
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [ready, onTrigger, timeOfDay]);
+  }, [ready, timeOfDay, worldId, starters]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%',

@@ -1,116 +1,74 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 
-const LoginScreen = ({ onNavigate }) => {
-    const { login, loginAsGuest } = useGame();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(null);
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      const result = await login(email, password);
-      if (!result.success) {
-        setError(result.error);
-      }
-    };
+const LoginScreen = ({ onRegisterClick }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { login } = useGame();
 
-    const handleGuest = async () => {
-      await loginAsGuest();
-    };
-  
-    return (
-      <div className="login-screen" style={screenStyle}>
-        <div className="title-logo" style={titleStyle}>
-          <h1 style={h1Style}>HABITMON</h1>
-          <p style={pStyle}>EDICIÓN HÁBITOS</p>
-        </div>
-  
-        <div className="auth-box" style={boxStyle}>
-          <h2 style={h2Style}>ENTRAR</h2>
-          <form onSubmit={handleSubmit} style={formStyle}>
-            <div style={inputGroupStyle}>
-               <label style={labelStyle}>EMAIL:</label>
-               <input 
-                  type="email" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  style={inputStyle}
-                  required
-               />
-            </div>
-            <div style={inputGroupStyle}>
-               <label style={labelStyle}>PASSWORD:</label>
-               <input 
-                  type="password" 
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  style={inputStyle}
-                  required
-               />
-            </div>
-            {error && <p style={errorStyle}>{error}</p>}
-            <button type="submit" className="gb-button" style={buttonStyle}>ENTRAR</button>
-            <button type="button" onClick={handleGuest} className="gb-button guest" style={{...buttonStyle, backgroundColor: '#9bc60b', borderColor: '#6b8c06', boxShadow: '0 3px 0 #6b8c06'}}>MODO INVITADO ⚡</button>
-          </form>
-          <button onClick={() => onNavigate('REGISTER')} style={linkButtonStyle}>
-              ¿No tienes cuenta? REGÍSTRATE
-          </button>
-        </div>
-      </div>
-    );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    const res = await login(email, password);
+    if (!res.success) {
+      setError(res.message || 'Error al iniciar sesión');
+    }
   };
 
-const screenStyle = {
-  width: '100%', height: '100%',
-  backgroundColor: '#f8f8f8',
-  display: 'flex', flexDirection: 'column',
-  alignItems: 'center', justifyContent: 'center',
-  padding: 'clamp(20px, 5vw, 40px) 20px',
-  fontFamily: '"Press Start 2P", cursive',
-  overflowY: 'auto', boxSizing: 'border-box',
-};
+  return (
+    <div className="screen-container">
+      <div style={{ textAlign: 'center', marginBottom: '40px', marginTop: '40px' }}>
+        <h1 style={{ fontSize: '24px', color: 'var(--primary-color)' }}>HABITMON</h1>
+        <p style={{ fontSize: '8px' }}>Gotta Catch 'em All (Habits)!</p>
+      </div>
 
-const titleStyle = { textAlign: 'center', marginBottom: 'clamp(16px, 4vw, 30px)' };
-const h1Style = { fontSize: 'clamp(16px, 5vw, 24px)', color: '#3048a8', textShadow: '2px 2px #a0b0e0' };
-const pStyle = { fontSize: 'clamp(8px, 2vw, 10px)', color: '#ff1111', marginTop: '5px' };
+      <div className="gb-window">
+        <h2>INICIAR SESIÓN</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="gb-input-group">
+            <label className="gb-label">EMAIL</label>
+            <input 
+              className="gb-input" 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="prof.oak@kanto.com"
+              required 
+            />
+          </div>
 
-const boxStyle = {
-  width: '100%', maxWidth: '320px',
-  border: '4px solid #333',
-  padding: 'clamp(14px, 3vw, 20px)',
-  backgroundColor: '#fff',
-  boxShadow: '4px 4px 0 #aaa',
-};
+          <div className="gb-input-group">
+            <label className="gb-label">CONTRASEÑA</label>
+            <input 
+              className="gb-input" 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required 
+            />
+          </div>
 
-const h2Style = { fontSize: 'clamp(10px, 3vw, 14px)', marginBottom: '16px', textAlign: 'center' };
-const formStyle = { display: 'flex', flexDirection: 'column', gap: '12px' };
-const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '5px' };
-const labelStyle = { fontSize: 'clamp(7px, 1.8vw, 8px)' };
-const inputStyle = {
-  padding: '10px 8px',
-  fontSize: 'clamp(9px, 2.2vw, 11px)',
-  border: '2px solid #333',
-  fontFamily: '"Press Start 2P"',
-  width: '100%', boxSizing: 'border-box',
-};
-const errorStyle = { color: '#e40000', fontSize: '7px', textAlign: 'center', lineHeight: '1.5' };
-const buttonStyle = {
-  marginTop: '8px', padding: '12px',
-  backgroundColor: '#3048a8', color: '#fff',
-  border: '3px solid #1a2870',
-  cursor: 'pointer',
-  fontFamily: '"Press Start 2P"',
-  fontSize: 'clamp(8px, 2vw, 10px)',
-  boxShadow: '0 3px 0 #1a2870', width: '100%',
-};
-const linkButtonStyle = {
-  marginTop: '14px',
-  background: 'none', border: 'none',
-  color: '#555', fontSize: 'clamp(6px, 1.6vw, 8px)',
-  cursor: 'pointer', textDecoration: 'underline',
-  fontFamily: '"Press Start 2P"',
-  display: 'block', textAlign: 'center',
+          {error && (
+            <p style={{ color: 'var(--secondary-color)', fontSize: '8px', marginBottom: '20px' }}>
+              {error}
+            </p>
+          )}
+
+          <button type="submit" className="gb-button primary" style={{ width: '100%', marginBottom: '10px' }}>
+            ENTRAR
+          </button>
+        </form>
+      </div>
+
+      <div style={{ textAlign: 'center' }}>
+        <button onClick={onRegisterClick} className="gb-button" style={{ fontSize: '8px' }}>
+          ¿NUEVO ENTRENADOR? REGÍSTRATE
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default LoginScreen;

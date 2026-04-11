@@ -1,199 +1,163 @@
-/* ═══════════════════════════════════════════════════
-   HABITMON RPG — GLOBAL STYLES
-   Palette: Neutral GBA / DS inspired
-   ═══════════════════════════════════════════════════ */
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
-  --gb-light:    #F8F8F8;
-  --gb-mid:      #D0D0D0;
-  --gb-dark:     #505050;
-  --gb-darker:   #303030;
-  --gb-black:    #101010;
-
-  --blue-main:   #3048a8;
-  --red-main:    #e4000f;
-  --green-ok:    #4caf50;
-  --yellow-warn: #f0c020;
+  --bg-color: #f8f8f8;
+  --text-color: #333333;
+  --border-color: #333333;
+  --primary-color: #3498db;
+  --secondary-color: #e74c3c;
+  --accent-color: #2ecc71;
+  --window-bg: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-*, *::before, *::after {
+* {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Press Start 2P', cursive;
   -webkit-font-smoothing: none;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: var(--gb-black);
+  -moz-osx-font-smoothing: none;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: var(--text-color);
+  font-family: 'Press Start 2P', cursive;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
 #root {
   width: 100%;
   height: 100%;
-  /* Desktop: caja de aspecto móvil */
-  max-width: 480px;
-  max-height: 860px;
-  background-color: var(--gb-light);
-  color: var(--gb-black);
+  max-width: 600px;
+  max-height: 900px;
+  background-color: var(--bg-color);
+  border: 8px solid #333;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
 }
 
-/* En móviles reales: ocupa toda la pantalla */
-@media (max-width: 500px), (max-height: 700px) {
-  #root {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  body {
-    align-items: flex-start;
-  }
-}
-
-/* ── UI Shared Components ── */
-.gb-box {
-  border: 3px solid var(--gb-darker);
-  background-color: var(--gb-light);
-  box-shadow: inset -3px -3px 0 var(--gb-dark);
-}
-
-.gb-button {
-  border: 3px solid var(--gb-darker);
-  background-color: var(--gb-light);
-  color: var(--gb-black);
-  padding: 10px 14px;
-  cursor: pointer;
+h1, h2, h3 {
+  margin: 0;
+  padding: 10px;
+  font-size: 14px;
   text-transform: uppercase;
+}
+
+.screen-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* GBC Window Style */
+.gb-window {
+  background: var(--window-bg);
+  border: 4px solid var(--border-color);
+  padding: 15px;
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 4px 4px 0 var(--shadow-color);
+}
+
+/* GBC Button Style */
+.gb-button {
+  background: var(--window-bg);
+  border: 4px solid var(--border-color);
+  padding: 10px;
   font-family: 'Press Start 2P', cursive;
-  font-size: clamp(8px, 2vw, 11px);
-  line-height: 1.5;
-  outline: none;
-  box-shadow: inset -3px -3px 0 var(--gb-dark);
-  transition: transform 0.08s, box-shadow 0.08s;
-  -webkit-tap-highlight-color: transparent;
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: transform 0.1s;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
 }
 
 .gb-button:active {
-  box-shadow: inset 3px 3px 0 var(--gb-dark);
   transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--shadow-color);
 }
 
-.gb-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.gb-button.primary { background-color: var(--primary-color); color: white; }
+.gb-button.secondary { background-color: var(--secondary-color); color: white; }
+
+/* Form Elements */
+.gb-input-group {
+  margin-bottom: 20px;
 }
 
-/* ── Animations ── */
-@keyframes blinkAnim {
-  to { visibility: hidden; }
-}
-.blink { animation: blinkAnim 1s steps(2, start) infinite; }
-
-@keyframes shakeAnim {
-  0%,100% { transform: translateX(0); }
-  25%      { transform: translateX(-4px); }
-  75%      { transform: translateX(4px); }
-}
-.shake { animation: shakeAnim 0.3s steps(4) 2; }
-
-@keyframes flashAnim {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(8) invert(1); }
-  100% { filter: brightness(1); }
-}
-.flash { animation: flashAnim 0.15s steps(2) 3; }
-
-/* ── Image rendering ── */
-img, canvas {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+.gb-label {
+  display: block;
+  font-size: 8px;
+  margin-bottom: 10px;
 }
 
-/* ── Touch Controls ── */
-.touch-controls {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2000;
-}
-
-.joystick-base {
-  position: absolute;
-  bottom: 50px;
-  left: 24px;
-  width: 90px;
-  height: 90px;
-  background: rgba(255,255,255,0.18);
-  border: 2px solid rgba(255,255,255,0.35);
-  border-radius: 50%;
-  pointer-events: auto;
-  touch-action: none;
-  user-select: none;
-}
-
-.joystick-handle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,0.55);
-  border: 2px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  transform: translate(calc(-50% + var(--jx, 0px)), calc(-50% + var(--jy, 0px)));
-  pointer-events: none;
-  transition: transform 0.05s;
-}
-
-.action-buttons {
-  position: absolute;
-  bottom: 50px;
-  right: 24px;
-  display: flex;
-  gap: 14px;
-  pointer-events: auto;
-}
-
-.a-btn, .b-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.gb-input {
+  width: 100%;
+  padding: 10px;
+  border: 4px solid var(--border-color);
   font-family: 'Press Start 2P', cursive;
-  font-size: 16px;
-  color: #fff;
+  font-size: 10px;
+  outline: none;
+}
+
+/* Dialog Box Style */
+.gb-dialog {
+  background: #fff;
+  border: 4px solid var(--border-color);
+  border-radius: 10px;
+  padding: 15px;
+  font-size: 12px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.gb-dialog::after {
+  content: '▼';
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 10px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* List Style */
+.gb-list {
+  list-style: none;
+  padding: 0;
+}
+
+.gb-list-item {
+  padding: 10px;
+  border: 4px solid var(--border-color);
+  margin-bottom: 10px;
   cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.b-btn { background: rgba(50,50,50,0.65); }
-.a-btn { background: rgba(160,40,70,0.70); }
-
-.a-btn:active, .b-btn:active {
-  transform: scale(0.88);
+.gb-list-item:hover {
+  background-color: #eee;
 }
 
-/* ── scrollable lists ── */
-.setup-list::-webkit-scrollbar { width: 4px; }
-.setup-list::-webkit-scrollbar-track { background: transparent; }
-.setup-list::-webkit-scrollbar-thumb { background: var(--gb-mid); border-radius: 2px; }
+.gb-list-item.active {
+  background-color: #ddd;
+  border-color: var(--primary-color);
+}
