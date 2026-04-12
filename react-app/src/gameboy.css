@@ -32,7 +32,7 @@ body {
 
 .game-container {
   width: 100%;
-  height: 100%;
+  height: 100dvh; /* Force full height */
   position: relative;
   background-color: var(--bg-color);
   max-width: 500px;
@@ -40,6 +40,14 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.screen-layout {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #000;
 }
 
 .screen-container {
@@ -95,13 +103,12 @@ body {
 
 /* CONTROLS (Mobile) */
 .controls-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
   height: 220px;
-  background: rgba(0,0,0,0.1);
-  pointer-events: none;
+  background: var(--bg-color);
+  border-top: 4px solid #333;
+  flex-shrink: 0;
+  position: relative;
   z-index: 100;
 }
 

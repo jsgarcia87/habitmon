@@ -38,6 +38,7 @@ cp -r Fonts "$DIST_DIR/" 2>/dev/null || :
 # 5. Copiar Backend (PHP & Flask)
 echo "📂 Preparando Backend..."
 cp -r api "$DIST_DIR/"
+cp habitmon_setup.sql "$DIST_DIR/api/" # Copia estándar para PHP
 mkdir -p "$DIST_DIR/backend"
 cp app.py "$DIST_DIR/backend/"
 cp requirements.txt "$DIST_DIR/backend/"

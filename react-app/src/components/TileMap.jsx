@@ -7,6 +7,31 @@ const T = 32;        // Tile size px
 const tsCols = 8;    // Tileset columns
 const MOVE_DURATION = 180; // ms per tile move
 
+const TILE_COLORS = {
+  0: '#D4A855',  // suelo dorado
+  1: '#404040',  // pared gris oscuro
+  2: '#8B4513',  // camino marrón (alfombra)
+  3: '#D4A855',  // trigger líder (invisible)
+};
+
+const GYM_INTERIOR_MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,1],
+  [1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,1],
+  [1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,0,1],
+  [1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1],
+];
+
 const TileMap = ({ 
   mapId = 'Map002', 
   worldId = null,
@@ -15,7 +40,9 @@ const TileMap = ({
   startDir = 0, 
   timeOfDay = 'day', 
   starters = [], 
-  onTrigger 
+  onTrigger,
+  direction = null,
+  aPressed = false
 }) => {
   const { user, progress } = useGame();
   const activeWorld = WORLDS.find(w => w.mapId === mapId || w.world_id === worldId);
@@ -51,6 +78,11 @@ const TileMap = ({
   });
 
   const keys = useRef({});
+  const directionRef = useRef(direction);
+  const aPressedRef = useRef(aPressed);
+
+  useEffect(() => { directionRef.current = direction; }, [direction]);
+  useEffect(() => { aPressedRef.current = aPressed; }, [aPressed]);
 
   const [mapData, setMapData] = useState(null);
 
@@ -59,6 +91,13 @@ const TileMap = ({
   const isSolid = (nx, ny, dx, dy) => {
     const map = mapDataRef.current;
     if (!map) return true;
+    
+    if (map.isHardcoded) {
+      if (nx < 0 || nx >= 20 || ny < 0 || ny >= 15) return true;
+      const tile = GYM_INTERIOR_MAP[ny][nx];
+      return tile === 1; // Wall is solid
+    }
+
     if (nx < 0 || nx >= map.width || ny < 0 || ny >= map.height) return true;
 
     const p = playerState.current;
@@ -130,6 +169,21 @@ const TileMap = ({
        return;
     }
 
+    if (map.isHardcoded) {
+      if (y <= 1 && x === 9) {
+        // Leader interaction
+        const gymId = activeWorld?.gym_id || 'vestirse';
+        onTriggerRef.current?.('npc_dialogue', { 
+          npc: { nombre: 'LÍDER', tipo: 'boss' }, 
+          messages: ["¿Estás listo para el desafío?"] 
+        });
+      }
+      if (y >= 14) {
+        onTriggerRef.current?.('transfer', { mapId: 'city' });
+      }
+      return;
+    }
+
     // Check for other building entries (Map001)
     if (mapId === 'Map001') {
       if (x === 7 && y === 8) { // Puerta PC
@@ -167,6 +221,18 @@ const TileMap = ({
     tilesetImgRef.current = null;
 
     if (String(mapId).startsWith('virtual_')) {
+      if (mapId === 'virtual_pkmn_gym') {
+        const data = { 
+          width: 20, height: 15, 
+          isHardcoded: true,
+          getTile: (x, y) => GYM_INTERIOR_MAP[y]?.[x] ?? 1 
+        };
+        mapDataRef.current = data;
+        setMapData(data);
+        setReady(true);
+        return;
+      }
+
       const vKey = mapId.replace('virtual_', '');
       import('../data/interiors').then(({ INTERIORS }) => {
         const vMap = INTERIORS[vKey];
@@ -411,11 +477,12 @@ const TileMap = ({
         return;
       }
 
+      const dir = directionRef.current;
       let dx = 0, dy = 0;
-      if      (keys.current['ArrowUp']    || keys.current['w']) { dy = -1; p.dir = 3; }
-      else if (keys.current['ArrowDown']  || keys.current['s']) { dy =  1; p.dir = 0; }
-      else if (keys.current['ArrowLeft']  || keys.current['a']) { dx = -1; p.dir = 1; }
-      else if (keys.current['ArrowRight'] || keys.current['d']) { dx =  1; p.dir = 2; }
+      if      (keys.current['ArrowUp']    || keys.current['w'] || dir === 'up')    { dy = -1; p.dir = 3; }
+      else if (keys.current['ArrowDown']  || keys.current['s'] || dir === 'down')  { dy =  1; p.dir = 0; }
+      else if (keys.current['ArrowLeft']  || keys.current['a'] || dir === 'left')  { dx = -1; p.dir = 1; }
+      else if (keys.current['ArrowRight'] || keys.current['d'] || dir === 'right') { dx =  1; p.dir = 2; }
 
       if (dx !== 0 || dy !== 0) {
         const nx = p.x + dx, ny = p.y + dy;
@@ -428,7 +495,8 @@ const TileMap = ({
         p.frame = 0;
       }
 
-      if ((keys.current['z'] || keys.current[' '] || keys.current['Enter']) && !p.isInteracting) {
+      const actionJustPressed = (keys.current['z'] || keys.current[' '] || keys.current['Enter'] || aPressedRef.current);
+      if (actionJustPressed && !p.isInteracting) {
         p.isInteracting = true;
         checkInteraction();
         setTimeout(() => { p.isInteracting = false; }, 300);
@@ -473,6 +541,32 @@ const TileMap = ({
       const sY_v = Math.max(0, Math.floor(camY / T));
       const eX_v = Math.min(map.width  - 1, Math.ceil((camX + W) / T));
       const eY_v = Math.min(map.height - 1, Math.ceil((camY + H) / T));
+
+      if (map.isHardcoded) {
+        GYM_INTERIOR_MAP.forEach((row, y) => {
+          row.forEach((tile, x) => {
+            const sx = x * T + ox;
+            const sy = y * T + oy;
+            
+            ctx.fillStyle = TILE_COLORS[tile] || TILE_COLORS[0];
+            ctx.fillRect(Math.floor(sx), Math.floor(sy), T, T);
+            
+            if(tile === 0 || tile === 2 || tile === 3) {
+              ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+              ctx.lineWidth = 0.5;
+              ctx.strokeRect(Math.floor(sx), Math.floor(sy), T, T);
+            }
+          });
+        });
+
+        // Draw Player
+        const pImg = playerImgRef.current;
+        if (pImg) {
+          const fw = pImg.width / 4, fh = pImg.height / 4;
+          ctx.drawImage(pImg, p.frame * fw, p.dir * fh, fw, fh, Math.round(W / 2 - T / 2), Math.round(H / 2 - T / 2 - (fh - T)), T, fh * (T / fw));
+        }
+        return;
+      }
 
       for (let z = 0; z < 3; z++) {
         for (let my = sY_v; my <= eY_v; my++) {

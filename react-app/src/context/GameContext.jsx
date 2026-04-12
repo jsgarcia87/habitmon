@@ -75,19 +75,22 @@ export const GameProvider = ({children}) => {
       
       // Check for unauthorized access in any response
       const results = [s, h, g, c];
-      const isUnauthorized = results.some(r => 
-        r?.msg?.toLowerCase()?.includes('token') ||
-        r?.msg?.toLowerCase()?.includes('expired') ||
-        r?.error === 'Unauthorized'
+      const allUnauthorized = results.every(r => 
+        !r?.success && (
+          r?.msg?.includes('Missing') ||
+          r?.msg?.includes('Expired') ||
+          r?.msg?.includes('Invalid') ||
+          r?.msg?.includes('revoked')
+        )
       );
 
-      if(isUnauthorized) {
-        console.warn('Token inválido o expirado, cerrando sesión');
+      if (allUnauthorized) {
+        console.warn('Sesión expirada');
         logout();
         return;
       }
 
-      if(s?.success) setStarter(s.starter);
+      if(s?.success) setStarter(s.starter || s);
       if(h?.success) setHabitosHoy(h.habitos || []);
       if(g?.success) setGimnasiosHoy(g.gimnasios || []);
       if(c?.success) setColeccion(c.pokemon || []);

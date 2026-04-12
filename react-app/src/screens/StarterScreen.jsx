@@ -1,38 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import PokemonSprite from '../components/PokemonSprite';
 import DialogBox from '../components/DialogBox';
+import TileMap from '../components/TileMap';
 
-const StarterScreen = ({ navigate }) => {
+const StarterScreen = ({ navigate, direction, aPressed }) => {
   const { elegirStarter } = useGame();
+  const [mode, setMode] = useState('intro'); // intro, exploration, selection, confirmed
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState(null);
   const [isJumping, setIsJumping] = useState(false);
 
-  const dialogs = [
+  const introDialogs = [
     "¡Bienvenido al mundo POKÉMON!",
     "Soy el Profesor Oak.",
     "El mundo está lleno de criaturas llamadas Pokémon.",
-    "Tú vas a comenzar tu aventura hoy.",
-    "Pero primero... ¡necesitas un compañero!",
-    "Elige tu Pokémon inicial:"
+    "Para comenzar tu aventura, ¡necesitas un compañero!",
+    "He dejado tres Pokéballs en la mesa."
   ];
 
-  const starters = [
-    { id: 152, name: 'Chikorita', type: 'PLANTA' },
-    { id: 155, name: 'Cyndaquil', type: 'FUEGO' },
-    { id: 158, name: 'Totodile', type: 'AGUA' }
+  const starterData = [
+    { id: 152, name: 'Chikorita', tileX: 4, tileY: 1 },
+    { id: 155, name: 'Cyndaquil', tileX: 5, tileY: 1 },
+    { id: 158, name: 'Totodile', tileX: 6, tileY: 1 }
   ];
 
   const handleNext = () => {
-    if (step < dialogs.length - 1) {
+    if (step < introDialogs.length - 1) {
       setStep(step + 1);
+    } else {
+      setMode('exploration');
     }
   };
 
-  const handleSelect = (pk) => {
-    setSelected(pk);
-    setStep(dialogs.length); // Transition to selection confirmation
+  const handleTrigger = (type, data) => {
+    if (type.startsWith('starter_')) {
+      const id = parseInt(type.split('_')[1]);
+      const pk = starterData.find(s => s.id === id);
+      setSelected(pk);
+      setMode('selection');
+    }
   };
 
   const handleConfirm = async () => {
@@ -43,59 +50,76 @@ const StarterScreen = ({ navigate }) => {
     }, 1000);
   };
 
+  const handleCancelSelection = () => {
+    setMode('exploration');
+    setSelected(null);
+  };
+
   return (
-    <div className="screen-container" style={{ backgroundColor: '#F8F0D8', justifyContent: 'center' }}>
-      
-      {/* Background Lab Visual (Mockup) */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, zIndex: 0 }}>
-        {/* Aquí podría ir un tilemap básico de lab */}
-      </div>
+    <div style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      background: '#000',
+      overflow: 'hidden'
+    }}>
+      {/* Lab World (Flex 1) */}
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', opacity: mode === 'intro' ? 0.3 : 1 }}>
+        <TileMap 
+          mapId="virtual_prof_lab"
+          startX={5} startY={8}
+          starters={starterData}
+          onTrigger={handleTrigger}
+          direction={direction}
+          aPressed={aPressed}
+        />
 
-      <div style={{ zIndex: 1, textAlign: 'center' }}>
-        {/* Prof Oak Sprite */}
-        {step < dialogs.length && (
-          <div style={{
-            width: '64px', height: '64px',
-            margin: '0 auto 20px',
-            backgroundImage: 'url(/Graphics/characters/prof_oak.png)',
-            backgroundSize: '128px 128px',
-            backgroundPosition: '0 0',
-            imageRendering: 'pixelated'
-          }} />
+        {/* Intro Dialogs */}
+        {mode === 'intro' && (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{
+              width: '64px', height: '64px',
+              marginBottom: '20px',
+              backgroundImage: 'url(/Graphics/characters/prof_oak.png)',
+              backgroundColor: '#F8F0D8',
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundSize: '128px 128px',
+              backgroundPosition: '0 0',
+              imageRendering: 'pixelated'
+            }} />
+            <DialogBox 
+              text={introDialogs[step]} 
+              onNext={handleNext} 
+              showArrow={true} 
+            />
+          </div>
         )}
 
-        {/* Pokémon Selection Grid */}
-        {step === dialogs.length - 1 && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
-            {starters.map(pk => (
-              <div key={pk.id} onClick={() => handleSelect(pk)} style={{ cursor: 'pointer' }}>
-                <PokemonSprite id={pk.id} style={{ width: '80px', height: '80px' }} />
-                <div style={{ fontSize: '8px', marginTop: '5px' }}>{pk.name}</div>
+        {/* Selection Confirmation */}
+        {mode === 'selection' && selected && (
+          <div className="gb-dialog" style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px', zIndex: 100 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <PokemonSprite id={selected.id} style={{ width: '60px', height: '60px' }} />
+              <div style={{ fontSize: '10px' }}>
+                ¿Quieres a {selected.name}, el Pokémon de tipo {selected.id === 152 ? 'PLANTA' : selected.id === 155 ? 'FUEGO' : 'AGUA'}?
               </div>
-            ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+              <button className="gb-button secondary" onClick={handleCancelSelection} style={{ fontSize: '8px', padding: '5px 10px' }}>NO</button>
+              <button className="gb-button primary" onClick={handleConfirm} style={{ fontSize: '8px', padding: '5px 10px' }}>SÍ</button>
+            </div>
           </div>
         )}
 
-        {/* Selected Pokémon Animation */}
-        {selected && step === dialogs.length && (
-          <div style={{
-            transform: isJumping ? 'scale(1.5) translateY(-50px)' : 'none',
-            transition: 'all 0.5s',
-            opacity: isJumping ? 0 : 1
-          }}>
-            <PokemonSprite id={selected.id} style={{ width: '120px', height: '120px', margin: '0 auto' }} />
-            <div style={{ fontSize: '10px', marginTop: '10px' }}>¡{selected.name} te ha elegido!</div>
-            <button className="gb-button primary" onClick={handleConfirm} style={{ marginTop: '20px' }}>¡VAMOS!</button>
+        {/* Jump Animation on Confirm */}
+        {isJumping && (
+          <div style={{ position: 'absolute', inset: 0, background: '#fff', zIndex: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ transform: 'scale(2) translateY(-20px)', transition: 'transform 0.5s ease-in' }}>
+              <PokemonSprite id={selected.id} style={{ width: '80px', height: '80px' }} />
+            </div>
           </div>
-        )}
-
-        {/* Dialogue Box */}
-        {step < dialogs.length && (
-          <DialogBox 
-            text={dialogs[step]} 
-            onNext={handleNext} 
-            showArrow={step < dialogs.length - 1} 
-          />
         )}
       </div>
     </div>

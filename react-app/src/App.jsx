@@ -11,6 +11,7 @@ import GymScreen from './screens/GymScreen';
 import BattleScreen from './screens/BattleScreen';
 import CaptureScreen from './screens/CaptureScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import HabitEditScreen from './screens/HabitEditScreen';
 
 import './gameboy.css';
 
@@ -54,12 +55,13 @@ function App() {
     switch(screen) {
       case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} />;
       case 'register': return <RegisterScreen onLoginClick={() => setShowRegister(false)} />;
-      case 'starter': return <StarterScreen navigate={navigate} />;
+      case 'starter': return <StarterScreen navigate={navigate} direction={direction} aPressed={aPressed} />;
       case 'city': return <CityScreen navigate={navigate} direction={direction} aPressed={aPressed} />;
       case 'gym': return <GymScreen navigate={navigate} gymId={screenData?.gymId} direction={direction} aPressed={aPressed} onBack={() => navigate('city')} />;
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={aPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
       case 'profile': return <ProfileScreen onNavigate={(s) => navigate(s.toLowerCase())} />;
+      case 'habits_edit': return <HabitEditScreen onNavigate={(s) => navigate(s.toLowerCase())} />;
       default: return <CityScreen navigate={navigate} />;
     }
   };

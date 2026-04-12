@@ -1,500 +1,456 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (JWTManager, 
+  create_access_token, jwt_required, get_jwt_identity)
+from werkzeug.security import (generate_password_hash, 
+  check_password_hash)
 from datetime import datetime, date
 import json
 import os
-from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            static_folder='react-app/dist', 
+            static_url_path='/')
 CORS(app)
-# Configuración de la base de datos (MySQL para producción con fallback a SQLite local)
-# Configuración de la base de datos (MySQL para producción con fallback a SQLite local)
-MYSQL_URL = "mysql+pymysql://Sangar:SangarBD@127.0.0.1/habitmon_db"
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', MYSQL_URL)
+
+# Servir Frontend
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+# Use an absolute path for the database to avoid issues with current working directory
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'habitmon.db')
+app.config['JWT_SECRET_KEY'] = 'habitmon-secret-2024'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'habitmon-super-secret' # Change this in production
+
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
-# Test de conexión al inicio
-with app.app_context():
-    try:
-        from sqlalchemy import text
-        db.session.execute(text('SELECT 1'))
-        print(" [DB CHECK] SUCCESS: Conexión establecida con MySQL.")
-    except Exception as e:
-        print(f" [DB CHECK] ERROR: No se pudo conectar a la base de datos: {str(e)}")
+# ---------------------------------------------------------
+# MODELS
+# ---------------------------------------------------------
 
-# Serve static game assets
-@app.route('/Data/<path:filename>')
-def serve_data(filename):
-    return send_from_directory('Data', filename)
+class Usuario(db.Model):
+    id            = db.Column(db.Integer, primary_key=True)
+    username      = db.Column(db.String(50), unique=True, nullable=False)
+    email         = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    avatar        = db.Column(db.Integer, default=0)
+    # Pokémon inicial
+    starter_id    = db.Column(db.String(10), nullable=True)
+    starter_nombre= db.Column(db.String(50), nullable=True)
+    starter_nivel  = db.Column(db.Integer, default=5)
+    starter_exp    = db.Column(db.Integer, default=0)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
-@app.route('/Graphics/<path:filename>')
-def serve_graphics(filename):
-    return send_from_directory('Graphics', filename)
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "avatar": self.avatar,
+            "starter_id": self.starter_id,
+            "starter_nombre": self.starter_nombre,
+            "starter_nivel": self.starter_nivel,
+            "starter_exp": self.starter_exp
+        }
 
-@app.route('/data_json')
-def get_data_json():
-    return send_from_directory('Data', 'gamedata.json')
+class HabitoConfig(db.Model):
+    """Config de hábitos por usuario (el padre edita esto)"""
+    id          = db.Column(db.Integer, primary_key=True)
+    usuario_id  = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    gym_id      = db.Column(db.String(50), nullable=False)
+    habito_id   = db.Column(db.String(50), nullable=False)
+    habito_nombre = db.Column(db.String(100), nullable=False)
+    icono       = db.Column(db.String(10), default='⚔️')
+    daño        = db.Column(db.Integer, default=25)
+    activo      = db.Column(db.Boolean, default=True)
+    orden       = db.Column(db.Integer, default=0)
 
-# --- Gym Templates ---
-GIMNASIOS_TEMPLATE = [
+class ProgresoDia(db.Model):
+    """Progreso diario — se resetea cada día"""
+    id          = db.Column(db.Integer, primary_key=True)
+    usuario_id  = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    fecha       = db.Column(db.Date, default=date.today)
+    gym_id      = db.Column(db.String(50), nullable=False)
+    habito_id   = db.Column(db.String(50), nullable=False)
+    completado  = db.Column(db.Boolean, default=False)
+    __table_args__ = (
+        db.UniqueConstraint('usuario_id','fecha',
+                           'gym_id','habito_id'),
+    )
 
-  # ── MAÑANA (06:00–12:00) ─────────────────────────────────────────────────
-  {
-    "gym_id": "vestirse", "gym_nombre": "Gimnasio Vestirse",
-    "orden": 1, "tiempo": "morning", "mapa_evento": "gym_vestirse",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Meowth", "id": "052", "nivel": 5, "maxhp": 50,
-        "habitos": [
-          {"id": "quitarse_pijama", "nombre": "Quitarse el pijama", "icono": "\U0001f319", "da\u00f1o": 25, "obligatorio": True},
-          {"id": "quitar_camiseta", "nombre": "Quitar camiseta", "icono": "\U0001f455", "da\u00f1o": 25, "obligatorio": False}
-        ]
-      },
-      { "nombre": "Persian", "id": "053", "nivel": 8, "maxhp": 80,
-        "habitos": [
-          {"id": "ponerse_interior", "nombre": "Ponerse ropa interior", "icono": "\U0001fa32", "da\u00f1o": 20, "obligatorio": True},
-          {"id": "ponerse_pantalones", "nombre": "Ponerse pantalones", "icono": "\U0001f456", "da\u00f1o": 20, "obligatorio": True},
-          {"id": "ponerse_camiseta", "nombre": "Ponerse camiseta", "icono": "\U0001f455", "da\u00f1o": 20, "obligatorio": True},
-          {"id": "ponerse_calcetines", "nombre": "Ponerse calcetines", "icono": "\U0001f9e6", "da\u00f1o": 20, "obligatorio": False}
-        ]
-      }
-    ]
-  },
-  {
-    "gym_id": "desayuno", "gym_nombre": "Gimnasio Desayuno",
-    "orden": 2, "tiempo": "morning", "mapa_evento": "gym_desayuno",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Snorlax", "id": "143", "nivel": 10, "maxhp": 100,
-        "habitos": [
-          {"id": "tomar_leche", "nombre": "Tomar leche", "icono": "\U0001f95b", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "comer_tostadas", "nombre": "Comer tostadas", "icono": "\U0001f35e", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "comer_fruta", "nombre": "Comer fruta", "icono": "\U0001f34a", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
-  },
-  {
-    "gym_id": "higiene_m", "gym_nombre": "Gimnasio Higiene",
-    "orden": 3, "tiempo": "morning", "mapa_evento": "gym_higiene",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Grimer", "id": "088", "nivel": 8, "maxhp": 70,
-        "habitos": [
-          {"id": "lavarse_dientes_m", "nombre": "Lavarse dientes", "icono": "\U0001fab5", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "lavarse_cara", "nombre": "Lavarse la cara", "icono": "\U0001f9fc", "da\u00f1o": 35, "obligatorio": True}
-        ]
-      },
-      { "nombre": "Muk", "id": "089", "nivel": 12, "maxhp": 90,
-        "habitos": [
-          {"id": "lavarse_manos_m", "nombre": "Lavarse manos", "icono": "\U0001f932", "da\u00f1o": 30, "obligatorio": True},
-          {"id": "peinarse", "nombre": "Peinarse", "icono": "\U0001f487", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
-  },
+class GimnasioCompletado(db.Model):
+    id          = db.Column(db.Integer, primary_key=True)
+    usuario_id  = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    gym_id      = db.Column(db.String(50), nullable=False)
+    fecha       = db.Column(db.Date, default=date.today)
 
-  # ── TARDE (12:00–20:00) ──────────────────────────────────────────────────
-  {
-    "gym_id": "deberes", "gym_nombre": "Gimnasio Deberes",
-    "orden": 4, "tiempo": "day", "mapa_evento": "gym_deberes",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Slowpoke", "id": "079", "nivel": 10, "maxhp": 80,
-        "habitos": [
-          {"id": "sacar_libros", "nombre": "Sacar los libros", "icono": "\U0001f4da", "da\u00f1o": 40, "obligatorio": True},
-          {"id": "hacer_deberes", "nombre": "Hacer los deberes", "icono": "\u270f\ufe0f", "da\u00f1o": 40, "obligatorio": True}
-        ]
-      },
-      { "nombre": "Slowbro", "id": "080", "nivel": 14, "maxhp": 100,
-        "habitos": [
-          {"id": "repasar_leccion", "nombre": "Repasar la lecci\u00f3n", "icono": "\U0001f4d6", "da\u00f1o": 35, "obligatorio": False},
-          {"id": "guardar_mochila", "nombre": "Guardar la mochila", "icono": "\U0001f392", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "firmar_agenda", "nombre": "Firmar la agenda", "icono": "\u270d\ufe0f", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
-  },
-  {
-    "gym_id": "merienda", "gym_nombre": "Gimnasio Merienda",
-    "orden": 5, "tiempo": "day", "mapa_evento": "gym_merienda",
-    "battleback": "Graphics/battlebacks/outdoor.png",
-    "pokemon": [
-      { "nombre": "Oddish", "id": "043", "nivel": 8, "maxhp": 60,
-        "habitos": [
-          {"id": "merendar_fruta", "nombre": "Comer fruta", "icono": "\U0001f34e", "da\u00f1o": 30, "obligatorio": True},
-          {"id": "merendar_bocata", "nombre": "Comer bocadillo", "icono": "\U0001f96a", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
-  },
-  {
-    "gym_id": "orden", "gym_nombre": "Gimnasio Orden",
-    "orden": 6, "tiempo": "day", "mapa_evento": "gym_orden",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Voltorb", "id": "100", "nivel": 10, "maxhp": 60,
-        "habitos": [
-          {"id": "hacer_cama", "nombre": "Hacer la cama", "icono": "\U0001f6cf\ufe0f", "da\u00f1o": 60, "obligatorio": True}
-        ]
-      },
-      { "nombre": "Electrode", "id": "101", "nivel": 14, "maxhp": 100,
-        "habitos": [
-          {"id": "recoger_habitacion", "nombre": "Recoger habitaci\u00f3n", "icono": "\U0001f9f8", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "dejar_ropa_sucia", "nombre": "Ropa al cesto", "icono": "\U0001f9fa", "da\u00f1o": 35, "obligatorio": False},
-          {"id": "limpiar_mesa", "nombre": "Limpiar la mesa", "icono": "\U0001f9f9", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
-  },
+class Pokemon(db.Model):
+    """Colección de Pokémon capturados"""
+    id              = db.Column(db.Integer, primary_key=True)
+    usuario_id      = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    pokemon_id      = db.Column(db.String(10), nullable=False)
+    pokemon_nombre  = db.Column(db.String(50), nullable=False)
+    origen          = db.Column(db.String(50))  # gym_id o 'wild'
+    fecha_captura   = db.Column(db.Date, default=date.today)
 
-  # ── NOCHE (20:00–06:00) ──────────────────────────────────────────────────
-  {
-    "gym_id": "ducha", "gym_nombre": "Gimnasio Ducha",
-    "orden": 7, "tiempo": "night", "mapa_evento": "gym_ducha",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Psyduck", "id": "054", "nivel": 12, "maxhp": 80,
-        "habitos": [
-          {"id": "ducharse", "nombre": "Ducharse", "icono": "\U0001f6bf", "da\u00f1o": 40, "obligatorio": True},
-          {"id": "lavarse_pelo", "nombre": "Lavarse el pelo", "icono": "\U0001f9f4", "da\u00f1o": 40, "obligatorio": False}
-        ]
-      },
-      { "nombre": "Golduck", "id": "055", "nivel": 15, "maxhp": 100,
-        "habitos": [
-          {"id": "lavarse_dientes_n", "nombre": "Lavarse dientes", "icono": "\U0001f9b7", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "ponerse_pijama", "nombre": "Ponerse pijama", "icono": "\U0001f319", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "crema_manos", "nombre": "Ponerse crema", "icono": "\U0001f9f4", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
+# ---------------------------------------------------------
+# DEFAULT HABITOS TEMPLATE
+# ---------------------------------------------------------
+
+DEFAULT_HABITOS = [
+  # GYM: VESTIRSE
+  {"gym_id":"vestirse","gym_nombre":"Gym Vestirse",
+   "pokemon_fase1":{"id":"052","nombre":"Meowth","nivel":5,"maxhp":50},
+   "pokemon_fase2":{"id":"053","nombre":"Persian","nivel":8,"maxhp":80},
+   "fase1":[
+     {"habito_id":"quitar_pijama","nombre":"Quitar pijama","icono":"🌙","daño":25},
+     {"habito_id":"quitar_calcetines","nombre":"Quitar calcetines","icono":"🧦","daño":25}
+   ],
+   "fase2":[
+     {"habito_id":"ponerse_ropa_interior","nombre":"Ponerse ropa interior","icono":"🩲","daño":20},
+     {"habito_id":"ponerse_pantalones","nombre":"Ponerse pantalones","icono":"👖","daño":20},
+     {"habito_id":"ponerse_camiseta","nombre":"Ponerse camiseta","icono":"👕","daño":20},
+     {"habito_id":"ponerse_calcetines","nombre":"Ponerse calcetines","icono":"🧦","daño":20}
+   ]
   },
-  {
-    "gym_id": "cena", "gym_nombre": "Gimnasio Cena",
-    "orden": 8, "tiempo": "night", "mapa_evento": "gym_cena",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Growlithe", "id": "058", "nivel": 10, "maxhp": 70,
-        "habitos": [
-          {"id": "cenar_verduras", "nombre": "Cenar verduras", "icono": "\U0001f966", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "cenar_proteina", "nombre": "Cenar prote\u00edna", "icono": "\U0001f357", "da\u00f1o": 35, "obligatorio": True}
-        ]
-      }
-    ]
+  # GYM: DESAYUNO
+  {"gym_id":"desayuno","gym_nombre":"Gym Desayuno",
+   "pokemon_fase1":{"id":"143","nombre":"Snorlax","nivel":10,"maxhp":100},
+   "pokemon_fase2":None,
+   "fase1":[
+     {"habito_id":"tomar_leche","nombre":"Tomar leche","icono":"🥛","daño":35},
+     {"habito_id":"comer_tostadas","nombre":"Comer tostadas","icono":"🍞","daño":35},
+     {"habito_id":"comer_fruta","nombre":"Comer fruta","icono":"🍊","daño":30}
+   ],
+   "fase2":None
   },
-  {
-    "gym_id": "dormir", "gym_nombre": "Gimnasio Dormir",
-    "orden": 9, "tiempo": "night", "mapa_evento": "gym_dormir",
-    "battleback": "Graphics/battlebacks/indoor1.png",
-    "pokemon": [
-      { "nombre": "Jigglypuff", "id": "039", "nivel": 10, "maxhp": 80,
-        "habitos": [
-          {"id": "apagar_tablet", "nombre": "Apagar tablet/tele", "icono": "\U0001f4f5", "da\u00f1o": 40, "obligatorio": True},
-          {"id": "meterse_cama", "nombre": "Meterse en la cama", "icono": "\U0001f6cf\ufe0f", "da\u00f1o": 40, "obligatorio": True}
-        ]
-      },
-      { "nombre": "Wigglytuff", "id": "040", "nivel": 14, "maxhp": 100,
-        "habitos": [
-          {"id": "leer_cuento", "nombre": "Leer un cuento", "icono": "\U0001f4d5", "da\u00f1o": 35, "obligatorio": False},
-          {"id": "apagar_luz", "nombre": "Apagar la luz", "icono": "\U0001f4a1", "da\u00f1o": 35, "obligatorio": True},
-          {"id": "buenas_noches", "nombre": "Dar las buenas noches", "icono": "\U0001f634", "da\u00f1o": 30, "obligatorio": False}
-        ]
-      }
-    ]
+  # GYM: HIGIENE
+  {"gym_id":"higiene","gym_nombre":"Gym Higiene",
+   "pokemon_fase1":{"id":"088","nombre":"Grimer","nivel":8,"maxhp":70},
+   "pokemon_fase2":{"id":"089","nombre":"Muk","nivel":12,"maxhp":90},
+   "fase1":[
+     {"habito_id":"lavarse_dientes","nombre":"Lavarse dientes","icono":"🪥","daño":35},
+     {"habito_id":"lavarse_cara","nombre":"Lavarse cara","icono":"🧼","daño":35}
+   ],
+   "fase2":[
+     {"habito_id":"lavarse_manos","nombre":"Lavarse manos","icono":"🤲","daño":30},
+     {"habito_id":"peinarse","nombre":"Peinarse","icono":"💇","daño":30}
+   ]
+  },
+  # GYM: ORDEN
+  {"gym_id":"orden","gym_nombre":"Gym Orden",
+   "pokemon_fase1":{"id":"100","nombre":"Voltorb","nivel":10,"maxhp":60},
+   "pokemon_fase2":{"id":"101","nombre":"Electrode","nivel":14,"maxhp":100},
+   "fase1":[
+     {"habito_id":"hacer_cama","nombre":"Hacer la cama","icono":"🛏️","daño":60}
+   ],
+   "fase2":[
+     {"habito_id":"recoger_habitacion","nombre":"Recoger habitación","icono":"🧸","daño":35},
+     {"habito_id":"preparar_mochila","nombre":"Preparar mochila","icono":"🎒","daño":35}
+   ]
   }
 ]
 
-# --- Database Models ---
+def init_default_habitos(usuario_id):
+    # Revisa si ya tiene config
+    count = HabitoConfig.query.filter_by(usuario_id=usuario_id).count()
+    if count > 0: return
 
-class Usuario(db.Model):
-    __tablename__ = 'usuarios'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    avatar = db.Column(db.Integer, default=0)
-    pokemon_inicial_id = db.Column(db.String(10), nullable=True)
-    pokemon_inicial_nombre = db.Column(db.String(50), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    for gym in DEFAULT_HABITOS:
+        # Fase 1
+        for h in gym['fase1']:
+            db.session.add(HabitoConfig(
+                usuario_id=usuario_id,
+                gym_id=gym['gym_id'],
+                habito_id=h['habito_id'],
+                habito_nombre=h['nombre'],
+                icono=h['icono'],
+                daño=h['daño'],
+                orden=0
+            ))
+        # Fase 2 if exists
+        if gym['fase2']:
+            for h in gym['fase2']:
+                db.session.add(HabitoConfig(
+                    usuario_id=usuario_id,
+                    gym_id=gym['gym_id'],
+                    habito_id=h['habito_id'],
+                    habito_nombre=h['nombre'],
+                    icono=h['icono'],
+                    daño=h['daño'],
+                    orden=1
+                ))
+    db.session.commit()
 
-class PokemonColeccion(db.Model):
-    __tablename__ = 'pokemon_coleccion'
-    id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    pokemon_id = db.Column(db.String(10), nullable=False)
-    pokemon_nombre = db.Column(db.String(50))
-    gimnasio_origen = db.Column(db.String(50))
-    xp = db.Column(db.Integer, default=0)
-    nivel = db.Column(db.Integer, default=5)
-    is_partner = db.Column(db.Boolean, default=False)
-    fecha_captura = db.Column(db.Date, default=date.today)
-
-class Habito(db.Model):
-    __tablename__ = 'habitos'
-    id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    gimnasio_id = db.Column(db.String(50), nullable=False)
-    pokemon_index = db.Column(db.Integer, default=0) # Which pokemon in the gym sequence
-    habito_id = db.Column(db.String(50), nullable=False)
-    habito_nombre = db.Column(db.String(100))
-    completado = db.Column(db.Boolean, default=False)
-    fecha = db.Column(db.Date, default=date.today)
-
-class ProgresoDiario(db.Model):
-    __tablename__ = 'progreso_diario'
-    id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    fecha = db.Column(db.Date, default=date.today)
-    gimnasios_completados = db.Column(db.JSON, default=list)
-    pokemon_obtenidos = db.Column(db.JSON, default=list)
-
-# --- Auth Routes ---
+# ---------------------------------------------------------
+# ENDPOINTS
+# ---------------------------------------------------------
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
-    try:
-        data = request.json
-        if Usuario.query.filter_by(email=data['email']).first():
-            return jsonify({"success": False, "error": "El email ya está registrado"}), 400
-        
-        new_user = Usuario(
-            username=data['username'],
-            email=data['email'],
-            password_hash=generate_password_hash(data['password'], method='pbkdf2:sha256'),
-            avatar=data.get('avatar', 0)
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        
-        token = create_access_token(identity=str(new_user.id))
-        return jsonify({"success": True, "token": token, "usuario": {
-            "id": new_user.id, 
-            "username": new_user.username, 
-            "avatar": new_user.avatar,
-            "pokemon_inicial_id": new_user.pokemon_inicial_id
-        }})
-    except Exception as e:
-        print(f"ERROR en register: {str(e)}")
-        return jsonify({"success": False, "error": "Error de conexión con la base de datos"}), 500
+    data = request.get_json()
+    if Usuario.query.filter_by(email=data['email']).first():
+        return jsonify({"success": False, "message": "Email ya registrado"}), 400
+    
+    new_user = Usuario(
+        username=data['username'],
+        email=data['email'],
+        password_hash=generate_password_hash(data['password'], method='pbkdf2:sha256'),
+        avatar=data.get('avatar', 0)
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    
+    init_default_habitos(new_user.id)
+    
+    token = create_access_token(identity=str(new_user.id))
+    return jsonify({"success": True, "token": token, "usuario": new_user.to_dict()})
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    try:
-        data = request.json
-        user = Usuario.query.filter_by(email=data['email']).first()
-        if user and check_password_hash(user.password_hash, data['password']):
-            token = create_access_token(identity=str(user.id))
-            return jsonify({"success": True, "token": token, "usuario": {
-                "id": user.id, 
-                "username": user.username, 
-                "avatar": user.avatar,
-                "pokemon_inicial_id": user.pokemon_inicial_id
-            }})
-        return jsonify({"success": False, "error": "Credenciales inválidas"}), 401
-    except Exception as e:
-        print(f"ERROR en login: {str(e)}")
-        return jsonify({"success": False, "error": "Error de conexión con la base de datos"}), 500
+    data = request.get_json()
+    user = Usuario.query.filter_by(email=data['email']).first()
+    
+    if user and check_password_hash(user.password_hash, data['password']):
+        token = create_access_token(identity=str(user.id))
+        return jsonify({"success": True, "token": token, "usuario": user.to_dict()})
+    
+    return jsonify({"success": False, "message": "Credenciales inválidas"}), 401
 
-@app.route('/api/auth/elegir-starter', methods=['POST'])
+@app.route('/api/starter/elegir', methods=['POST'])
 @jwt_required()
 def elegir_starter():
-    user_id = int(get_jwt_identity())
-    data = request.json
+    uid = get_jwt_identity()
+    data = request.get_json()
+    user = Usuario.query.get(uid)
     
-    user = Usuario.query.get(user_id)
-    if not user:
-        return jsonify({"success": False}), 404
+    user.starter_id = data['pokemon_id']
+    user.starter_nombre = data['pokemon_nombre']
     
-    user.pokemon_inicial_id = data['pokemon_id']
-    user.pokemon_inicial_nombre = data['pokemon_nombre']
-    
-    try:
-        # Añadir a la colección
-        starter = PokemonColeccion(
-            usuario_id=user_id,
-            pokemon_id=data['pokemon_id'],
-            pokemon_nombre=data['pokemon_nombre'],
-            gimnasio_origen='starter',
-            nivel=5,
-            xp=0,
-            is_partner=True
-        )
-        db.session.add(starter)
-        db.session.commit()
-        print(f"DEBUG: Starter {data['pokemon_nombre']} asignado a usuario {user_id}")
-    except Exception as e:
-        db.session.rollback()
-        print(f"ERROR en elegir_starter: {str(e)}")
-        return jsonify({"success": False, "error": "Error de base de datos en el servidor"}), 500
-    
-    return jsonify({"success": True, 
-                   "mensaje": f"¡{data['pokemon_nombre']} es tu compañero!",
-                   "pokemon_inicial_id": data['pokemon_id']})
-
-# --- Gameplay Routes ---
-
-@app.route('/api/coleccion/<int:usuario_id>', methods=['GET'])
-@jwt_required()
-def get_coleccion(usuario_id):
-    pokemon = PokemonColeccion.query.filter_by(usuario_id=usuario_id).all()
-    res = []
-    for p in pokemon:
-        res.append({
-            "pokemon_id": p.pokemon_id,
-            "pokemon_nombre": p.pokemon_nombre,
-            "fecha_captura": p.fecha_captura.isoformat(),
-            "gimnasio_origen": p.gimnasio_origen
-        })
-    return jsonify({"success": True, "pokemon": res})
-
-@app.route('/api/habitos/template', methods=['GET'])
-@jwt_required()
-def get_template():
-    return jsonify({"success": True, "template": GIMNASIOS_TEMPLATE})
-
-@app.route('/api/progreso/setup', methods=['POST'])
-@jwt_required()
-def setup_day():
-    user_id = int(get_jwt_identity())
-    data = request.json # List of habits selected/adjusted
-    today = date.today()
-    
-    # Clear existing for today
-    Habito.query.filter_by(usuario_id=user_id, fecha=today).delete()
-    
-    for h in data['habitos']:
-        new_h = Habito(
-            usuario_id=user_id,
-            gimnasio_id=h['gym_id'],
-            pokemon_index=h.get('pokemon_index', 0),
-            habito_id=h['habito_id'],
-            habito_nombre=h['habito_nombre'],
-            fecha=today
-        )
-        db.session.add(new_h)
-    
-    # Ensure progress object exists
-    if not ProgresoDiario.query.filter_by(usuario_id=user_id, fecha=today).first():
-        new_p = ProgresoDiario(usuario_id=user_id, fecha=today)
-        db.session.add(new_p)
-        
+    # Add to collection
+    pk = Pokemon(
+        usuario_id=uid,
+        pokemon_id=data['pokemon_id'],
+        pokemon_nombre=data['pokemon_nombre'],
+        origen='starter'
+    )
+    db.session.add(pk)
     db.session.commit()
     return jsonify({"success": True})
 
-@app.route('/api/habito/completar', methods=['POST'])
+@app.route('/api/starter/info', methods=['GET'])
 @jwt_required()
-def completar_habito():
-    data = request.json
-    user_id = int(get_jwt_identity())
-    today = date.today()
-    
-    print(f"DEBUG: Completar habito: {data['gimnasio_id']} - {data['habito_id']} for user {user_id}")
-    habito = Habito.query.filter_by(
-        usuario_id=user_id, 
-        gimnasio_id=data['gimnasio_id'], 
-        habito_id=data['habito_id'],
-        fecha=today
-    ).first()
-    
-    if habito:
-        habito.completado = True
-        db.session.commit()
-        print("DEBUG: Habito marcado como completado")
-        return jsonify({"success": True})
-    
-    print(f"DEBUG: Habito NO encontrado en DB para fecha {today}")
-    return jsonify({"success": False, "error": "Habit not found"}), 404
-
-@app.route('/api/gimnasio/completar', methods=['POST'])
-@jwt_required()
-def completar_gimnasio():
-    data = request.json
-    user_id = int(get_jwt_identity())
-    today = date.today()
-    
-    progreso = ProgresoDiario.query.filter_by(usuario_id=user_id, fecha=today).first()
-    if progreso:
-        gyms = list(progreso.gimnasios_completados or [])
-        if data['gimnasio_id'] not in gyms:
-            gyms.append(data['gimnasio_id'])
-            progreso.gimnasios_completados = gyms
-            
-            # Add to collection
-            new_p = PokemonColeccion(
-                usuario_id=user_id,
-                pokemon_id=data['pokemon_id'],
-                pokemon_nombre=data['pokemon_nombre'],
-                gimnasio_origen=data['gimnasio_id']
-            )
-            db.session.add(new_p)
-            db.session.commit()
-            return jsonify({"success": True, "pokemon_ganado": data['pokemon_nombre']})
-    return jsonify({"success": False, "error": "Progress not found"}), 404
-
-@app.route('/api/progreso/<int:usuario_id>/<string:fecha_str>', methods=['GET'])
-@jwt_required()
-def get_progreso(usuario_id, fecha_str):
-    try:
-        query_date = datetime.strptime(fecha_str, '%Y-%m-%d').date()
-    except:
-        query_date = date.today()
-    
-    habitos = Habito.query.filter_by(
-        usuario_id=usuario_id, 
-        fecha=query_date
-    ).all()
-    
-    # Si no hay hábitos para hoy → necesita setup
-    if not habitos:
-        return jsonify({"success": True, "setup_required": True})
-    
-    progreso = ProgresoDiario.query.filter_by(
-        usuario_id=usuario_id, 
-        fecha=query_date
-    ).first()
-    
-    habitos_list = []
-    for h in habitos:
-        # Find extra info from template
-        extra = None
-        gym = next((g for g in GIMNASIOS_TEMPLATE if g['gym_id'] == h.gimnasio_id), None)
-        if gym:
-            pk = gym['pokemon'][h.pokemon_index] if h.pokemon_index < len(gym['pokemon']) else None
-            if pk:
-                extra = next((th for th in pk['habitos'] if th['id'] == h.habito_id), None)
-        
-        habitos_list.append({
-            "gym_id": h.gimnasio_id,
-            "pokemon_index": h.pokemon_index,
-            "id": h.habito_id,
-            "nombre": h.habito_nombre,
-            "completado": h.completado,
-            "icono": extra['icono'] if extra else "❓",
-            "daño": extra['daño'] if extra else 10
-        })
-    
-    hour = datetime.now().hour
-    if 6 <= hour < 12:
-        tiempo_actual = 'morning'
-    elif 12 <= hour < 20:
-        tiempo_actual = 'day'
-    else:
-        tiempo_actual = 'night'
-
+def get_starter_info():
+    uid = get_jwt_identity()
+    user = Usuario.query.get(uid)
     return jsonify({
         "success": True,
-        "setup_required": False,
-        "tiempo_actual": tiempo_actual,
-        "gimnasios_completados": progreso.gimnasios_completados if progreso else [],
-        "habitos": habitos_list
+        "starter_id": user.starter_id,
+        "starter_nombre": user.starter_nombre,
+        "starter_nivel": user.starter_nivel,
+        "starter_exp": user.starter_exp
     })
+
+@app.route('/api/habitos/config', methods=['GET', 'POST'])
+@jwt_required()
+def habitos_config():
+    uid = get_jwt_identity()
+    if request.method == 'GET':
+        configs = HabitoConfig.query.filter_by(usuario_id=uid).all()
+        # Group by gym_id
+        res = {}
+        for c in configs:
+            if c.gym_id not in res: res[c.gym_id] = []
+            res[c.gym_id].append({
+                "habito_id": c.habito_id,
+                "nombre": c.habito_nombre,
+                "icono": c.icono,
+                "daño": c.daño,
+                "activo": c.activo
+            })
+        return jsonify({"success": True, "config": res})
+    else:
+        # POST: Replace config
+        data = request.get_json() # expects list of habits
+        HabitoConfig.query.filter_by(usuario_id=uid).delete()
+        for h in data:
+            db.session.add(HabitoConfig(
+                usuario_id=uid,
+                gym_id=h['gym_id'],
+                habito_id=h['habito_id'],
+                habito_nombre=h['nombre'],
+                icono=h.get('icono', '⚔️'),
+                daño=h.get('daño', 25)
+            ))
+        db.session.commit()
+        return jsonify({"success": True})
+
+@app.route('/api/habitos/hoy', methods=['GET'])
+@jwt_required()
+def get_habitos_hoy():
+    uid = get_jwt_identity()
+    today = date.today()
+    
+    # Check current config
+    configs = HabitoConfig.query.filter_by(usuario_id=uid, activo=True).all()
+    
+    # Get or create today's progress
+    habitos_res = []
+    for c in configs:
+        prog = ProgresoDia.query.filter_by(
+            usuario_id=uid, fecha=today, 
+            gym_id=c.gym_id, habito_id=c.habito_id
+        ).first()
+        
+        if not prog:
+            prog = ProgresoDia(
+                usuario_id=uid, fecha=today, 
+                gym_id=c.gym_id, habito_id=c.habito_id, 
+                completado=False
+            )
+            db.session.add(prog)
+            db.session.flush() # assign ID
+            
+        habitos_res.append({
+            "gym_id": c.gym_id,
+            "habito_id": c.habito_id,
+            "nombre": c.habito_nombre,
+            "icono": c.icono,
+            "daño": c.daño,
+            "completado": prog.completado
+        })
+    
+    db.session.commit()
+    return jsonify({"success": True, "habitos": habitos_res})
+
+@app.route('/api/habitos/completar', methods=['POST'])
+@jwt_required()
+def completar_habito():
+    uid = get_jwt_identity()
+    today = date.today()
+    data = request.get_json()
+    
+    prog = ProgresoDia.query.filter_by(
+        usuario_id=uid, fecha=today, 
+        gym_id=data['gym_id'], habito_id=data['habito_id']
+    ).first()
+    
+    if not prog:
+        return jsonify({"success": False, "message": "Hábito no encontrado para hoy"}), 404
+    
+    if prog.completado:
+        return jsonify({"success": False, "message": "ya completado"}), 400
+    
+    prog.completado = True
+    db.session.commit()
+    return jsonify({"success": True})
+
+@app.route('/api/gimnasios/hoy', methods=['GET'])
+@jwt_required()
+def get_gimnasios_hoy():
+    uid = get_jwt_identity()
+    today = date.today()
+    
+    # Gyms available in config
+    gym_ids = [r[0] for r in db.session.query(HabitoConfig.gym_id).filter_by(usuario_id=uid).distinct()]
+    
+    res = []
+    for gid in gym_ids:
+        # Check if already completed today
+        comp = GimnasioCompletado.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid).first()
+        
+        # Stats
+        total = ProgresoDia.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid).count()
+        done = ProgresoDia.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid, completado=True).count()
+        
+        res.append({
+            "gym_id": gid,
+            "completado": comp is not None,
+            "habitos_completados": done,
+            "total_habitos": total
+        })
+        
+    return jsonify({"success": True, "gimnasios": res})
+
+@app.route('/api/gimnasios/completar', methods=['POST'])
+@jwt_required()
+def completar_gimnasio():
+    uid = get_jwt_identity()
+    today = date.today()
+    data = request.get_json()
+    gid = data['gym_id']
+    
+    user = Usuario.query.get(uid)
+    
+    # Check if already completed today
+    if GimnasioCompletado.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid).first():
+        return jsonify({"success": False, "message": "Gimnasio ya completado hoy"}), 400
+    
+    # Add to completed
+    comp = GimnasioCompletado(usuario_id=uid, fecha=today, gym_id=gid)
+    db.session.add(comp)
+    
+    # Add Pokémon to collection
+    new_pk = Pokemon(
+        usuario_id=uid,
+        pokemon_id=data['pokemon_id'],
+        pokemon_nombre=data['pokemon_nombre'],
+        origen=gid
+    )
+    db.session.add(new_pk)
+    
+    # EXP Logic
+    exp_gained = 50
+    user.starter_exp += exp_gained
+    subio_nivel = False
+    
+    target_exp = user.starter_nivel * 100
+    if user.starter_exp >= target_exp:
+        user.starter_nivel += 1
+        user.starter_exp = 0 # reset or keep remainder? instructions say reset level*100
+        subio_nivel = True
+    
+    db.session.commit()
+    return jsonify({
+        "success": True, 
+        "exp_ganada": exp_gained, 
+        "subio_nivel": subio_nivel,
+        "nuevo_nivel": user.starter_nivel
+    })
+
+@app.route('/api/coleccion', methods=['GET'])
+@jwt_required()
+def get_coleccion():
+    uid = get_jwt_identity()
+    pks = Pokemon.query.filter_by(usuario_id=uid).all()
+    res = [{
+        "pokemon_id": p.pokemon_id,
+        "pokemon_nombre": p.pokemon_nombre,
+        "origen": p.origen,
+        "fecha_captura": p.fecha_captura.isoformat()
+    } for p in pks]
+    return jsonify({"success": True, "pokemon": res})
+
+@app.route('/api/admin/config', methods=['GET', 'POST'])
+@jwt_required()
+def admin_config():
+    # En esta fase hace lo mismo que habitos_config
+    return habitos_config()
+
+# ---------------------------------------------------------
+# START
+# ---------------------------------------------------------
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    
+    # Catch-all for SPA routing
+    @app.errorhandler(404)
+    def not_found(e):
+        return send_from_directory(app.static_folder, 'index.html')
+
+    app.run(port=8000, debug=True)

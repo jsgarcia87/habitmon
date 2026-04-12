@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `habitos` (
     `habito_nombre` VARCHAR(255) NOT NULL,
     `fecha` DATE NOT NULL,
     `completado` TINYINT(1) DEFAULT 0,
+    UNIQUE KEY `unique_habito_dia` (`usuario_id`, `gimnasio_id`, `habito_id`, `fecha`),
     FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

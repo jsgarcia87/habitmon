@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once 'db.php';
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -160,10 +163,14 @@ try {
         $data = get_json_input();
         $today = date('Y-m-d');
         
-        $pdo->prepare("DELETE FROM habitos WHERE usuario_id = ? AND fecha = ?")->execute([$user_id, $today]);
+        // No borramos todo, solo insertamos los que no existan para hoy
         foreach ($data['habitos'] as $h) {
-            $stmt = $pdo->prepare("INSERT INTO habitos (usuario_id, gimnasio_id, pokemon_index, habito_id, habito_nombre, fecha) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$user_id, $h['gym_id'], $h['pokemon_index'] ?? 0, $h['habito_id'], $h['habito_nombre'], $today]);
+            $stmtCheck = $pdo->prepare("SELECT id FROM habitos WHERE usuario_id = ? AND gimnasio_id = ? AND habito_id = ? AND fecha = ?");
+            $stmtCheck->execute([$user_id, $h['gym_id'], $h['habito_id'], $today]);
+            if (!$stmtCheck->fetch()) {
+                $stmt = $pdo->prepare("INSERT INTO habitos (usuario_id, gimnasio_id, pokemon_index, habito_id, habito_nombre, fecha, completado) VALUES (?, ?, ?, ?, ?, ?, 0)");
+                $stmt->execute([$user_id, $h['gym_id'], $h['pokemon_index'] ?? 0, $h['habito_id'], $h['habito_nombre'], $today]);
+            }
         }
         
         $stmt = $pdo->prepare("INSERT IGNORE INTO progreso_diario (usuario_id, fecha, gimnasios_completados) VALUES (?, ?, '[]')");
@@ -175,6 +182,23 @@ try {
         $user_id = get_user_id();
         $data = get_json_input();
         $today = date('Y-m-d');
+        
+        // Verificar si ya está completado
+        $stmtCheck = $pdo->prepare("SELECT completado FROM habitos WHERE usuario_id = ? AND gimnasio_id = ? AND habito_id = ? AND fecha = ?");
+        $stmtCheck->execute([$user_id, $data['gimnasio_id'], $data['habito_id'], $today]);
+        $habito = $stmtCheck->fetch();
+        
+        if (!$habito) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "error" => "Hábito no encontrado para hoy"]);
+            exit();
+        }
+        
+        if ($habito['completado']) {
+            echo json_encode(["success" => false, "error" => "Este hábito ya fue completado hoy", "ya_completado" => true]);
+            exit();
+        }
+
         $stmt = $pdo->prepare("UPDATE habitos SET completado = 1 WHERE usuario_id = ? AND gimnasio_id = ? AND habito_id = ? AND fecha = ?");
         $stmt->execute([$user_id, $data['gimnasio_id'], $data['habito_id'], $today]);
         echo json_encode(["success" => true]);

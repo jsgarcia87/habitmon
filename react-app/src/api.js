@@ -1,8 +1,7 @@
 const BASE = '/api';
-const getToken = () => localStorage.getItem('hm_token');
 const h = () => ({
   'Content-Type': 'application/json',
-  'Authorization': `Bearer ${getToken()}`
+  'Authorization': `Bearer ${localStorage.getItem('hm_token')}`
 });
 
 export const api = {
@@ -48,6 +47,10 @@ export const api = {
     {headers:h()}).then(r=>r.json()),
   
   saveAdminConfig: (data) => fetch(`${BASE}/admin/config`,
+    {method:'POST',headers:h(),
+     body:JSON.stringify(data)}).then(r=>r.json()),
+
+  capturarPokemon: (data) => fetch(`${BASE}/coleccion/capturar`,
     {method:'POST',headers:h(),
      body:JSON.stringify(data)}).then(r=>r.json()),
 };

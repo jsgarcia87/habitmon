@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
 import PokemonSprite from '../components/PokemonSprite';
 import HPBar from '../components/HPBar';
@@ -110,67 +110,66 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   };
 
   return (
-    <div className="screen-container" style={{ padding: 0, backgroundColor: '#E0E0E0', overflow: 'hidden' }}>
-      
-      {/* BACKGROUND & PLATFORMS */}
+    <div style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      background: '#000',
+      overflow: 'hidden'
+    }}>
+      {/* AREA DE BATALLA (Flex 1) */}
       <div style={{ 
-        height: '60%', width: '100%', position: 'relative', 
+        flex: 1, position: 'relative', 
         backgroundImage: 'url(/Graphics/battlebacks/general_bg.png)',
         backgroundSize: '100% 100%',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: '#F8F0D8'
+        backgroundColor: '#F8F0D8',
+        overflow: 'hidden'
       }}>
-        {/* Enemy Platform & Sprite */}
-        <div style={{ position: 'absolute', top: '40px', right: '30px', textAlign: 'center' }}>
-          <div style={{ 
-            width: '120px', height: '40px', background: 'rgba(0,0,0,0.2)', 
-            borderRadius: '50%', marginBottom: '-20px', marginLeft: '20px' 
-          }} />
-          <div style={{
-            transition: 'all 0.5s',
-            transform: enemyAnim === 'slide-in' ? 'translateX(200px)' : (enemyAnim === 'hit' ? 'translateX(10px) rotate(10deg)' : 'none'),
-            opacity: enemyAnim === 'hit' ? 0.5 : 1
-          }}>
-            <PokemonSprite id={enemyId} style={{ width: '120px', height: '120px' }} />
-          </div>
+        {/* Enemy Side */}
+        <div style={{ position: 'absolute', top: '20px', left: '10px', zIndex: 10 }}>
+          <HPBar 
+            current={leaderHP} 
+            max={100} 
+            name={enemyName}
+            level={isWild ? (wildPk?.nivel || 5) : 30}
+            alignment="enemy"
+          />
+        </div>
+        <div style={{ 
+          position: 'absolute', top: '30px', right: '40px',
+          width: '120px', height: '120px',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          transition: 'all 0.5s',
+          transform: enemyAnim === 'slide-in' ? 'translateX(200px)' : (enemyAnim === 'hit' ? 'translateX(10px) rotate(10deg)' : 'none'),
+          opacity: enemyAnim === 'hit' ? 0.5 : 1
+        }}>
+          <PokemonSprite id={enemyId} front={true} style={{ width: '100px', height: '100px', filter: 'drop-shadow(3px 3px 0 rgba(0,0,0,0.1))' }} />
         </div>
 
-        {/* Enemy HUD */}
-        <div className="gb-window" style={{ position: 'absolute', top: '20px', left: '20px', width: '160px', padding: '5px' }}>
-          <div style={{ fontSize: '8px', marginBottom: '4px' }}>{enemyName.toUpperCase()} Lv30</div>
-          <HPBar current={leaderHP} max={100} />
+        {/* Player Side */}
+        <div style={{ position: 'absolute', bottom: '20px', right: '10px', zIndex: 10 }}>
+          <HPBar 
+            current={playerHP} 
+            max={100} 
+            name={user.starter_nombre || 'Pokémon'}
+            level={user.starter_nivel || 5}
+            alignment="player"
+          />
         </div>
-
-        {/* Player Platform & Sprite */}
-        <div style={{ position: 'absolute', bottom: '10px', left: '30px' }}>
-           <div style={{ 
-            width: '140px', height: '40px', background: 'rgba(0,0,0,0.2)', 
-            borderRadius: '50%', marginBottom: '-30px', marginLeft: '-10px' 
-          }} />
-          <div style={{
-            transition: 'transform 0.3s',
-            transform: playerAnim === 'lunge' ? 'translateY(-20px) translateX(20px)' : 'none'
-          }}>
-            <div style={{
-              width: '128px', height: '128px',
-              backgroundImage: 'url(/Graphics/characters/trback000.png)',
-              backgroundSize: '640px 128px',
-              backgroundPosition: '0 0',
-              imageRendering: 'pixelated'
-            }} />
-          </div>
-        </div>
-
-        {/* Player HUD */}
-        <div className="gb-window" style={{ position: 'absolute', bottom: '40px', right: '20px', width: '160px', padding: '5px' }}>
-          <div style={{ fontSize: '8px', marginBottom: '4px' }}>{user.starter_nombre.toUpperCase()} Lv{user.starter_nivel}</div>
-          <HPBar current={playerHP} max={100} />
-          <div style={{ fontSize: '8px', textAlign: 'right', marginTop: '2px' }}>{playerHP}/100</div>
+        <div style={{ 
+          position: 'absolute', bottom: '10px', left: '30px',
+          width: '140px', height: '140px',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          transition: 'transform 0.3s',
+          transform: playerAnim === 'lunge' ? 'translateY(-20px) translateX(20px)' : 'none'
+        }}>
+           <PokemonSprite id={user.starter_id || 1} front={false} style={{ width: '120px', height: '120px', filter: 'drop-shadow(-3px 3px 0 rgba(0,0,0,0.1))' }} />
         </div>
       </div>
 
-      {/* DIALOG & MENU AREA */}
-      <div style={{ height: '40%', borderTop: '4px solid #333', backgroundColor: '#F8F0D8', zIndex: 10 }}>
+      {/* DIALOG & MENU AREA (Fijo 140px) */}
+      <div style={{ height: '140px', borderTop: '4px solid #333', backgroundColor: '#F8F0D8', zIndex: 10, flexShrink: 0 }}>
         {phase === 'menu' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', height: '100%', padding: '10px', gap: '8px' }}>
              {!isWild ? (
@@ -210,13 +209,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         {(phase === 'intro' || phase === 'attack' || phase === 'win' || phase === 'dialog' || phase === 'dialog_exit' || phase === 'dialog_fail_flee') && (
            <DialogBox 
              text={message} 
-             onNext={() => {
-               if (phase === 'intro') setPhase('menu');
-               else if (phase === 'win') navigate('capture', { gymId });
-               else if (phase === 'dialog') setPhase('menu');
-               else if (phase === 'dialog_exit') navigate('city');
-               else if (phase === 'dialog_fail_flee') setPhase('menu');
-             }} 
+             onNext={handleDialogNext}
            />
         )}
       </div>

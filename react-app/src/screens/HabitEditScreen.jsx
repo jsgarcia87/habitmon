@@ -112,7 +112,7 @@ const HabitEditScreen = ({ onNavigate }) => {
     <div style={s.screen}>
       {/* Header */}
       <div style={s.header}>
-        <button style={s.backBtn} onClick={() => onNavigate(progress?.setup_required ? 'SETUP' : 'MAP')}>← VOLVER</button>
+        <button style={s.backBtn} onClick={() => onNavigate('PROFILE')}>← VOLVER</button>
         <h2 style={s.title}>🛠️ GESTOR DE ATAQUES</h2>
         <div style={s.headerRight} />
       </div>

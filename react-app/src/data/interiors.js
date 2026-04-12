@@ -63,8 +63,47 @@ export const INTERIORS = {
     transfer_out: { mapId: 'Map001', x: 22, y: 9, dir: 0 }
   },
 
-  // Gimnasio (Genérico para Hábitos)
+  // Gimnasio (Laberinto para Hábitos)
   'pkmn_gym': {
+    width: 10,
+    height: 15,
+    tileset_name: 'gsc gym 1a',
+    data: [
+      [384, 385, 385, 385, 385, 385, 385, 385, 385, 386],
+      [392, 450, 450, 450, 450, 450, 450, 450, 450, 394], // 450 is wall
+      [392, 401, 401, 401, 401, 401, 401, 401, 450, 394],
+      [392, 450, 450, 450, 450, 450, 450, 401, 450, 394],
+      [392, 401, 401, 401, 401, 401, 401, 401, 450, 394],
+      [392, 401, 450, 450, 450, 450, 450, 450, 450, 394],
+      [392, 401, 401, 401, 401, 401, 401, 401, 401, 394],
+      [392, 450, 450, 450, 450, 450, 450, 450, 401, 394],
+      [392, 401, 401, 401, 401, 401, 401, 401, 401, 394],
+      [392, 401, 450, 450, 450, 450, 450, 450, 450, 394],
+      [392, 401, 401, 401, 401, 401, 401, 401, 401, 394],
+      [432, 433, 433, 434, 435, 435, 436, 433, 433, 434]
+    ],
+    npcs: [
+      {
+        nombre: 'Líder',
+        sprite: 'leader_morty',
+        posicion: { x: 5, y: 1 },
+        direccion: 0,
+        mensajes: ['¡Has llegado al final del laberinto!', '¿Listo para el combate?'],
+        tipo: 'boss'
+      },
+      {
+        nombre: 'Entrenador Junior',
+        sprite: 'char_ 04_a',
+        posicion: { x: 8, y: 4 },
+        direccion: 1,
+        mensajes: ['¡No pasarás tan fácilmente!']
+      }
+    ],
+    transfer_out: { mapId: 'city', x: 8, y: 6, dir: 0 }
+  },
+
+  // Laboratorio Oak
+  'prof_lab': {
     width: 10,
     height: 12,
     tileset_name: 'gsc lab-gym',
@@ -74,24 +113,23 @@ export const INTERIORS = {
       [400, 401, 401, 401, 401, 401, 401, 401, 401, 402],
       [408, 409, 409, 409, 409, 409, 409, 409, 409, 410],
       [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
-      [424, 425, 425, 425, 425, 425, 425, 425, 425, 426],
-      [424, 425, 425, 425, 425, 425, 425, 425, 425, 426],
-      [424, 425, 425, 425, 425, 425, 425, 425, 425, 426],
-      [424, 425, 425, 425, 425, 425, 425, 425, 425, 426],
-      [424, 425, 425, 425, 425, 425, 425, 425, 425, 426],
-      [424, 425, 425, 425, 425, 425, 425, 425, 425, 426],
+      [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
+      [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
+      [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
+      [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
+      [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
+      [416, 417, 417, 417, 417, 417, 417, 417, 417, 418],
       [432, 433, 433, 434, 435, 435, 436, 433, 433, 434]
     ],
     npcs: [
       {
-        nombre: 'Líder de Gym',
-        sprite: 'prof_oak', // Temporal, se verá luego
-        posicion: { x: 5, y: 3 },
+        nombre: 'Prof. Oak',
+        sprite: 'prof_oak',
+        posicion: { x: 5, y: 2 },
         direccion: 0,
-        mensajes: ['¡Soy el líder de este gimnasio!', '¿Estás listo para demostrar tu hábito?'],
-        tipo: 'boss'
+        mensajes: ['¡Hola! Bienvenido al laboratorio.', 'Tengo tres Pokémon aquí para ti.']
       }
     ],
-    transfer_out: { mapId: 'Map001', x: 15, y: 16, dir: 0 }
+    transfer_out: { mapId: 'city', x: 12, y: 14, dir: 0 }
   }
 };
