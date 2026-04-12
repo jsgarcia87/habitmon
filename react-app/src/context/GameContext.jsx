@@ -10,9 +10,9 @@ export const GameProvider = ({children}) => {
     const s = localStorage.getItem('hm_user');
     return s ? JSON.parse(s) : null;
   });
-  const [token, setToken]     = useState(
-    () => localStorage.getItem('hm_token'));
+  const [token, setToken]     = useState(() => localStorage.getItem('hm_token'));
   const [starter, setStarter] = useState(null);
+  const [template, setTemplate] = useState(null);
   const [habitosHoy, setHabitosHoy] = useState([]);
   const [gimnasiosHoy, setGimnasiosHoy] = useState([]);
   const [coleccion, setColeccion] = useState([]);
@@ -58,33 +58,45 @@ export const GameProvider = ({children}) => {
   };
 
   const cargarDatos = useCallback(async () => {
-    if(!token) return;
+    const tok = localStorage.getItem('hm_token');
+    if(!tok) return;
     setLoading(true);
     try {
-      const results = await Promise.all([
-        api.getStarter(),
-        api.getHabitosHoy(),
-        api.getGimnasiosHoy(),
-        api.getColeccion()
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${tok}`
+      };
+      const [s, h, g, c] = await Promise.all([
+        fetch('/api/starter/info', {headers}).then(r=>r.json()),
+        fetch('/api/habitos/hoy', {headers}).then(r=>r.json()),
+        fetch('/api/gimnasios/hoy', {headers}).then(r=>r.json()),
+        fetch('/api/coleccion', {headers}).then(r=>r.json())
       ]);
-
+      
       // Check for unauthorized access in any response
-      if (results.some(r => r.msg === 'Token is missing!' || r.msg === 'Token is invalid!')) {
+      const results = [s, h, g, c];
+      const isUnauthorized = results.some(r => 
+        r?.msg?.toLowerCase()?.includes('token') ||
+        r?.msg?.toLowerCase()?.includes('expired') ||
+        r?.error === 'Unauthorized'
+      );
+
+      if(isUnauthorized) {
+        console.warn('Token inválido o expirado, cerrando sesión');
         logout();
         return;
       }
 
-      const [s, h, g, c] = results;
-      if(s.success) setStarter(s.starter);
-      if(h.success) setHabitosHoy(h.habitos);
-      if(g.success) setGimnasiosHoy(g.gimnasios);
-      if(c.success) setColeccion(c.pokemon);
+      if(s?.success) setStarter(s.starter);
+      if(h?.success) setHabitosHoy(h.habitos || []);
+      if(g?.success) setGimnasiosHoy(g.gimnasios || []);
+      if(c?.success) setColeccion(c.pokemon || []);
     } catch (e) {
       console.error("Error loading data:", e);
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const completarHabito = async (gym_id, habito_id) => {
     const r = await api.completarHabito(
@@ -106,15 +118,52 @@ export const GameProvider = ({children}) => {
     return r;
   };
 
-  useEffect(() => { cargarDatos(); }, [cargarDatos]);
+  const fetchTemplate = useCallback(async () => {
+    const r = await api.getAdminConfig();
+    if(r.success) setTemplate(r.config);
+  }, []);
+
+  const saveCustomTemplate = async (newTemplate) => {
+    const r = await api.saveAdminConfig(newTemplate);
+    if(r.success) {
+      setTemplate(newTemplate);
+      await cargarDatos(); // Refresh today's habits
+    }
+    return r;
+  };
+
+  const capturarPokemon = async (pk_id, pk_nombre) => {
+    try {
+      const r = await api.capturarPokemon({ pokemon_id: pk_id, pokemon_nombre: pk_nombre });
+      if (r.success) {
+        await cargarDatos(); 
+      } else {
+        // Fallback local en caso de error de servidor
+        setColeccion(prev => [...prev, { pokemon_id: pk_id, pokemon_nombre: pk_nombre }]);
+      }
+      return r;
+    } catch (e) {
+      console.error("Capture API failed, falling back to local state:", e);
+      setColeccion(prev => [...prev, { pokemon_id: pk_id, pokemon_nombre: pk_nombre }]);
+      return { success: true, localOnly: true };
+    }
+  };
+
+
+  useEffect(() => {
+    if(token) {
+      cargarDatos();
+    }
+  }, [token, cargarDatos]);
 
   return (
     <Ctx.Provider value={{
       user, token, starter, habitosHoy,
+      template, fetchTemplate, saveCustomTemplate,
       gimnasiosHoy, coleccion, loading,
       login, register, logout,
       elegirStarter, completarHabito,
-      completarGimnasio, cargarDatos
+      completarGimnasio, cargarDatos, capturarPokemon
     }}>
       {children}
     </Ctx.Provider>
