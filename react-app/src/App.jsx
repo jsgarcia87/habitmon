@@ -12,6 +12,7 @@ import BattleScreen from './screens/BattleScreen';
 import CaptureScreen from './screens/CaptureScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import HabitEditScreen from './screens/HabitEditScreen';
+import AdminScreen from './screens/AdminScreen';
 
 import './gameboy.css';
 
@@ -60,8 +61,9 @@ function App() {
       case 'gym': return <GymScreen navigate={navigate} gymId={screenData?.gymId} direction={direction} aPressed={aPressed} onBack={() => navigate('city')} />;
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={aPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
-      case 'profile': return <ProfileScreen onNavigate={(s) => navigate(s.toLowerCase())} />;
-      case 'habits_edit': return <HabitEditScreen onNavigate={(s) => navigate(s.toLowerCase())} />;
+      case 'profile': return <ProfileScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
+      case 'habits_edit': return <HabitEditScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
+      case 'admin': return <AdminScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
       default: return <CityScreen navigate={navigate} />;
     }
   };
@@ -77,7 +79,7 @@ function App() {
       </div>
 
       {/* Global Controls (Only visible in game screens) */}
-      {(token && user?.starter_id && screen !== 'login' && screen !== 'register') && (
+      {(token && user?.starter_id && (screen === 'city' || screen === 'gym')) && (
         <Controls 
           onDirectionChange={(dir) => setDirection(dir)}
           onA={() => { setAPressed(true); setTimeout(() => setAPressed(false), 100); }}

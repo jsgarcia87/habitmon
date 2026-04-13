@@ -208,7 +208,7 @@ const TileMap = ({
         });
         return;
       }
-      onTriggerRef.current?.('interact', { name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); 
+      onTriggerRef.current?.('interact', { name: (ev.name || 'event').toLowerCase().replace(/\s/g, '_'), ev }); 
       return; 
     }
   };
@@ -225,6 +225,8 @@ const TileMap = ({
         const data = { 
           width: 20, height: 15, 
           isHardcoded: true,
+          tileset_name: 'gsc lab-gym',
+          tileset_id: 2,
           getTile: (x, y) => GYM_INTERIOR_MAP[y]?.[x] ?? 1 
         };
         mapDataRef.current = data;
@@ -309,6 +311,7 @@ const TileMap = ({
 
     // 1. Tileset
     const loadTileset = (tsName, tsId) => {
+      if (!tsName) return;
       const img = new Image();
       let finalName = tsName.toLowerCase();
       if (mapId === 'Map001') {
@@ -427,7 +430,7 @@ const TileMap = ({
     const map = mapDataRef.current;
     if (map) {
       const ev = Object.values(map.events || {}).find(e => e.x === ix && e.y === iy);
-      if (ev) { onTriggerRef.current?.('interact', { name: ev.name.toLowerCase().replace(/\s/g, '_'), ev }); return; }
+      if (ev) { onTriggerRef.current?.('interact', { name: (ev.name || 'event').toLowerCase().replace(/\s/g, '_'), ev }); return; }
     }
 
     const starter = starters.find(s => s.tileX === ix && s.tileY === iy);

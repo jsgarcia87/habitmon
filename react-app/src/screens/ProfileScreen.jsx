@@ -18,21 +18,24 @@ const ProfileScreen = ({ onNavigate }) => {
         FICHA ENTRENADOR
       </h2>
 
-      {/* Avatar + nombre */}
+      {/* Avatar + nombre (CORREGIDO) */}
       <div style={{
         border:'3px solid #FFD700',
-        padding:'12px 20px', marginBottom:16,
+        padding:'20px', marginBottom:16,
         textAlign:'center', width:'100%',
-        maxWidth:300
+        maxWidth:300, display: 'flex', flexDirection: 'column', alignItems: 'center'
       }}>
-        <img
-          src={`Graphics/characters/trchar00${
-            user?.avatar||0}.png`}
-          style={{imageRendering:'pixelated',
-                  width:48, marginBottom:8}}
-          onError={e=>e.target.style.display='none'}
-        />
-        <p style={{fontSize:9}}>{user?.username}</p>
+        <div style={{
+          width: 32, height: 40,
+          backgroundImage: `url(Graphics/characters/trchar00${user?.avatar||0}.png)`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: '0 0',
+          imageRendering: 'pixelated',
+          transform: 'scale(2)',
+          marginBottom: 20,
+          marginTop: 10
+        }} />
+        <p style={{fontSize:9, marginTop: 15}}>{user?.username}</p>
       </div>
 
       {/* Starter */}
@@ -152,6 +155,22 @@ const ProfileScreen = ({ onNavigate }) => {
       >
         ⚙️ GESTOR DE ATAQUES
       </button>
+
+      <button 
+        onClick={()=>onNavigate('ADMIN')}
+        style={{
+          marginTop:12,padding:'10px 20px',
+          background:'rgba(255,215,0,0.1)',
+          color:'#FFD700',
+          border:'2px solid #FFD700',
+          fontFamily:'"Press Start 2P",monospace',
+          fontSize:7,cursor:'pointer',
+          width:'100%',maxWidth:300
+        }}
+      >
+        ⚙️ CONFIGURAR HÁBITOS
+      </button>
+
 
       <button
         onClick={()=>onNavigate('CITY')}

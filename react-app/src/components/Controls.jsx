@@ -1,41 +1,72 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
-  const joystickRef = useRef(null);
+  const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
+  const [joystickActive, setJoystickActive] = useState(false);
   const [activeDir, setActiveDir] = useState(null);
 
-  const handleTouch = (e) => {
-    if (!joystickRef.current) return;
-    const touch = e.touches[0];
-    const rect = joystickRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+  const calculateDirection = (dx, dy) => {
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 15) return null;
     
-    const dx = touch.clientX - centerX;
-    const dy = touch.clientY - centerY;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-    
-    let dir = null;
-    if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
-      if (angle > -45 && angle <= 45) dir = 'right';
-      else if (angle > 45 && angle <= 135) dir = 'down';
-      else if (angle > 135 || angle <= -135) dir = 'left';
-      else if (angle > -135 && angle <= -45) dir = 'up';
+    if (angle > -45 && angle <= 45) return 'right';
+    else if (angle > 45 && angle <= 135) return 'down';
+    else if (angle > 135 || angle <= -135) return 'left';
+    else if (angle > -135 && angle <= -45) return 'up';
+    return null;
+  };
+
+  const onJoystickStart = (e) => {
+    setJoystickActive(true);
+    handleInput(e);
+  };
+
+  const onJoystickMove = (e) => {
+    if (!joystickActive) return;
+    handleInput(e);
+  };
+
+  const onJoystickEnd = () => {
+    setJoystickActive(false);
+    setJoystickPos({ x: 0, y: 0 });
+    if (activeDir) {
+      setActiveDir(null);
+      onDirectionChange?.(null);
     }
+  };
+
+  const handleInput = (e) => {
+    const rect = e.currentTarget.closest('.joystick-container').getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    const dx = touch.clientX - (rect.left + rect.width / 2);
+    const dy = touch.clientY - (rect.top + rect.height / 2);
     
+    // Limit joystick visually
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const max = 30;
+    const lx = dist > max ? (dx / dist) * max : dx;
+    const ly = dist > max ? (dy / dist) * max : dy;
+    
+    setJoystickPos({ x: lx, y: ly });
+    
+    const dir = calculateDirection(dx, dy);
     if (dir !== activeDir) {
       setActiveDir(dir);
-      if (onDirectionChange) onDirectionChange(dir);
+      onDirectionChange?.(dir);
     }
   };
 
-  const handleEnd = () => {
-    setActiveDir(null);
-    if (onDirectionChange) onDirectionChange(null);
+  const handleKey = (key, state) => {
+    if (state === 'down') {
+      if (key === 'z') onA?.();
+      if (key === 'x') onB?.();
+    }
   };
 
+  // Keyboard fallbacks
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKD = (e) => {
       const key = e.key.toLowerCase();
       if (key === 'w' || key === 'arrowup') onDirectionChange?.('up');
       if (key === 's' || key === 'arrowdown') onDirectionChange?.('down');
@@ -45,96 +76,155 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
       if (key === 'x') onB?.();
       if (key === 'enter') onStart?.();
     };
-
-    const handleKeyUp = (e) => {
-      onDirectionChange?.(null);
+    const handleKU = (e) => {
+      const key = e.key.toLowerCase();
+      if (['w','s','a','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key)) {
+        onDirectionChange?.(null);
+      }
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('keydown', handleKD);
+    window.addEventListener('keyup', handleKU);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keydown', handleKD);
+      window.removeEventListener('keyup', handleKU);
     };
   }, [onDirectionChange, onA, onB, onStart]);
 
   return (
-    <div className="controls-container">
-      {/* Joystick Area */}
-      <div 
-        className="d-pad" 
-        ref={joystickRef}
-        onTouchMove={handleTouch}
-        onTouchEnd={handleEnd}
-        onMouseDown={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const handleMouse = (me) => {
-             const dx = me.clientX - (rect.left + rect.width/2);
-             const dy = me.clientY - (rect.top + rect.height/2);
-             let dir = null;
-             if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-               if (Math.abs(dx) > Math.abs(dy)) dir = dx > 0 ? 'right' : 'left';
-               else dir = dy > 0 ? 'down' : 'up';
-             }
-             if (dir !== activeDir) {
-               setActiveDir(dir);
-               onDirectionChange?.(dir);
-             }
-          };
-          window.addEventListener('mousemove', handleMouse);
-          window.addEventListener('mouseup', () => {
-            window.removeEventListener('mousemove', handleMouse);
-            setActiveDir(null);
-            onDirectionChange?.(null);
-          }, { once: true });
-        }}
-        style={{
-          background: 'radial-gradient(circle, #444 0%, #222 100%)',
-          borderRadius: '50%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          border: '4px solid #111'
-        }}
-      >
-        <div style={{
-          width: '50px',
-          height: '50px',
-          background: '#555',
-          borderRadius: '50%',
-          transform: activeDir ? 
-            (activeDir === 'up' ? 'translateY(-20px)' : 
-             activeDir === 'down' ? 'translateY(20px)' :
-             activeDir === 'left' ? 'translateX(-20px)' : 'translateX(20px)') 
-            : 'none',
-          transition: 'transform 0.1s'
-        }} />
+    <div style={{
+      position: 'absolute',
+      bottom: 0, left: 0,
+      width: '100%',
+      height: '100%',
+      pointerEvents: 'none',
+      zIndex: 50
+    }}>
+      {/* D-PAD — esquina inferior izquierda */}
+      <div className="joystick-container" style={{
+        position: 'absolute',
+        bottom: 40,
+        left: 30,
+        pointerEvents: 'auto'
+      }}>
+        <div
+          onTouchStart={onJoystickStart}
+          onTouchMove={onJoystickMove}
+          onTouchEnd={onJoystickEnd}
+          onMouseDown={onJoystickStart}
+          onMouseMove={onJoystickMove}
+          onMouseUp={onJoystickEnd}
+          onMouseLeave={onJoystickEnd}
+          style={{
+            width: 90,
+            height: 90,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.15)',
+            border: '2px solid rgba(255,255,255,0.3)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            touchAction: 'none'
+          }}
+        >
+          {/* Punto central del joystick */}
+          <div style={{
+            width: 35,
+            height: 35,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.4)',
+            border: '2px solid rgba(255,255,255,0.6)',
+            transform: `translate(${joystickPos.x}px, ${joystickPos.y}px)`,
+            transition: joystickActive ? 'none' : 'transform 0.1s ease'
+          }}/>
+        </div>
       </div>
 
-      {/* Start/Select Area */}
-      <div style={{ position: 'absolute', bottom: '15px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '20px', pointerEvents: 'auto', zIndex: 2000 }}>
-         <div onPointerDown={onStart} onClick={onStart} style={{ 
-           width: '65px', height: '25px', background: '#e67e22', 
-           borderRadius: '12px', transform: 'rotate(-25deg)',
-           border: '3px solid #111', cursor: 'pointer',
-           display: 'flex', justifyContent: 'center', alignItems: 'center',
-           boxShadow: '3px 3px 0 #111'
-         }}>
-           <span style={{ fontSize: '4px', color: '#fff' }}>START</span>
-         </div>
-         <div style={{ 
-           width: '40px', height: '12px', background: '#444', 
-           borderRadius: '6px', transform: 'rotate(-25deg)',
-           border: '2px solid #111', opacity: 0.5
-         }}>
-            <span style={{ fontSize: '4px', color: '#fff', marginLeft: '8px' }}>SELECT</span>
-         </div>
+      {/* BOTONES A/B — esquina inferior derecha */}
+      <div style={{
+        position: 'absolute',
+        bottom: 44,
+        right: 30,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        alignItems: 'center',
+        pointerEvents: 'auto'
+      }}>
+        <button
+          onTouchStart={() => handleKey('z','down')}
+          onTouchEnd={() => handleKey('z','up')}
+          onMouseDown={() => handleKey('z','down')}
+          onMouseUp={() => handleKey('z','up')}
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: '50%',
+            background: 'rgba(220,50,50,0.6)',
+            border: '2px solid rgba(255,100,100,0.8)',
+            color: 'rgba(255,255,255,0.9)',
+            fontFamily: '"Press Start 2P"',
+            fontSize: 12,
+            cursor: 'pointer',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
+          }}
+        >A</button>
+
+        <button
+          onTouchStart={() => handleKey('x','down')}
+          onTouchEnd={() => handleKey('x','up')}
+          onMouseDown={() => handleKey('x','down')}
+          onMouseUp={() => handleKey('x','up')}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'rgba(50,50,180,0.5)',
+            border: '2px solid rgba(100,100,220,0.7)',
+            color: 'rgba(255,255,255,0.8)',
+            fontFamily: '"Press Start 2P"',
+            fontSize: 10,
+            cursor: 'pointer',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
+          }}
+        >B</button>
       </div>
 
-      {/* Buttons */}
-      <div className="action-buttons">
-        <div className="btn-circle btn-a" onPointerDown={onA}>A</div>
-        <div className="btn-circle btn-b" onPointerDown={onB}>B</div>
+      {/* START/SELECT — centro inferior */}
+      <div style={{
+        position: 'absolute',
+        bottom: 35,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: 12,
+        pointerEvents: 'auto'
+      }}>
+        <button
+          onClick={() => onStart?.()}
+          style={{
+            padding: '6px 14px',
+            borderRadius: 8,
+            background: 'rgba(255,255,255,0.2)',
+            border: '1px solid rgba(255,255,255,0.4)',
+            color: 'rgba(255,255,255,0.8)',
+            fontFamily: '"Press Start 2P"',
+            fontSize: 7,
+            cursor: 'pointer',
+            backdropFilter: 'blur(4px)'
+          }}
+        >START</button>
       </div>
     </div>
   );

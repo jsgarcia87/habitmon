@@ -1,122 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BUILDING_TEMPLATES } from '../data/buildingTemplates';
 import { useGame } from '../context/GameContext';
 
 const TILE_SIZE = 32;
-const MAP_ID = 'Map002';
-const TILESET_SRC = '/Graphics/tilesets/gsc overworld johto day.png';
+const TILESET_MAP = {
+  1: '/Graphics/tilesets/gsc overworld johto day.png',
+  44: '/Graphics/tilesets/GSC rail station-gym a.png'
+};
 
-const GRASS_ZONES = [
-  {x1:2, y1:8, x2:6, y2:14},
-  {x1:14, y1:2, x2:20, y2:8},
-  {x1:2, y1:16, x2:8, y2:22},
-  {x1:16, y1:14, x2:22, y2:20},
-];
-
-const BUILDINGS = [
-  { gym_id:'vestirse', nombre:'Vestirse', tileX:3, tileY:3 },
-  { gym_id:'desayuno', nombre:'Desayuno', tileX:14, tileY:3 },
-  { gym_id:'higiene', nombre:'Higiene', tileX:3, tileY:14 },
-  { gym_id:'orden', nombre:'Orden', tileX:14, tileY:14 },
-];
-
-function drawGymBuilding(ctx, screenX, screenY, gymId, nombre, completado) {
-  const T = 32; // tamaño tile
-  
-  // Colores por tipo de gimnasio
-  const COLORS = {
-    vestirse:  { roof:'#C84040', wall:'#F8D878', door:'#8B4513' },
-    desayuno:  { roof:'#4040C8', wall:'#78C878', door:'#8B4513' },
-    higiene:   { roof:'#40C8C8', wall:'#F8F8A0', door:'#8B4513' },
-    orden:     { roof:'#C840C8', wall:'#C8A078', door:'#8B4513' },
-  };
-  const c = COLORS[gymId] || COLORS.vestirse;
-  
-  // TECHO (3 tiles ancho, 1 tile alto base + triángulo)
-  ctx.fillStyle = c.roof;
-  ctx.fillRect(screenX, screenY, T*3, T);
-  // Línea borde techo
-  ctx.fillStyle = '#000';
-  ctx.fillRect(screenX, screenY, T*3, 3);
-  ctx.fillRect(screenX, screenY+T-3, T*3, 3);
-  // Triángulo techo
-  ctx.fillStyle = c.roof;
-  ctx.beginPath();
-  ctx.moveTo(screenX, screenY);
-  ctx.lineTo(screenX + T*1.5, screenY - T*0.6);
-  ctx.lineTo(screenX + T*3, screenY);
-  ctx.fill();
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  
-  // PAREDES (3 tiles ancho, 2 tiles alto)
-  ctx.fillStyle = c.wall;
-  ctx.fillRect(screenX, screenY+T, T*3, T*2);
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(screenX, screenY+T, T*3, T*2);
-  
-  // VENTANAS (2 ventanas)
-  ctx.fillStyle = '#A0D8F0';
-  ctx.fillRect(screenX+6, screenY+T+8, T-8, T-8);
-  ctx.fillRect(screenX+T*2+6, screenY+T+8, T-8, T-8);
-  // Cruz ventana
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(screenX+T/2 + 6, screenY+T+8);
-  ctx.lineTo(screenX+T/2 + 6, screenY+T*2);
-  ctx.moveTo(screenX+6, screenY+T+T/2);
-  ctx.lineTo(screenX+T, screenY+T+T/2);
-  ctx.stroke();
-  
-  // PUERTA (centro)
-  ctx.fillStyle = c.door;
-  ctx.fillRect(screenX+T+8, screenY+T*2, T-8, T);
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(screenX+T+8, screenY+T*2, T-8, T);
-  // Pomo puerta
-  ctx.fillStyle = '#FFD700';
-  ctx.beginPath();
-  ctx.arc(screenX+T+10, screenY+T*2+T/2, 3, 0, Math.PI*2);
-  ctx.fill();
-  
-  // LETRERO encima del edificio
-  const labelY = screenY - T*0.6 - 18;
-  ctx.fillStyle = completado ? '#2D8A2D' : '#1A1A8A';
-  ctx.fillRect(screenX+T/2, labelY, T*2, 14);
-  ctx.strokeStyle = '#FFD700';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(screenX+T/2, labelY, T*2, 14);
-  ctx.fillStyle = '#FFD700';
-  ctx.font = '6px "Press Start 2P"';
-  ctx.textAlign = 'center';
-  ctx.fillText(
-    nombre.toUpperCase(),
-    screenX + T*1.5,
-    labelY + 10
-  );
-  
-  // Medalla si completado
-  if(completado) {
-    ctx.font = '16px serif';
-    ctx.fillText('🏅', screenX+T*1.5, labelY-4);
-  }
-  
-  ctx.textAlign = 'left';
-}
-
-const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [] }) => {
+const CityMap = ({ 
+  mapId = 'Map002', 
+  direction, 
+  aPressed, 
+  onEvent, 
+  playerPos, 
+  setPlayerPos, 
+  npcs = [], 
+  buildings = [] 
+}) => {
   const { gimnasiosHoy } = useGame();
   const canvasRef = useRef(null);
   const [mapData, setMapData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [facing, setFacing] = useState('down');
-  const [flash, setFlash] = useState(0); 
   
-  // Refs for non-reactive state (Game Loop)
   const tilesetImg = useRef(new Image());
   const playerImg = useRef(new Image());
   const npcImgCache = useRef({});
@@ -129,23 +35,24 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
     walkFrame: 0
   });
 
-  // 1. Initial Data Loading
+  // Load Map Data
   useEffect(() => {
-    fetch(`/Data/${MAP_ID}.json`)
+    setIsLoading(true);
+    fetch(`/Data/${mapId}.json`)
       .then(r => r.json())
       .then(data => {
         setMapData(data);
-        tilesetImg.current.src = TILESET_SRC;
+        const tilesetSrc = TILESET_MAP[data.tileset_id] || TILESET_MAP[1];
+        tilesetImg.current.src = tilesetSrc;
         playerImg.current.src = '/Graphics/characters/trchar000.png';
-        
         let loaded = 0;
         const checkLoaded = () => { if(++loaded === 2) setIsLoading(false); };
         tilesetImg.current.onload = checkLoaded;
         playerImg.current.onload = checkLoaded;
       });
-  }, []);
+  }, [mapId]);
 
-  // 2. NPC Image Cache
+  // NPC Image Cache
   useEffect(() => {
     npcs.forEach(npc => {
       if (!npcImgCache.current[npc.sprite]) {
@@ -156,7 +63,7 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
     });
   }, [npcs]);
 
-  // 3. Keep logical pos in sync (for teleports)
+  // Keep state in sync
   useEffect(() => {
     const p = playerState.current;
     if (!p.isMoving) {
@@ -167,7 +74,6 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
     }
   }, [playerPos]);
 
-  // 4. Collision Logic
   const checkCollision = (nx, ny) => {
     if (!mapData || !mapData.data) return true;
     const { width, height, data } = mapData;
@@ -175,20 +81,13 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
     const tilesPerLayer = width * height;
     const headerOffset = actualData.length > (tilesPerLayer * 3) ? 20 : 0;
     
+    // Bounds check
+    if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false; // Allow border exit logic
+
     // NPC collision
     if (npcs.some(n => n.posicion.x === nx && n.posicion.y === ny)) return true;
 
-    // Building collision (simple check for hardcoded buildings area)
-    const isInsideBuilding = BUILDINGS.some(b => {
-      return nx >= b.tileX && nx < b.tileX + 3 && ny >= b.tileY && ny < b.tileY + 3;
-    });
-    if (isInsideBuilding) {
-       // Allow door at tile (center x, bottom y)
-       const isDoor = BUILDINGS.some(b => nx === b.tileX + 1 && ny === b.tileY + 2);
-       if (!isDoor) return true;
-    }
-
-    // Layer collisions (Blocking tiles > 450)
+    // Layer collision
     for (let z = 0; z < 3; z++) {
       const i = ny * width + nx;
       const baseIdx = headerOffset + (z * tilesPerLayer + i) * 2;
@@ -198,12 +97,21 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
     return false;
   };
 
-  // 5. Interaction Logic (A Button)
+  // Border Transition (Warp) Logic
+  const checkWarp = (nx, ny) => {
+    if (!mapData) return;
+    const { width, height } = mapData;
+    
+    if (nx < 0) onEvent({ type: 'transfer', side: 'left' });
+    else if (nx >= width) onEvent({ type: 'transfer', side: 'right' });
+    else if (ny < 0) onEvent({ type: 'transfer', side: 'up' });
+    else if (ny >= height) onEvent({ type: 'transfer', side: 'down' });
+  };
+
   useEffect(() => {
     if (aPressed) {
       const p = playerState.current;
-      let tx = p.x;
-      let ty = p.y;
+      let tx = p.x, ty = p.y;
       if (p.facing === 'up') ty--;
       if (p.facing === 'down') ty++;
       if (p.facing === 'left') tx--;
@@ -215,56 +123,43 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
         return;
       }
 
-      const activeGym = BUILDINGS.find(b => tx === b.tileX + 1 && ty === b.tileY + 2);
-      if (activeGym) {
-        onEvent({ type: 'gym_entry', gymId: activeGym.gym_id });
+      const activeBuilding = buildings.find(b => tx === b.x && ty === b.y);
+      if (activeBuilding) {
+        if (activeBuilding.type === 'home') onEvent({ type: 'profile_open' });
+        else onEvent({ type: 'gym_entry', gymId: activeBuilding.gymId });
       }
     }
-  }, [aPressed, npcs, onEvent]);
+  }, [aPressed, npcs, buildings, onEvent]);
 
-  // 6. Main Game Loop (Movement + Render)
   useEffect(() => {
     if (!mapData || isLoading) return;
-
     let lastTime = performance.now();
     let frameId;
 
     const loop = (now) => {
       const dt = now - lastTime;
       lastTime = now;
-      
       const p = playerState.current;
 
-      // Handle Smooth Movement
       if (p.isMoving) {
-        p.progress += dt / 180; // Walk speed
+        p.progress += dt / 180;
         if (p.progress >= 1) {
-          p.x = p.targetX;
-          p.y = p.targetY;
-          p.isMoving = false;
-          p.progress = 0;
-          p.walkFrame = 0;
+          p.x = p.targetX; p.y = p.targetY;
+          p.isMoving = false; p.progress = 0; p.walkFrame = 0;
           setPlayerPos({ x: p.x, y: p.y });
-
-          // Grass triggers
-          const inGrass = GRASS_ZONES.some(z => p.x >= z.x1 && p.x <= z.x2 && p.y >= z.y1 && p.y <= z.y2);
-          if (inGrass && Math.random() < 0.05) {
-             onEvent({ type: 'encounter' });
-          }
-        } else {
-          p.walkFrame = Math.floor(p.progress * 4) % 4;
-        }
+          
+          // Check for border exit
+          checkWarp(p.x, p.y);
+        } else p.walkFrame = Math.floor(p.progress * 4) % 4;
       } else if (direction) {
-        let nx = p.x;
-        let ny = p.y;
+        let nx = p.x, ny = p.y;
         if (direction === 'up') { ny--; p.facing = 'up'; }
         else if (direction === 'down') { ny++; p.facing = 'down'; }
         else if (direction === 'left') { nx--; p.facing = 'left'; }
         else if (direction === 'right') { nx++; p.facing = 'right'; }
+        setFacing(p.facing);
         
-        setFacing(p.facing); // For UI reactivity
-
-        if (nx >= 0 && nx < mapData.width && ny >= 0 && ny < mapData.height && !checkCollision(nx, ny)) {
+        if (!checkCollision(nx, ny)) {
           p.targetX = nx; p.targetY = ny;
           p.isMoving = true; p.progress = 0;
         }
@@ -275,37 +170,30 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
     };
 
     const draw = () => {
-      if (!canvasRef.current) return;
+      if (!canvasRef.current || !mapData) return;
       const ctx = canvasRef.current.getContext('2d');
       const { width, height, data } = mapData;
       const actualData = data['@data'] || data;
       const tilesPerLayer = width * height;
       const headerOffset = actualData.length > (tilesPerLayer * 3) ? 20 : 0;
-
-      const cw = canvasRef.current.width;
-      const ch = canvasRef.current.height;
+      const cw = canvasRef.current.width, ch = canvasRef.current.height;
       
       const p = playerState.current;
       const vX = p.x + (p.targetX - p.x) * p.progress;
       const vY = p.y + (p.targetY - p.y) * p.progress;
-
       const camX = vX * TILE_SIZE - (cw / 2) + (TILE_SIZE / 2);
       const camY = vY * TILE_SIZE - (ch / 2) + (TILE_SIZE / 2);
 
       ctx.clearRect(0, 0, cw, ch);
       ctx.imageSmoothingEnabled = false;
 
-      // Layer 0 & 1
       for (let z = 0; z < 2; z++) {
         for (let i = 0; i < tilesPerLayer; i++) {
-          const x = i % width;
-          const y = Math.floor(i / width);
+          const x = i % width, y = Math.floor(i / width);
           const baseIdx = headerOffset + (z * tilesPerLayer + i) * 2;
           const tid = actualData[baseIdx] + (actualData[baseIdx + 1] << 8);
           if (tid < 384) continue;
-          
-          const dx = x * TILE_SIZE - camX;
-          const dy = y * TILE_SIZE - camY;
+          const dx = x * TILE_SIZE - camX, dy = y * TILE_SIZE - camY;
           if (dx > -TILE_SIZE && dx < cw && dy > -TILE_SIZE && dy < ch) {
             const index = tid - 384;
             ctx.drawImage(tilesetImg.current, (index % 8) * TILE_SIZE, Math.floor(index / 8) * TILE_SIZE, TILE_SIZE, TILE_SIZE, Math.floor(dx), Math.floor(dy), TILE_SIZE, TILE_SIZE);
@@ -313,18 +201,6 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
         }
       }
 
-      // Custom Gym Buildings
-      BUILDINGS.forEach(b => {
-        const sx = b.tileX * TILE_SIZE - camX;
-        const sy = b.tileY * TILE_SIZE - camY;
-        
-        if (sx > -TILE_SIZE * 4 && sx < cw + TILE_SIZE && sy > -TILE_SIZE * 4 && sy < ch + TILE_SIZE) {
-          const gymStatus = gimnasiosHoy?.find(g => g.gym_id === b.gym_id);
-          drawGymBuilding(ctx, Math.floor(sx), Math.floor(sy), b.gym_id, b.nombre, gymStatus?.completado);
-        }
-      });
-
-      // NPCs
       npcs.forEach(npc => {
         const img = npcImgCache.current[npc.sprite];
         if (img && img.complete) {
@@ -333,7 +209,6 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
         }
       });
 
-      // Player
       const px = vX * TILE_SIZE - camX, py = vY * TILE_SIZE - camY;
       const row = { down:0, left:1, right:2, up:3 }[p.facing];
       ctx.drawImage(playerImg.current, p.walkFrame * 32, row * 40, 32, 40, Math.floor(px), Math.floor(py - 8), 32, 40);
@@ -350,17 +225,31 @@ const CityMap = ({ direction, aPressed, onEvent, playerPos, setPlayerPos, npcs =
           ctx.drawImage(tilesetImg.current, (index % 8) * TILE_SIZE, Math.floor(index / 8) * TILE_SIZE, TILE_SIZE, TILE_SIZE, Math.floor(dx), Math.floor(dy), TILE_SIZE, TILE_SIZE);
         }
       }
+
+      buildings.forEach(b => {
+        const sx = b.x * TILE_SIZE - camX, sy = b.y * TILE_SIZE - camY;
+        if (sx > -TILE_SIZE && sx < cw && sy > -TILE_SIZE && sy < ch) {
+          const done = b.gymId ? gimnasiosHoy?.find(g => g.gym_id === b.gymId)?.completado : false;
+          const labelY = sy - 40;
+          ctx.fillStyle = b.type === 'home' ? '#E83030' : (done ? '#2D8A2D' : '#1A1A8A');
+          ctx.fillRect(Math.floor(sx - 16), Math.floor(labelY), TILE_SIZE * 2, 14);
+          ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 1.5; ctx.strokeRect(Math.floor(sx - 16), Math.floor(labelY), TILE_SIZE * 2, 14);
+          ctx.fillStyle = '#FFD700'; ctx.font = '6px "Press Start 2P"'; ctx.textAlign = 'center';
+          ctx.fillText(b.nombre.toUpperCase(), Math.floor(sx + 16), Math.floor(labelY + 10));
+          if (done) { ctx.font = '16px serif'; ctx.fillText('🏅', Math.floor(sx + 16), Math.floor(labelY - 4)); }
+          ctx.textAlign = 'left';
+        }
+      });
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [mapData, isLoading, gimnasiosHoy, npcs, direction, onEvent]);
+  }, [mapData, isLoading, gimnasiosHoy, npcs, buildings, direction, onEvent]);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000' }}>
       <canvas ref={canvasRef} width={400} height={400} style={{ width: '100%', height: '100%', display: 'block', imageRendering: 'pixelated' }} />
-      {isLoading && <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000', color: '#fff' }}>Cargando Mapa...</div>}
-      {flash === 1 && <div style={{ position: 'absolute', inset: 0, background: '#fff', zIndex: 1000 }} />}
+      {isLoading && <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000', color: '#fff' }}>Explorando...</div>}
     </div>
   );
 };

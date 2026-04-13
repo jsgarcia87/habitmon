@@ -59,6 +59,8 @@ export const GameProvider = ({children}) => {
 
   const cargarDatos = useCallback(async () => {
     const tok = localStorage.getItem('hm_token');
+    console.log('Token en localStorage:', tok ? 
+      tok.substring(0,20)+'...' : 'NULL');
     if(!tok) return;
     setLoading(true);
     try {
@@ -77,12 +79,17 @@ export const GameProvider = ({children}) => {
       const results = [s, h, g, c];
       const allUnauthorized = results.every(r => 
         !r?.success && (
-          r?.msg?.includes('Missing') ||
-          r?.msg?.includes('Expired') ||
-          r?.msg?.includes('Invalid') ||
-          r?.msg?.includes('revoked')
+          // Backend might return msg or error
+          [r?.msg, r?.error].some(m => 
+            m?.includes('Missing') || 
+            m?.includes('Expired') || 
+            m?.includes('Invalid') ||
+            m?.includes('expirado') ||
+            m?.includes('inválido')
+          )
         )
       );
+
 
       if (allUnauthorized) {
         console.warn('Sesión expirada');
