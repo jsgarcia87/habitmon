@@ -142,8 +142,11 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
           backgroundColor: 'white', border: '4px solid black', borderRadius: '8px', 
           padding: '15px', zIndex: 200, color: 'black', fontFamily: 'monospace' 
         }}>
-          <p style={{ margin: '0 0 15px 0' }}>¿Quieres a {selected.nombre} como tu compañero?</p>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <p style={{ margin: '0 0 15px 0', textAlign: 'center', fontWeight: 'bold' }}>¿Quieres a {selected.nombre} como tu compañero?</p>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
+            <PokemonSprite id={selected.id} style={{ width: '64px', height: '64px' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
             <button 
               onClick={handleConfirm}
               style={{ padding: '8px 20px', cursor: 'pointer', background: '#38A', color: '#fff', border: '2px solid #000', fontWeight: 'bold' }}

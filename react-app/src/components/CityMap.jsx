@@ -153,8 +153,14 @@ const CityMap = ({
           p.isMoving = false; p.progress = 0; p.walkFrame = 0;
           setPlayerPos({ x: p.x, y: p.y });
           
-          // Check for border exit
-          checkWarp(p.x, p.y);
+          // Random Grass Encounter (5% in Wild Routes like Map008)
+          if (mapId === 'Map008' && Math.random() < 0.05) {
+             onEvent({ type: 'encounter' });
+             // Evitar checkWarp inmediato para no salir del mapa accidentalmente
+          } else {
+             // Check for border exit
+             checkWarp(p.x, p.y);
+          }
         } else p.walkFrame = Math.floor(p.progress * 4) % 4;
       } else if (direction) {
         let nx = p.x, ny = p.y;

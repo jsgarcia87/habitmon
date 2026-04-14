@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
 import HPBar from '../components/HPBar';
+import { getAssetPath } from '../api';
 
 const INTRO_STATES = {
   FADE_IN:        'fadeIn',        // 0→1 opacidad
@@ -61,24 +62,24 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   useEffect(() => {
     // Background
     const bg = new Image();
-    bg.src = '/Graphics/battlebacks/general_bg.png';
+    bg.src = getAssetPath('Graphics/battlebacks/general_bg.png');
     bg.onload = () => { bgImgRef.current = bg; };
 
     // Trainer
     const avatarNum = String(user?.avatar || 0).padStart(3,'0');
     const tr = new Image();
-    tr.src = `/Graphics/characters/trback${avatarNum === '000' ? '000' : '001'}.png`;
+    tr.src = getAssetPath(`Graphics/trainers/trback${avatarNum === '000' ? '000' : '001'}.png`);
     tr.onload = () => { trainerImgRef.current = tr; };
     tr.onerror = () => {
       const tr2 = new Image();
-      tr2.src = '/Graphics/characters/trback000.png';
+      tr2.src = getAssetPath('Graphics/trainers/trback000.png');
       tr2.onload = () => { trainerImgRef.current = tr2; };
     };
 
     // Enemy
     const enemyFormattedId = String(isWild ? wildPk?.id : 151).padStart(3, '0');
     const en = new Image();
-    en.src = `/Graphics/battlers/${enemyFormattedId}.png`;
+    en.src = getAssetPath(`Graphics/battlers/${enemyFormattedId}.png`);
     en.onload = () => { enemyImgRef.current = en; };
 
     // Initialize HP
