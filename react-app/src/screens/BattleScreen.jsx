@@ -21,9 +21,9 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     return <div className="screen-container">Cargando datos de batalla...</div>;
   }
 
-  const isWild = battleData?.tipo === 'wild' || battleData?.isWild;
+  const isWild = battleData?.tipo === 'wild' || battleData?.isWild || battleData?.type === 'encounter';
   const gymId = battleData?.gymId;
-  const wildPk = battleData?.pokemon;
+  const wildPk = battleData?.pokemon || { id: 16, nombre: 'PIDGEY', nivel: 5 };
   const enemyName = isWild ? (wildPk?.nombre || 'Wild PKMN') : "LÍDER";
   
   // Data Logic
@@ -216,8 +216,9 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     if(trainerImgRef.current && intro.state !== INTRO_STATES.FADE_IN) {
       const img = trainerImgRef.current;
       const tw = 64, th = 80;
-      // El spritesheet de la espalda del entrenador tiene 5 frames. Extraemos solo el primero (idle).
-      const frameWidth = img.width / 5;
+      // Asegurar que leemos solo el primer frame (ajusta a 4 si es spritesheet de GBA/GSC estándar)
+      const frames = 4; 
+      const frameWidth = img.width / frames;
       ctx.drawImage(img, 0, 0, frameWidth, img.height, intro.trainerX, H*0.55, tw, th);
     }
 

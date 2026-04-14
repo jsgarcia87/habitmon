@@ -37,7 +37,13 @@ const MapRenderer = ({ mapId }) => {
         const tilesetInfo = tilesetsData[tilesetId];
         if (!tilesetInfo) throw new Error(`Tileset with ID ${tilesetId} not found in Tilesets.json`);
 
-        const tilesetName = tilesetInfo.tileset_name.toLowerCase();
+        let tilesetName = tilesetInfo.tileset_name.toLowerCase();
+        
+        // Parche rápido para el caos del interior del gimnasio
+        if (mapId === 'MapXXX') {
+          tilesetName = 'gsc interior gym';
+        }
+
         console.log('Tileset identified:', tilesetName);
         if (!tilesetName) throw new Error('Tileset name is missing in definition');
 
