@@ -2,9 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { WORLDS } from '../data/worlds';
 import { BUILDING_TEMPLATES } from '../data/buildingTemplates';
+import { getAssetPath } from '../api';
 
 const T = 32;        // Tile size px
 const tsCols = 8;    // Tileset columns
+const W = 480;       // Logical Canvas Width
+const H = 320;       // Logical Canvas Height
 const MOVE_DURATION = 180; // ms per tile move
 
 const TILE_COLORS = {
@@ -42,11 +45,14 @@ const TileMap = ({
   starters = [], 
   onTrigger,
   direction = null,
-  aPressed = false
+  aPressed = false,
+  children,
+  style
 }) => {
   const { user, progress } = useGame();
   const activeWorld = WORLDS.find(w => w.mapId === mapId || w.world_id === worldId);
   const canvasRef = useRef(null);
+  const worldOverlayRef = useRef(null);
   const mapDataRef = useRef(null);
   const tilesetPassagesRef = useRef([]);
   const [ready, setReady] = useState(false);
@@ -259,7 +265,7 @@ const TileMap = ({
         gymPositionRef.current = world.gym_position;
       }
 
-      fetch(`Data/${mapId}.json`)
+      fetch(getAssetPath(`Data/${mapId}.json`))
         .then(async r => {
           const text = await r.text();
           // Detect corrupted Ruby placeholder files
@@ -273,16 +279,21 @@ const TileMap = ({
           }
         })
         .then(mapJson => {
-          const rawTable = mapJson.data?.['@data'] || mapJson.data || [];
+          // Extraemos la data cruda del objeto Table de RPG Maker
+          const mapBytes = mapJson.data?.['@data'] || mapJson.data || [];
           const width = mapJson.width || 20;
-          const height = mapJson.height || 20;
-          const offset = 20;
+          const height = mapJson.height || 16;
+          
+          // Reemplazamos getTile por la lógica directa de bytes
           const getTile = (x, y, z) => {
             if (x < 0 || x >= width || y < 0 || y >= height) return 0;
-            const idx = offset + (x + y * width + z * width * height) * 2;
-            return (rawTable[idx] ?? 0) | ((rawTable[idx + 1] ?? 0) << 8);
+            // RPG Maker XP: Header de 20 bytes (dim, width, height, size)
+            // Cada tile son 2 bytes (byte1 | byte2 << 8)
+            const idx = 20 + ((z * width * height) + (y * width + x)) * 2;
+            return (mapBytes[idx] ?? 0) | ((mapBytes[idx + 1] ?? 0) << 8);
           };
-          const data = { ...mapJson, width, height, getTile };
+
+          const data = { ...mapJson, width, height, getTile, mapBytes };
           mapDataRef.current = data;
           setMapData(data);
         })
@@ -314,16 +325,20 @@ const TileMap = ({
       if (!tsName) return;
       const img = new Image();
       let finalName = tsName.toLowerCase();
-      if (mapId === 'Map001') {
+      
+      // PARCHE: Forzar tileset de laboratorio para el mapa de inicio
+      if (mapId === 'virtual_prof_lab' || mapId === 'starter') {
+        finalName = 'gsc lab-gym';
+      } else if (mapId === 'Map001') {
         if (timeOfDay === 'morning') finalName = 'gsc overworld johto morning';
         else if (timeOfDay === 'night') finalName = 'gsc overworld johto nite';
         else finalName = 'gsc overworld johto day';
       }
-      img.src = `Graphics/tilesets/${encodeURIComponent(finalName)}.png`;
+      img.src = getAssetPath(`Graphics/tilesets/${encodeURIComponent(finalName)}.png`);
       img.onload = () => { tilesetImgRef.current = img; checkReady(); };
       img.onerror = () => {
         console.warn("Retrying original tileset name:", tsName);
-        img.src = `Graphics/tilesets/${encodeURIComponent(tsName.toLowerCase())}.png`;
+        img.src = getAssetPath(`Graphics/tilesets/${encodeURIComponent(tsName.toLowerCase())}.png`);
         img.onerror = () => { 
           console.error("Critical: Tileset failed to load.");
           checkReady(); // Continue anyway to avoid being stuck
@@ -334,7 +349,7 @@ const TileMap = ({
     if (String(mapId).startsWith('virtual_')) {
       loadTileset(mapData.tileset_name);
     } else {
-      fetch('Data/Tilesets.json').then(r => r.json()).then(tsData => {
+      fetch(getAssetPath('Data/Tilesets.json')).then(r => r.json()).then(tsData => {
         const ts = tsData.find(t => t && t.id === mapData.tileset_id);
         if (ts) {
           loadTileset(ts.tileset_name);
@@ -350,7 +365,7 @@ const TileMap = ({
 
     // 2. Player
     const pImg = new Image();
-    pImg.src = `Graphics/characters/trchar00${user?.avatar ?? 0}.png`;
+    pImg.src = getAssetPath(`Graphics/characters/trchar00${user?.avatar ?? 0}.png`);
     pImg.onload = () => { playerImgRef.current = pImg; checkReady(); };
     pImg.onerror = () => checkReady();
 
@@ -358,7 +373,7 @@ const TileMap = ({
     const loadNPC = (name) => {
       if (!name || npcImgsRef.current[name]) return;
       const img = new Image();
-      img.src = `Graphics/characters/${encodeURIComponent(name.toLowerCase())}.png`;
+      img.src = getAssetPath(`Graphics/characters/${encodeURIComponent(name.toLowerCase())}.png`);
       img.onload = () => { npcImgsRef.current[name] = img; };
     };
     worldNpcsRef.current?.forEach(n => loadNPC(n.sprite));
@@ -369,7 +384,7 @@ const TileMap = ({
       const img = new Image();
       // Usamos el icono o el sprite del Pokémon inicial
       const path = st.sprite?.startsWith('Graphics/') ? st.sprite : `Graphics/icons/${st.id}.png`;
-      img.src = path;
+      img.src = getAssetPath(path);
       img.onload = () => { starterImgsRef.current[st.id] = img; };
     });
 
@@ -523,6 +538,11 @@ const TileMap = ({
       const ox = -Math.round(camX);
       const oy = -Math.round(camY);
 
+      // Sincronizar capa de mundo DOM
+      if (worldOverlayRef.current) {
+        worldOverlayRef.current.style.transform = `translate(${ox}px, ${oy}px)`;
+      }
+
       // ── Helper: drawBuilding ──
       const drawBuilding = (tx, ty, buildingTemplate) => {
         if (!tilesetImgRef.current) return;
@@ -571,25 +591,40 @@ const TileMap = ({
         return;
       }
 
+      const mapBytes = map.mapBytes;
+      const tilesPerLayer = map.width * map.height;
+
       for (let z = 0; z < 3; z++) {
-        for (let my = sY_v; my <= eY_v; my++) {
-          for (let mx = sX_v; mx <= eX_v; mx++) {
-            const tid = map.getTile(mx, my, z);
-            if (tid === 0) continue;
-            const dx = mx * T + ox, dy = my * T + oy;
-            if (tid < 384) {
-              const atId = Math.floor((tid - 48) / 48);
-              const img = autotileImgsRef.current[atId];
-              if (img) ctx.drawImage(img, 0, 0, 32, 32, dx, dy, T, T);
-            } else {
-              const lid = tid - 384;
-              if (tilesetImgRef.current)
-                ctx.drawImage(tilesetImgRef.current, (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 32, 32, dx, dy, T, T);
-            }
+        for (let i = 0; i < tilesPerLayer; i++) {
+          const mx = i % map.width;
+          const my = Math.floor(i / map.width);
+          
+          // Renderizamos solo si está en pantalla (opcional pero bueno para rendimiento)
+          const dx = mx * T + ox;
+          const dy = my * T + oy;
+          if (dx < -T || dx > W || dy < -T || dy > H) continue;
+
+          // Índice base en el array (con offset de 20 bytes del header Table)
+          const byteIndex = 20 + ((z * tilesPerLayer) + i) * 2;
+          const byte1 = mapBytes[byteIndex];
+          const byte2 = mapBytes[byteIndex + 1];
+          const tid = (byte1 ?? 0) | ((byte2 ?? 0) << 8);
+
+          if (!tid || tid < 384) continue;
+
+          const lid = tid - 384;
+          if (tilesetImgRef.current) {
+            ctx.drawImage(
+              tilesetImgRef.current, 
+              (lid % tsCols) * 32, Math.floor(lid / tsCols) * 32, 
+              32, 32, 
+              dx, dy, T, T
+            );
           }
         }
 
         if (z === 1) {
+          // Dibujar eventos, NPCs y starters entre las capas 1 y 2
           // 1. Draw RPG Maker Events
           Object.values(map.events || {}).forEach(ev => {
             const g = ev.pages?.[0]?.graphic;
@@ -609,7 +644,7 @@ const TileMap = ({
             if (npc.sprite && npcImgsRef.current[npc.sprite]) {
               const img = npcImgsRef.current[npc.sprite];
               const fw = img.width / 4, fh = img.height / 4;
-              ctx.drawImage(img, fw, 0, fw, fh, sx, sy - (fh - T), T, fh * (T / fw));
+              ctx.drawImage(img, 0, 0, fw, fh, sx, sy - (fh - T), T, fh * (T / fw));
             } else if (!npc.sprite) {
               // NPC objeto (!):
               ctx.fillStyle = '#FFD700'; ctx.fillRect(sx + 8, sy - 8, 16, 20);
@@ -709,13 +744,25 @@ const TileMap = ({
   }, [ready, timeOfDay, worldId, starters]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%',
-                  overflow: 'hidden', backgroundColor: '#000' }}>
+    <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#000', ...style }}>
       <canvas
         ref={canvasRef}
-        width={480} height={320}
-        style={{ width: '100%', height: '100%', imageRendering: 'pixelated', display: 'block' }}
+        width={W} height={H}
+        style={{ imageRendering: 'pixelated', display: 'block', maxWidth: '100%', maxHeight: '100%' }}
       />
+      {/* Capa de Mundo DOM (Sincronizada con cámara) */}
+      <div 
+        ref={worldOverlayRef} 
+        style={{ 
+          position: 'absolute', top: 0, left: 0, 
+          pointerEvents: 'none', width: '2000px', height: '2000px',
+          transformOrigin: 'top left' 
+        }}
+      >
+        <div style={{ pointerEvents: 'auto' }}>
+          {children}
+        </div>
+      </div>
       {!ready && (
         <div style={{
           position: 'absolute', inset: 0, display: 'flex',

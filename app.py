@@ -22,10 +22,31 @@ def serve_index():
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'habitmon.db')
 app.config['JWT_SECRET_KEY'] = 'habitmon-secret-2024'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config['JWT_HEADER_NAME'] = 'Authorization'
+app.config['JWT_HEADER_TYPE'] = 'Bearer'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
+
+# IMPORTANTE: Añade este handler para debug
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    print(f"JWT Invalid: {error}")
+    return jsonify({"success":False,"msg":"Invalid"}), 401
+
+@jwt.expired_token_loader  
+def expired_token_callback(jwt_header, jwt_data):
+    print(f"JWT Expired")
+    return jsonify({"success":False,"msg":"Expired"}), 401
+
+@jwt.unauthorized_loader
+def unauthorized_callback(error):
+    print(f"JWT Missing: {error}")
+    return jsonify({"success":False,"msg":"Missing"}), 401
+
 
 # ---------------------------------------------------------
 # MODELS
@@ -257,36 +278,55 @@ def get_starter_info():
 @app.route('/api/habitos/config', methods=['GET', 'POST'])
 @jwt_required()
 def habitos_config():
-    uid = get_jwt_identity()
+    uid = int(get_jwt_identity())
     if request.method == 'GET':
         configs = HabitoConfig.query.filter_by(usuario_id=uid).all()
         # Group by gym_id
-        res = {}
+        gyms_map = {}
         for c in configs:
-            if c.gym_id not in res: res[c.gym_id] = []
-            res[c.gym_id].append({
-                "habito_id": c.habito_id,
+            gid = c.gym_id
+            if gid not in gyms_map:
+                gyms_map[gid] = {
+                    "gym_id": gid,
+                    "gym_nombre": f"Gym {gid.capitalize()}",
+                    "activo": True,
+                    "habitos": []
+                }
+            gyms_map[gid]["habitos"].append({
+                "id": c.habito_id,
                 "nombre": c.habito_nombre,
                 "icono": c.icono,
                 "daño": c.daño,
                 "activo": c.activo
             })
-        return jsonify({"success": True, "config": res})
+        
+        # Si no hay nada, el frontend usa defaults, pero devolver lista vacía
+        return jsonify({"success": True, "config": list(gyms_map.values())})
     else:
         # POST: Replace config
-        data = request.get_json() # expects list of habits
+        data = request.get_json() # expects list of gym objects
+        if not isinstance(data, list):
+            return jsonify({"success":False,"error":"Invalid data format"}), 400
+            
         HabitoConfig.query.filter_by(usuario_id=uid).delete()
-        for h in data:
-            db.session.add(HabitoConfig(
-                usuario_id=uid,
-                gym_id=h['gym_id'],
-                habito_id=h['habito_id'],
-                habito_nombre=h['nombre'],
-                icono=h.get('icono', '⚔️'),
-                daño=h.get('daño', 25)
-            ))
+        for gym in data:
+            gym_id = gym.get('gym_id')
+            # Extraer los hábitos del gym
+            habitos = gym.get('habitos') or gym.get('pokemon', [{}])[0].get('habitos', [])
+            
+            for h in habitos:
+                db.session.add(HabitoConfig(
+                    usuario_id=uid,
+                    gym_id=gym_id,
+                    habito_id=h.get('id') or h.get('habito_id'),
+                    habito_nombre=h.get('nombre') or h.get('habito_nombre'),
+                    icono=h.get('icono', '⚔️'),
+                    daño=h.get('daño') or h.get('damage') or 25,
+                    activo=h.get('activo', True)
+                ))
         db.session.commit()
         return jsonify({"success": True})
+
 
 @app.route('/api/habitos/hoy', methods=['GET'])
 @jwt_required()
@@ -351,20 +391,45 @@ def completar_habito():
 @app.route('/api/gimnasios/hoy', methods=['GET'])
 @jwt_required()
 def get_gimnasios_hoy():
-    uid = get_jwt_identity()
+    uid = int(get_jwt_identity())
     today = date.today()
     
-    # Gyms available in config
-    gym_ids = [r[0] for r in db.session.query(HabitoConfig.gym_id).filter_by(usuario_id=uid).distinct()]
+    # Obtener config de hábitos del usuario
+    gym_ids = db.session.query(
+        HabitoConfig.gym_id
+    ).filter_by(
+        usuario_id=uid, 
+        activo=True  # solo gimnasios activos
+    ).distinct().all()
+    
+    gym_ids = [g[0] for g in gym_ids]
+    
+    if not gym_ids:
+        # Si no hay config, usar template default
+        from default_config import DEFAULT_GYMS
+        gym_ids = DEFAULT_GYMS
     
     res = []
     for gid in gym_ids:
-        # Check if already completed today
-        comp = GimnasioCompletado.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid).first()
+        # IMPORTANTE: filtrar por fecha HOY
+        comp = GimnasioCompletado.query.filter_by(
+            usuario_id=uid,
+            gym_id=gid,
+            fecha=today  # solo hoy
+        ).first()
         
-        # Stats
-        total = ProgresoDia.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid).count()
-        done = ProgresoDia.query.filter_by(usuario_id=uid, fecha=today, gym_id=gid, completado=True).count()
+        total = ProgresoDia.query.filter_by(
+            usuario_id=uid,
+            fecha=today,  # solo hoy
+            gym_id=gid
+        ).count()
+        
+        done = ProgresoDia.query.filter_by(
+            usuario_id=uid,
+            fecha=today,  # solo hoy
+            gym_id=gid,
+            completado=True
+        ).count()
         
         res.append({
             "gym_id": gid,
@@ -372,8 +437,9 @@ def get_gimnasios_hoy():
             "habitos_completados": done,
             "total_habitos": total
         })
-        
+    
     return jsonify({"success": True, "gimnasios": res})
+
 
 @app.route('/api/gimnasios/completar', methods=['POST'])
 @jwt_required()

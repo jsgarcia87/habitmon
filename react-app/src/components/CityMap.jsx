@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
+import { getAssetPath } from '../api';
 
 const TILE_SIZE = 32;
 const TILESET_MAP = {
-  1: '/Graphics/tilesets/gsc overworld johto day.png',
-  44: '/Graphics/tilesets/GSC rail station-gym a.png'
+  1: 'Graphics/tilesets/gsc overworld johto day.png',
+  44: 'Graphics/tilesets/GSC rail station-gym a.png'
 };
 
 const CityMap = ({ 
@@ -38,17 +39,20 @@ const CityMap = ({
   // Load Map Data
   useEffect(() => {
     setIsLoading(true);
-    fetch(`/Data/${mapId}.json`)
+    fetch(getAssetPath(`Data/${mapId}.json`))
       .then(r => r.json())
       .then(data => {
         setMapData(data);
         const tilesetSrc = TILESET_MAP[data.tileset_id] || TILESET_MAP[1];
-        tilesetImg.current.src = tilesetSrc;
-        playerImg.current.src = '/Graphics/characters/trchar000.png';
+        tilesetImg.current.src = getAssetPath(tilesetSrc);
+        playerImg.current.src = getAssetPath('Graphics/characters/trchar000.png');
         let loaded = 0;
         const checkLoaded = () => { if(++loaded === 2) setIsLoading(false); };
         tilesetImg.current.onload = checkLoaded;
         playerImg.current.onload = checkLoaded;
+      })
+      .catch(err => {
+        console.error('Error loading CityMap:', err);
       });
   }, [mapId]);
 
@@ -57,11 +61,12 @@ const CityMap = ({
     npcs.forEach(npc => {
       if (!npcImgCache.current[npc.sprite]) {
         const img = new Image();
-        img.src = `/Graphics/characters/${npc.sprite}.png`;
+        img.src = getAssetPath(`Graphics/characters/${npc.sprite}.png`);
         npcImgCache.current[npc.sprite] = img;
       }
     });
   }, [npcs]);
+
 
   // Keep state in sync
   useEffect(() => {

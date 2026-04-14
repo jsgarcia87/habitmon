@@ -69,10 +69,10 @@ export const GameProvider = ({children}) => {
         'Authorization': `Bearer ${tok}`
       };
       const [s, h, g, c] = await Promise.all([
-        fetch('/api/starter/info', {headers}).then(r=>r.json()),
-        fetch('/api/habitos/hoy', {headers}).then(r=>r.json()),
-        fetch('/api/gimnasios/hoy', {headers}).then(r=>r.json()),
-        fetch('/api/coleccion', {headers}).then(r=>r.json())
+        api.getStarter(),
+        api.getHabitosHoy(),
+        api.getGimnasiosHoy(),
+        api.getColeccion()
       ]);
       
       // Check for unauthorized access in any response

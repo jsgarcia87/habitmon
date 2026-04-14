@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
+import { getAssetPath } from '../api';
 
 const RegisterScreen = ({ onLoginClick }) => {
   const [formData, setFormData] = useState({
@@ -71,17 +72,29 @@ const RegisterScreen = ({ onLoginClick }) => {
                   key={id} 
                   onClick={() => setFormData({...formData, avatar: id})}
                   style={{
-                    width: '50px',
-                    height: '50px',
+                    width: '60px',
+                    height: '60px',
                     border: '4px solid ' + (formData.avatar === id ? 'var(--primary-color)' : '#ccc'),
                     display: 'flex',
+                    flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
                     backgroundColor: formData.avatar === id ? '#eef' : '#fff',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    padding: '5px'
                   }}
                 >
-                  <span style={{ fontSize: '10px' }}>ID:{id}</span>
+                  <img 
+                    src={getAssetPath(`/Graphics/characters/trchar00${id}.png`)} 
+                    alt={`Avatar ${id}`} 
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      imageRendering: 'pixelated',
+                      objectFit: 'contain'
+                    }}
+                  />
+                  <span style={{ fontSize: '8px', marginTop: '5px' }}>ID:{id}</span>
                 </div>
               ))}
             </div>

@@ -24,7 +24,7 @@ const WORLD_DATA = {
     buildings: [
       { type: 'home', nombre: 'Hogar', x: 15, y: 7 },
       { gymId: 'vestirse', nombre: 'Vestirse', x: 8, y: 5 },
-      { gymId: 'higiene', nombre: 'Higiene', x: 13, y: 7 }
+      { gymId: 'higiene', nombre: 'Higiene', x: 6, y: 6 }
     ],
     exits: {
       left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }
@@ -69,12 +69,23 @@ const WORLD_DATA = {
 };
 
 const CityScreen = ({ navigate, direction, aPressed }) => {
-  const { habitosHoy } = useGame();
+  const { habitosHoy, template } = useGame();
   const [currentMapId, setCurrentMapId] = useState('Map002');
   const [playerPos, setPlayerPos] = useState({ x: 12, y: 13 }); 
   const [dialog, setDialog] = useState(null);
 
   const currentMap = WORLD_DATA[currentMapId];
+
+  // Filtramos dinámicamente los edificios inactivos basándonos en la template global
+  const activeBuildings = currentMap.buildings.filter(b => {
+    if (b.type === 'home') return true;
+    if (template && template.length > 0) {
+      const gymConfig = template.find(g => g.gym_id === b.gymId);
+      // Si existe config para el gimnasio y está desactivado, ocúltalo
+      if (gymConfig && gymConfig.activo === false) return false;
+    }
+    return true; // Si no hay config o está activo, lo mostramos por defecto
+  });
 
   const handleEvent = (event) => {
     if (event.type === 'gym_entry') {
@@ -120,7 +131,7 @@ const CityScreen = ({ navigate, direction, aPressed }) => {
           playerPos={playerPos}
           setPlayerPos={setPlayerPos}
           npcs={currentMap.npcs}
-          buildings={currentMap.buildings}
+          buildings={activeBuildings}
         />
 
         {/* HUD */}

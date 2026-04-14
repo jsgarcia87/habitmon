@@ -1,4 +1,17 @@
-const BASE = '/api';
+const BASE = 'hb_api/index.php';
+
+// Detect subfolder via Vite's BASE_URL (more reliable for build-time base paths)
+export const getAssetPath = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  
+  const base = import.meta.env.BASE_URL || '/';
+  // Clean path: remove leading slash if base already has trailing slash
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+  
+  return base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
+};
+
 const h = () => ({
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${localStorage.getItem('hm_token')}`

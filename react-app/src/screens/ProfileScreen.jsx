@@ -142,20 +142,6 @@ const ProfileScreen = ({ onNavigate }) => {
         </div>
       </div>
 
-      <button
-        onClick={() => onNavigate('HABITS_EDIT')}
-        style={{
-          marginTop: 20, padding: '12px 24px',
-          background: '#40C040', color: '#fff',
-          border: '3px solid #fff',
-          fontFamily: '"Press Start 2P",monospace',
-          fontSize: 8, cursor: 'pointer',
-          width: '100%', maxWidth: 300
-        }}
-      >
-        ⚙️ GESTOR DE ATAQUES
-      </button>
-
       <button 
         onClick={()=>onNavigate('ADMIN')}
         style={{

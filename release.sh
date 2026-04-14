@@ -2,6 +2,9 @@
 
 # --- Script de Compilación Automática para Habitmon RPG (Flask + React) ---
 
+# Añadir rutas comunes de Homebrew si no están presentes
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 DIST_DIR="habitmon_release"
 PROJECT_ROOT=$(pwd)
 
@@ -37,8 +40,8 @@ cp -r Fonts "$DIST_DIR/" 2>/dev/null || :
 
 # 5. Copiar Backend (PHP & Flask)
 echo "📂 Preparando Backend..."
-cp -r api "$DIST_DIR/"
-cp habitmon_setup.sql "$DIST_DIR/api/" # Copia estándar para PHP
+cp -r hb_api "$DIST_DIR/"
+cp habitmon_setup.sql "$DIST_DIR/hb_api/" # Copia estándar para PHP
 mkdir -p "$DIST_DIR/backend"
 cp app.py "$DIST_DIR/backend/"
 cp requirements.txt "$DIST_DIR/backend/"

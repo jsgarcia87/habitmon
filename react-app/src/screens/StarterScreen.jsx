@@ -3,51 +3,65 @@ import { useGame } from '../context/GameContext';
 import PokemonSprite from '../components/PokemonSprite';
 import DialogBox from '../components/DialogBox';
 import TileMap from '../components/TileMap';
+import { getAssetPath } from '../api';
+
+const STARTERS = [
+  { 
+    id: '152', nombre: 'Chikorita', tipo: 'Planta',
+    color: '#78C840',
+    sprite: 'Graphics/battlers/152.png',
+    tileX: 13, tileY: 4 // Posición en la mesa del lab
+  },
+  { 
+    id: '155', nombre: 'Cyndaquil', tipo: 'Fuego',
+    color: '#F85888',
+    sprite: 'Graphics/battlers/155.png',
+    tileX: 14, tileY: 4
+  },
+  { 
+    id: '158', nombre: 'Totodile', tipo: 'Agua',
+    color: '#6890F0',
+    sprite: 'Graphics/battlers/158.png',
+    tileX: 15, tileY: 4
+  }
+];
 
 const StarterScreen = ({ navigate, direction, aPressed }) => {
   const { elegirStarter } = useGame();
-  const [mode, setMode] = useState('intro'); // intro, exploration, selection, confirmed
-  const [step, setStep] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [dialogueStep, setDialogueStep] = useState(0);
+  const [mode, setMode] = useState('intro'); // intro, exploration, selection, confirmed
   const [isJumping, setIsJumping] = useState(false);
 
-  const introDialogs = [
-    "¡Bienvenido al mundo POKÉMON!",
-    "Soy el Profesor Oak.",
-    "El mundo está lleno de criaturas llamadas Pokémon.",
-    "Para comenzar tu aventura, ¡necesitas un compañero!",
-    "He dejado tres Pokéballs en la mesa."
+  const OAK_DIALOGUE = [
+    '¡Bienvenido al mundo POKÉMON!',
+    'Soy el Profesor Oak.',
+    'Este mundo está lleno de criaturas llamadas POKÉMON.',
+    'Tú vas a comenzar tu aventura hoy.',
+    '¡Pero primero necesitas un compañero!',
+    'He dejado tres Pokéballs en la mesa.',
+    '¡Elige la que más te guste!'
   ];
 
-  const starterData = [
-    { id: 152, name: 'Chikorita', tileX: 4, tileY: 1 },
-    { id: 155, name: 'Cyndaquil', tileX: 5, tileY: 1 },
-    { id: 158, name: 'Totodile', tileX: 6, tileY: 1 }
-  ];
-
-  const handleNext = () => {
-    if (step < introDialogs.length - 1) {
-      setStep(step + 1);
+  const handleNextDialogue = () => {
+    if (dialogueStep < OAK_DIALOGUE.length - 1) {
+      setDialogueStep(d => d + 1);
     } else {
       setMode('exploration');
     }
   };
 
-  const handleTrigger = (type, data) => {
-    if (type.startsWith('starter_')) {
-      const id = parseInt(type.split('_')[1]);
-      const pk = starterData.find(s => s.id === id);
-      setSelected(pk);
-      setMode('selection');
-    }
+  const handleSelectPokemon = (starter) => {
+    setSelected(starter);
+    setMode('selection');
   };
 
   const handleConfirm = async () => {
     setIsJumping(true);
-    setTimeout(async () => {
-      await elegirStarter(selected.id, selected.name);
+    await elegirStarter(selected.id, selected.nombre);
+    setTimeout(() => {
       navigate('city');
-    }, 1000);
+    }, 1500);
   };
 
   const handleCancelSelection = () => {
@@ -56,72 +70,104 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
   };
 
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      background: '#000',
+    <div style={{ 
+      display: 'flex', flexDirection: 'column', 
+      height: '100%', width: '100%', 
+      backgroundColor: '#222', alignItems: 'center', justifyContent: 'center',
       overflow: 'hidden'
     }}>
-      {/* Lab World (Flex 1) */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', opacity: mode === 'intro' ? 0.3 : 1 }}>
+      
+      {/* Contenedor relativo para posicionar el fondo y el mapa */}
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        
+        {/* El Mapa base */}
         <TileMap 
-          mapId="virtual_prof_lab"
-          startX={5} startY={8}
-          starters={starterData}
-          onTrigger={handleTrigger}
+          mapId="Map064"
+          startX={7} startY={12} 
           direction={direction}
           aPressed={aPressed}
-        />
+        >
+          {/* Pokéballs Interactivas (Ahora DENTRO del TileMap para heredar la cámara) */}
+          {mode === 'exploration' && (
+            <>
+              {/* Bola 1 - Chikorita */}
+              <img 
+                src={getAssetPath('Graphics/icons/icon_item.png')} 
+                alt="Pokeball 1"
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSelectPokemon(STARTERS[0]); }}
+                style={{ position: 'absolute', top: '160px', left: '288px', zIndex: 1000, cursor: 'pointer', width: '30px' }} 
+              />
+              
+              {/* Bola 2 - Cyndaquil */}
+              <img 
+                src={getAssetPath('Graphics/icons/icon_item.png')} 
+                alt="Pokeball 2"
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSelectPokemon(STARTERS[1]); }}
+                style={{ position: 'absolute', top: '160px', left: '320px', zIndex: 1000, cursor: 'pointer', width: '30px' }} 
+              />
 
-        {/* Intro Dialogs */}
+              {/* Bola 3 - Totodile */}
+              <img 
+                src={getAssetPath('Graphics/icons/icon_item.png')} 
+                alt="Pokeball 3"
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSelectPokemon(STARTERS[2]); }}
+                style={{ position: 'absolute', top: '160px', left: '352px', zIndex: 1000, cursor: 'pointer', width: '30px' }} 
+              />
+            </>
+          )}
+        </TileMap>
+
+        {/* Intro Overlay */}
         {mode === 'intro' && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{
-              width: '64px', height: '64px',
-              marginBottom: '20px',
-              backgroundImage: 'url(/Graphics/characters/prof_oak.png)',
-              backgroundColor: '#F8F0D8',
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundSize: '128px 128px',
-              backgroundPosition: '0 0',
-              imageRendering: 'pixelated'
-            }} />
+          <div style={{ 
+            position: 'absolute', inset: 0, 
+            background: 'rgba(0,0,0,0.3)',
+            display: 'flex', flexDirection: 'column', 
+            justifyContent: 'flex-end', padding: '0 0 10px 0',
+            zIndex: 50
+          }}>
             <DialogBox 
-              text={introDialogs[step]} 
-              onNext={handleNext} 
-              showArrow={true} 
+              text={OAK_DIALOGUE[dialogueStep]} 
+              onNext={handleNextDialogue}
+              showArrow={true}
             />
           </div>
         )}
-
-        {/* Selection Confirmation */}
-        {mode === 'selection' && selected && (
-          <div className="gb-dialog" style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px', zIndex: 100 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <PokemonSprite id={selected.id} style={{ width: '60px', height: '60px' }} />
-              <div style={{ fontSize: '10px' }}>
-                ¿Quieres a {selected.name}, el Pokémon de tipo {selected.id === 152 ? 'PLANTA' : selected.id === 155 ? 'FUEGO' : 'AGUA'}?
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
-              <button className="gb-button secondary" onClick={handleCancelSelection} style={{ fontSize: '8px', padding: '5px 10px' }}>NO</button>
-              <button className="gb-button primary" onClick={handleConfirm} style={{ fontSize: '8px', padding: '5px 10px' }}>SÍ</button>
-            </div>
-          </div>
-        )}
-
-        {/* Jump Animation on Confirm */}
-        {isJumping && (
-          <div style={{ position: 'absolute', inset: 0, background: '#fff', zIndex: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ transform: 'scale(2) translateY(-20px)', transition: 'transform 0.5s ease-in' }}>
-              <PokemonSprite id={selected.id} style={{ width: '80px', height: '80px' }} />
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Cuadro de diálogo de selección (Pedido por el usuario) */}
+      {selected && !isJumping && (
+        <div style={{ 
+          position: 'absolute', bottom: '20px', width: '90%', maxWidth: '400px', 
+          backgroundColor: 'white', border: '4px solid black', borderRadius: '8px', 
+          padding: '15px', zIndex: 200, color: 'black', fontFamily: 'monospace' 
+        }}>
+          <p style={{ margin: '0 0 15px 0' }}>¿Quieres a {selected.nombre} como tu compañero?</p>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <button 
+              onClick={handleConfirm}
+              style={{ padding: '8px 20px', cursor: 'pointer', background: '#38A', color: '#fff', border: '2px solid #000', fontWeight: 'bold' }}
+            >SÍ</button>
+            <button 
+              onClick={handleCancelSelection}
+              style={{ padding: '8px 20px', cursor: 'pointer', background: '#DDD', color: '#000', border: '2px solid #000' }}
+            >NO</button>
+          </div>
+        </div>
+      )}
+
+      {/* Final Jump Animation */}
+      {isJumping && (
+        <div style={{ 
+          position: 'absolute', inset: 0, 
+          background: '#fff', zIndex: 300, 
+          display: 'flex', justifyContent: 'center', alignItems: 'center' 
+        }}>
+          <div style={{ transform: 'scale(2) translateY(-20px)', transition: 'transform 0.5s ease-in' }}>
+            <PokemonSprite id={selected.id} style={{ width: '80px', height: '80px' }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

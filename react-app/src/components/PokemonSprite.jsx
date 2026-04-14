@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAssetPath } from '../api';
 
 const PokemonSprite = ({ id, back = false, shiny = false, style = {} }) => {
   // Format ID to 3 digits (e.g. 1 -> 001, 152 -> 152)
@@ -9,7 +10,7 @@ const PokemonSprite = ({ id, back = false, shiny = false, style = {} }) => {
   if (back) suffix += 'b';
   if (shiny) suffix += 's';
   
-  const src = `/Graphics/battlers/${formattedId}${suffix}.png`;
+  const src = getAssetPath(`/Graphics/battlers/${formattedId}${suffix}.png`);
 
   return (
     <div 
@@ -35,7 +36,7 @@ const PokemonSprite = ({ id, back = false, shiny = false, style = {} }) => {
         onError={(e) => {
           // Fallback if shiny/back doesn't exist
           if (suffix !== '') {
-            e.target.src = `/Graphics/battlers/${formattedId}.png`;
+            e.target.src = getAssetPath(`/Graphics/battlers/${formattedId}.png`);
           }
         }}
       />

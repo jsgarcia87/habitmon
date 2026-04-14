@@ -79,7 +79,7 @@ function App() {
       </div>
 
       {/* Global Controls (Only visible in game screens) */}
-      {(token && user?.starter_id && (screen === 'city' || screen === 'gym')) && (
+      {token && ['city', 'gym', 'starter'].includes(screen) && (
         <Controls 
           onDirectionChange={(dir) => setDirection(dir)}
           onA={() => { setAPressed(true); setTimeout(() => setAPressed(false), 100); }}
