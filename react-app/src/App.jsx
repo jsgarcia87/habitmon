@@ -23,6 +23,9 @@ function App() {
   const [fadeOut, setFadeOut] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
+  // Global Player State (survives CityScreen unmount)
+  const [globalPlayerPos, setGlobalPlayerPos] = useState({ x: 12, y: 13 });
+
   // Input State (Global to share with screens if needed)
   const [direction, setDirection] = useState(null);
   const [aPressed, setAPressed] = useState(false);
@@ -57,7 +60,7 @@ function App() {
       case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} />;
       case 'register': return <RegisterScreen onLoginClick={() => setShowRegister(false)} />;
       case 'starter': return <StarterScreen navigate={navigate} direction={direction} aPressed={aPressed} />;
-      case 'city': return <CityScreen navigate={navigate} direction={direction} aPressed={aPressed} />;
+      case 'city': return <CityScreen navigate={navigate} direction={direction} aPressed={aPressed} pPos={globalPlayerPos} setPPos={setGlobalPlayerPos} />;
       case 'gym': return <GymScreen navigate={navigate} gymId={screenData?.gymId} direction={direction} aPressed={aPressed} onBack={() => navigate('city')} />;
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={aPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;

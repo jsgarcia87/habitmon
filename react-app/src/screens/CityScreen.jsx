@@ -24,7 +24,8 @@ const WORLD_DATA = {
     buildings: [
       { type: 'home', nombre: 'Hogar', x: 15, y: 7 },
       { gymId: 'vestirse', nombre: 'Vestirse', x: 8, y: 5 },
-      { gymId: 'higiene', nombre: 'Higiene', x: 6, y: 6 }
+      { gymId: 'higiene', nombre: 'Higiene', x: 12, y: 5 },
+      { gymId: 'orden', nombre: 'Orden', x: 16, y: 5 }
     ],
     exits: {
       left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }
@@ -68,10 +69,9 @@ const WORLD_DATA = {
   }
 };
 
-const CityScreen = ({ navigate, direction, aPressed }) => {
+const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
   const { habitosHoy, template } = useGame();
   const [currentMapId, setCurrentMapId] = useState('Map002');
-  const [playerPos, setPlayerPos] = useState({ x: 12, y: 13 }); 
   const [dialog, setDialog] = useState(null);
 
   const currentMap = WORLD_DATA[currentMapId];
@@ -121,7 +121,7 @@ const CityScreen = ({ navigate, direction, aPressed }) => {
       const exit = currentMap.exits[event.side];
       if (exit) {
         setCurrentMapId(exit.targetMap);
-        setPlayerPos(exit.spawn);
+        if(setPPos) setPPos(exit.spawn);
       }
     } else if (event.type === 'encounter') {
       const WILD_POKEMON = [
@@ -143,8 +143,8 @@ const CityScreen = ({ navigate, direction, aPressed }) => {
           direction={direction} 
           aPressed={aPressed} 
           onEvent={handleEvent}
-          playerPos={playerPos}
-          setPlayerPos={setPlayerPos}
+          playerPos={pPos || {x:12,y:13}}
+          setPlayerPos={setPPos}
           npcs={currentMap.npcs}
           buildings={activeBuildings}
         />
