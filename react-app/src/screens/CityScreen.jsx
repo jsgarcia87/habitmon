@@ -76,8 +76,23 @@ const CityScreen = ({ navigate, direction, aPressed }) => {
 
   const currentMap = WORLD_DATA[currentMapId];
 
+  // Identificar gimnasios activos no asignados en ningún mapa y forzarlos en Map002
+  const baseBuildings = [...currentMap.buildings];
+  if (currentMapId === 'Map002' && template && template.length > 0) {
+    template.filter(g => g.activo).forEach((g, idx) => {
+      let isAssigned = false;
+      Object.values(WORLD_DATA).forEach(m => {
+        if (m.buildings.some(b => b.gymId === g.gym_id)) isAssigned = true;
+      });
+      // Si el gym no está en ningún edificio de ningún mapa, se dibuja como fallback al sur
+      if (!isAssigned) {
+        baseBuildings.push({ gymId: g.gym_id, nombre: g.gym_nombre || 'Gimnasio', x: 2 + (idx * 4), y: 14 });
+      }
+    });
+  }
+
   // Filtramos dinámicamente los edificios inactivos basándonos en la template global
-  const activeBuildings = currentMap.buildings.filter(b => {
+  const activeBuildings = baseBuildings.filter(b => {
     if (b.type === 'home') return true;
     if (template && template.length > 0) {
       const gymConfig = template.find(g => g.gym_id === b.gymId);
@@ -89,9 +104,9 @@ const CityScreen = ({ navigate, direction, aPressed }) => {
 
   const handleEvent = (event) => {
     if (event.type === 'gym_entry') {
-      const isDone = habitosHoy
-        .filter(h => h.gym_id === event.gymId)
-        .every(h => h.completado);
+      const gymHabits = habitosHoy.filter(h => h.gym_id === event.gymId);
+      // Solución Bug Lock-out: `every` da true si la lista está vacía. Exigimos lenght > 0.
+      const isDone = gymHabits.length > 0 && gymHabits.every(h => h.completado);
       
       if (isDone) {
         setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId.toUpperCase()} hoy.`);

@@ -15,7 +15,7 @@ const INTRO_STATES = {
 };
 
 const BattleScreen = ({ navigate, battleData, aPressed }) => {
-  const { user, habitosHoy, completarHabito, starter } = useGame();
+  const { user, habitosHoy, completarHabito, starter, capturarPokemon } = useGame();
   
   if (!user || !habitosHoy) {
     return <div className="screen-container">Cargando datos de batalla...</div>;
@@ -216,7 +216,9 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     if(trainerImgRef.current && intro.state !== INTRO_STATES.FADE_IN) {
       const img = trainerImgRef.current;
       const tw = 64, th = 80;
-      ctx.drawImage(img, 0, 0, img.width, img.height, intro.trainerX, H*0.55, tw, th);
+      // El spritesheet de la espalda del entrenador tiene 5 frames. Extraemos solo el primero (idle).
+      const frameWidth = img.width / 5;
+      ctx.drawImage(img, 0, 0, frameWidth, img.height, intro.trainerX, H*0.55, tw, th);
     }
 
     // Pokeball
@@ -250,58 +252,72 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   };
 
   useEffect(() => {
+    let lastTime = performance.now();
     let frameId;
-    let lastTime = 0;
 
-    const loop = (time) => {
-      if(!lastTime) lastTime = time;
-      const dt = time - lastTime;
-      lastTime = time;
-
+    const loop = (now) => {
+      const dt = now - lastTime;
+      lastTime = now;
+      
       const canvas = battleCanvasRef.current;
-      if(!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width;
-      const H = canvas.height;
-
-      updateIntro(dt);
-      drawIntro(ctx, W, H);
-
+      if(canvas) {
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+        
+        if(introRef.current.state !== INTRO_STATES.READY) {
+          updateIntro(dt);
+        }
+        drawIntro(ctx, W, H);
+      }
       frameId = requestAnimationFrame(loop);
     };
-
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, []);
+  }, [enemyName]);
 
-  const handleAttack = async (habit) => {
-    if (animating) return;
+  const handleAttack = async (h) => {
+    if (animating || localCompleted[h.habito_id || h.id]) return;
+    
     setAnimating(true);
+    setLocalCompleted(prev => ({...prev, [h.habito_id || h.id]: true}));
     
-    const habitId = habit.habito_id || habit.id;
-    setMessage(`¡${user.username} lanzó ${habit.nombre.toUpperCase()}!`);
+    const hId = h.habito_id || h.id;
+    const tpl = currentPk?.habitos?.find(t => t.id === hId);
     
-    // API Call
-    await completarHabito(gymId, habitId);
+    setMessage(`¡Usaste ${h.nombre.toUpperCase()}!`);
     
-    // Local animation simulation
-    setTimeout(() => {
-      const dmg = 100 / (habitsForStage.length || 1);
-      const newHP = Math.max(0, leaderHP - dmg);
+    // Simulate attack
+    setTimeout(async () => {
+      // Registrar hábito remotamente en background
+      completarHabito(gymId, hId).catch(e => console.error("Error al registrar hábito", e));
+
+      // Calculate HP logic
+      const doneSoFar = Object.keys(localCompleted).length + 1;
+      const total = habitsForStage.length;
+      const newHP = 100 - Math.min(100, Math.round((doneSoFar / total) * 100));
+      
       setLeaderHP(newHP);
-      setLocalCompleted(prev => ({...prev, [habitId]: true}));
 
       if (newHP <= 0) {
-        setMessage(`¡El ${enemyName} se debilitó!`);
-        setTimeout(() => navigate(isWild ? 'capture' : 'city', { gymId }), 2000);
+        setMessage(`¡LÍDER derrotado! ¡Ganaste medalla!`);
+        setTimeout(() => {
+          navigate('city');
+        }, 2000);
       } else {
-        setMessage("¡Es muy eficaz!");
         setTimeout(() => {
           setAnimating(false);
           setMessage('');
         }, 1500);
       }
     }, 1000);
+  };
+
+  const genericActionStyle = {
+    background: '#f0f0f0', border: '3px solid #333', padding: '6px 4px',
+    fontFamily: '"Press Start 2P",monospace', fontSize: 6, color: '#111', cursor: 'pointer',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3
   };
 
   return (
@@ -375,53 +391,91 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           )}
         </div>
 
-        {/* Grid ataques 2x2 — ocupa el resto */}
+        {/* Action Grid (Wild Menu vs Gym Habits) */}
         <div style={{
           flex: 1,
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: isWild ? 'repeat(3, 1fr)' : '1fr 1fr',
           gap: 3,
           padding: 6,
           background: '#c8c8c8'
         }}>
-          {habitsForStage.map(h => {
-            const hId = h.habito_id || h.id;
-            const tpl = currentPk?.habitos?.find(
-              t => t.id === hId
-            );
-            const done = h.completado || localCompleted[hId];
-            return (
-              <button key={hId}
-                disabled={done || animating}
-                onClick={() => handleAttack(h)}
-                style={{
-                  background: done ? '#888':'#f0f0f0',
-                  border: '3px solid #333',
-                  padding: '6px 4px',
-                  fontFamily:'"Press Start 2P",monospace',
-                  fontSize: 6,
-                  color: '#111',
-                  cursor: done||animating ?'default':'pointer',
-                  textDecoration: done?'line-through':'none',
-                  display:'flex',
-                  flexDirection:'column',
-                  alignItems:'center',
-                  justifyContent:'center',
-                  gap: 3,
-                  opacity: done ? 0.5 : 1
-                }}
-              >
-                <span style={{fontSize:18}}>
-                  {tpl?.icono || '⚔️'}
-                </span>
-                <span>{(h.nombre||tpl?.nombre||'')
-                  .toUpperCase().substring(0,12)}</span>
-                <span style={{fontSize:5,color:'#555'}}>
-                  DMG {tpl?.daño || '?'}
-                </span>
+          {isWild ? (
+            <>
+              <button disabled={animating} style={genericActionStyle} onClick={() => {
+                setAnimating(true);
+                setMessage('¡Usaste PLACAJE!');
+                setTimeout(() => {
+                  setLeaderHP(prev => Math.max(0, prev - (100 / 3))); // Pierde vida gradualmente
+                  setAnimating(false);
+                  setMessage('');
+                }, 1000);
+              }}>
+                <span style={{fontSize: 18}}>⚔️</span><span>ATACAR</span>
               </button>
-            );
-          })}
+              <button disabled={animating} style={genericActionStyle} onClick={async () => {
+                setAnimating(true);
+                setMessage('¡Lanzaste una POKÉBALL!');
+                setTimeout(async () => {
+                  if (leaderHP > 50) {
+                    setMessage('¡Oh no! El Pokémon escapó de la Pokéball.');
+                    setAnimating(false);
+                  } else {
+                    setMessage('¡Pokémon capturado!');
+                    try {
+                      if (capturarPokemon) await capturarPokemon(wildPk.id, wildPk.nombre);
+                    } catch (e) {}
+                    setTimeout(() => navigate('city'), 2000);
+                  }
+                }, 1500);
+              }}>
+                <span style={{fontSize: 18}}>🔴</span><span>POKÉBALL</span>
+              </button>
+              <button disabled={animating} style={genericActionStyle} onClick={() => {
+                setAnimating(true);
+                setMessage('¡Escapaste sin problemas!');
+                setTimeout(() => navigate('city'), 1000);
+              }}>
+                <span style={{fontSize: 18}}>🏃</span><span>HUIR</span>
+              </button>
+            </>
+          ) : (
+            habitsForStage.map(h => {
+              const hId = h.habito_id || h.id;
+              const tpl = currentPk?.habitos?.find(t => t.id === hId);
+              const done = h.completado || localCompleted[hId];
+              return (
+                <button key={hId}
+                  disabled={done || animating}
+                  onClick={() => handleAttack(h)}
+                  style={{
+                    background: done ? '#888':'#f0f0f0',
+                    border: '3px solid #333',
+                    padding: '6px 4px',
+                    fontFamily:'"Press Start 2P",monospace',
+                    fontSize: 6,
+                    color: '#111',
+                    cursor: done||animating ?'default':'pointer',
+                    textDecoration: done?'line-through':'none',
+                    display:'flex',
+                    flexDirection:'column',
+                    alignItems:'center',
+                    justifyContent:'center',
+                    gap: 3,
+                    opacity: done ? 0.5 : 1
+                  }}
+                >
+                  <span style={{fontSize:18}}>
+                    {tpl?.icono || '⚔️'}
+                  </span>
+                  <span>{(h.nombre||tpl?.nombre||'').toUpperCase().substring(0,12)}</span>
+                  <span style={{fontSize:5,color:'#555'}}>
+                    DMG {tpl?.daño || '?'}
+                  </span>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
       <style>{`
