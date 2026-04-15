@@ -22,10 +22,10 @@ const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'Hogar', x: 15, y: 7 },
-      { gymId: 'vestirse', nombre: 'Vestirse', x: 10, y: 15 },
-      { gymId: 'higiene', nombre: 'Higiene', x: 15, y: 15 },
-      { gymId: 'orden', nombre: 'Orden', x: 20, y: 15 }
+      { type: 'home', nombre: 'Hogar', x: 15, y: 7, targetMapId: 'Map003', spawn: { x: 12, y: 11 } },
+      { gymId: 'vestirse', nombre: 'Vestirse', x: 8, y: 5, targetMapId: 'Map007', spawn: { x: 10, y: 15 } },
+      { gymId: 'higiene', nombre: 'Higiene', x: 13, y: 15, targetMapId: 'Map005', spawn: { x: 8, y: 11 } },
+      { gymId: 'orden', nombre: 'Orden', x: 5, y: 13, targetMapId: 'Map006', spawn: { x: 8, y: 11 } }
     ],
     exits: {
       left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }
@@ -44,6 +44,21 @@ const WORLD_DATA = {
     ],
     buildings: [],
     exits: {}
+  },
+  Map005: {
+    nombre: 'Gimnasio Higiene',
+    npcs: [{ nombre: 'Entrenador', sprite: 'char_ 01_a', posicion: { x: 8, y: 5 }, mensajes: ['¡Lávate las manos!'] }],
+    buildings: [], exits: {}
+  },
+  Map006: {
+    nombre: 'Gimnasio Orden',
+    npcs: [{ nombre: 'Entrenador', sprite: 'char_ 00_a', posicion: { x: 8, y: 5 }, mensajes: ['¡Mantén tu cuarto limpio!'] }],
+    buildings: [], exits: {}
+  },
+  Map007: {
+    nombre: 'Gimnasio Vestirse',
+    npcs: [{ nombre: 'Entrenador', sprite: 'char_ 11_a', posicion: { x: 10, y: 10 }, mensajes: ['¡Vístete con estilo!'] }],
+    buildings: [], exits: {}
   },
   Map008: {
     nombre: 'Ruta 29',
@@ -124,22 +139,26 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
       const isDone = gymHabits.length > 0 && gymHabits.every(h => h.completado);
       
       if (isDone) {
-        setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId.toUpperCase()} hoy.`);
+        setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId?.toUpperCase() || ''} hoy.`);
       } else {
-        // MEMORIA EXTERIOR: Guardamos dónde estábamos antes de entrar
+        // MEMORIA EXTERIOR
         setExteriorPos({ ...pPos });
-        setCurrentMapId('Map003');
-        if (setPPos) setPPos({ x: 5, y: 9 }); // Posición de entrada dentro del gimnasio
+        const target = event.targetMapId || 'Map003';
+        setCurrentMapId(target);
+        if (setPPos) setPPos(event.spawn || { x: 5, y: 9 });
       }
     } else if (event.type === 'profile_open') {
       navigate('profile');
     } else if (event.type === 'npc_talk') {
       setDialog(event.npc.mensajes[0]);
     } else if (event.type === 'transfer') {
-      // Si estamos en el interior y salimos por abajo
-      if (currentMapId === 'Map003' && event.side === 'down') {
+      // Detección de salida universal de interiores (Maps 3, 5, 6, 7)
+      const interiors = ['Map003', 'Map005', 'Map006', 'Map007'];
+      if (interiors.includes(currentMapId) && event.side === 'down') {
         setCurrentMapId('Map002');
-        if (setPPos) setPPos(exteriorPos || { x: 10, y: 16 });
+        // Restaurar posición según el mapa del que venimos (fallback a la puerta correspondiente)
+        const doorFallback = { 'Map003': {x:15,y:8}, 'Map005': {x:13,y:16}, 'Map006': {x:5,y:14}, 'Map007': {x:8,y:6} };
+        if (setPPos) setPPos(exteriorPos || doorFallback[currentMapId] || { x: 15, y: 8 });
       } else {
         const exit = currentMap.exits[event.side];
         if (exit) {

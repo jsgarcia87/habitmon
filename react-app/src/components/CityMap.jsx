@@ -5,6 +5,7 @@ import { getAssetPath } from '../api';
 const TILE_SIZE = 32;
 const TILESET_MAP = {
   1: 'Graphics/tilesets/gsc overworld johto day.png',
+  3: 'Graphics/tilesets/gsc house 1.png',
   44: 'Graphics/tilesets/GSC rail station-gym a.png'
 };
 
@@ -137,8 +138,16 @@ const CityMap = ({
 
       const activeBuilding = buildings.find(b => tx === b.x && ty === b.y);
       if (activeBuilding) {
-        if (activeBuilding.type === 'home') onEvent({ type: 'profile_open' });
-        else onEvent({ type: 'gym_entry', gymId: activeBuilding.gymId });
+        if (activeBuilding.type === 'home' && !activeBuilding.targetMapId) {
+          onEvent({ type: 'profile_open' });
+        } else {
+          onEvent({ 
+            type: 'gym_entry', 
+            gymId: activeBuilding.gymId, 
+            targetMapId: activeBuilding.targetMapId,
+            spawn: activeBuilding.spawn
+          });
+        }
       }
     }
   }, [aPressed, npcs, buildings, onEvent]);
