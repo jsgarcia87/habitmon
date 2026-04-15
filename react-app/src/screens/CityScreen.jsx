@@ -23,13 +23,27 @@ const WORLD_DATA = {
     ],
     buildings: [
       { type: 'home', nombre: 'Hogar', x: 15, y: 7 },
-      { gymId: 'vestirse', nombre: 'Vestirse', x: 5, y: 5 },
-      { gymId: 'higiene', nombre: 'Higiene', x: 12, y: 5 },
-      { gymId: 'orden', nombre: 'Orden', x: 19, y: 5 }
+      { gymId: 'vestirse', nombre: 'Vestirse', x: 10, y: 15 },
+      { gymId: 'higiene', nombre: 'Higiene', x: 15, y: 15 },
+      { gymId: 'orden', nombre: 'Orden', x: 20, y: 15 }
     ],
     exits: {
       left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }
     }
+  },
+  Map003: {
+    nombre: 'Gimnasio Interior',
+    npcs: [
+      {
+        nombre: 'Líder de Gimnasio',
+        sprite: 'char_ 02_a',
+        posicion: { x: 5, y: 2 },
+        direccion: 0,
+        mensajes: ['¡Bienvenido al reto diario!', 'Demuestra que has cumplido tus hábitos para ganar la medalla.']
+      }
+    ],
+    buildings: [],
+    exits: {}
   },
   Map008: {
     nombre: 'Ruta 29',
@@ -73,6 +87,7 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
   const { habitosHoy, template } = useGame();
   const [currentMapId, setCurrentMapId] = useState('Map002');
   const [dialog, setDialog] = useState(null);
+  const [exteriorPos, setExteriorPos] = useState(null);
 
   const currentMap = WORLD_DATA[currentMapId];
 
@@ -111,17 +126,26 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
       if (isDone) {
         setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId.toUpperCase()} hoy.`);
       } else {
-        navigate('gym', { gymId: event.gymId });
+        // MEMORIA EXTERIOR: Guardamos dónde estábamos antes de entrar
+        setExteriorPos({ ...pPos });
+        setCurrentMapId('Map003');
+        if (setPPos) setPPos({ x: 5, y: 9 }); // Posición de entrada dentro del gimnasio
       }
     } else if (event.type === 'profile_open') {
       navigate('profile');
     } else if (event.type === 'npc_talk') {
       setDialog(event.npc.mensajes[0]);
     } else if (event.type === 'transfer') {
-      const exit = currentMap.exits[event.side];
-      if (exit) {
-        setCurrentMapId(exit.targetMap);
-        if(setPPos) setPPos(exit.spawn);
+      // Si estamos en el interior y salimos por abajo
+      if (currentMapId === 'Map003' && event.side === 'down') {
+        setCurrentMapId('Map002');
+        if (setPPos) setPPos(exteriorPos || { x: 10, y: 16 });
+      } else {
+        const exit = currentMap.exits[event.side];
+        if (exit) {
+          setCurrentMapId(exit.targetMap);
+          if(setPPos) setPPos(exit.spawn);
+        }
       }
     } else if (event.type === 'encounter') {
       const WILD_POKEMON = [

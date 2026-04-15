@@ -43,7 +43,14 @@ const CityMap = ({
       .then(r => r.json())
       .then(data => {
         setMapData(data);
-        const tilesetSrc = TILESET_MAP[data.tileset_id] || TILESET_MAP[1];
+        
+        let tilesetSrc = TILESET_MAP[data.tileset_id] || TILESET_MAP[1];
+
+        // PARCHE SEGURIDAD GIMNASIOS INTERIORES
+        if (mapId === 'Map003') {
+           tilesetSrc = 'Graphics/tilesets/GSC rail station-gym a.png';
+        }
+
         tilesetImg.current.src = getAssetPath(tilesetSrc);
         playerImg.current.src = getAssetPath('Graphics/characters/trchar000.png');
         let loaded = 0;
