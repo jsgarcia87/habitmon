@@ -47,17 +47,41 @@ const WORLD_DATA = {
   },
   Map005: {
     nombre: 'Gimnasio Higiene',
-    npcs: [{ nombre: 'Entrenador', sprite: 'char_ 01_a', posicion: { x: 8, y: 5 }, mensajes: ['¡Lávate las manos!'] }],
+    npcs: [{ 
+      nombre: 'Líder Higiene', 
+      sprite: 'char_ 01_a', 
+      posicion: { x: 8, y: 5 }, 
+      direccion: 0,
+      isLeader: true,
+      gymId: 'higiene',
+      mensajes: ['¡Veo que te has lavado las manos! Muéstrame tu disciplina en combate.'] 
+    }],
     buildings: [], exits: {}
   },
   Map006: {
     nombre: 'Gimnasio Orden',
-    npcs: [{ nombre: 'Entrenador', sprite: 'char_ 00_a', posicion: { x: 8, y: 5 }, mensajes: ['¡Mantén tu cuarto limpio!'] }],
+    npcs: [{ 
+      nombre: 'Líder Orden', 
+      sprite: 'char_ 00_a', 
+      posicion: { x: 8, y: 5 }, 
+      direccion: 0,
+      isLeader: true,
+      gymId: 'orden',
+      mensajes: ['Un cuarto limpio es una mente limpia. ¡Prepárate!'] 
+    }],
     buildings: [], exits: {}
   },
   Map007: {
     nombre: 'Gimnasio Vestirse',
-    npcs: [{ nombre: 'Entrenador', sprite: 'char_ 11_a', posicion: { x: 10, y: 10 }, mensajes: ['¡Vístete con estilo!'] }],
+    npcs: [{ 
+      nombre: 'Líder Vestirse', 
+      sprite: 'char_ 11_a', 
+      posicion: { x: 10, y: 10 }, 
+      direccion: 0,
+      isLeader: true,
+      gymId: 'vestirse',
+      mensajes: ['¡Ese estilo es impecable! Veamos si tus ataques lo son también.'] 
+    }],
     buildings: [], exits: {}
   },
   Map008: {
@@ -150,7 +174,11 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
     } else if (event.type === 'profile_open') {
       navigate('profile');
     } else if (event.type === 'npc_talk') {
-      setDialog(event.npc.mensajes[0]);
+      if (event.npc.isLeader) {
+        navigate('battle', { tipo: 'gym', gymId: event.npc.gymId });
+      } else {
+        setDialog(event.npc.mensajes[0]);
+      }
     } else if (event.type === 'transfer') {
       // Detección de salida universal de interiores (Maps 3, 5, 6, 7)
       const interiors = ['Map003', 'Map005', 'Map006', 'Map007'];
