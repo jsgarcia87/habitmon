@@ -40,7 +40,7 @@ const MapRenderer = ({ mapId }) => {
         let tilesetName = tilesetInfo.tileset_name.toLowerCase();
         
         // Parche rápido para el caos del interior del gimnasio
-        if (mapId === 'MapXXX') {
+        if (mapId === 'MapXXX' || mapId === 'Map005') {
           tilesetName = 'gsc interior gym';
         }
 

@@ -23,9 +23,9 @@ const WORLD_DATA = {
     ],
     buildings: [
       { type: 'home', nombre: 'Hogar', x: 15, y: 7 },
-      { gymId: 'vestirse', nombre: 'Vestirse', x: 8, y: 5 },
+      { gymId: 'vestirse', nombre: 'Vestirse', x: 5, y: 5 },
       { gymId: 'higiene', nombre: 'Higiene', x: 12, y: 5 },
-      { gymId: 'orden', nombre: 'Orden', x: 16, y: 5 }
+      { gymId: 'orden', nombre: 'Orden', x: 19, y: 5 }
     ],
     exits: {
       left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }

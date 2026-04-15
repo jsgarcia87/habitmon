@@ -36,11 +36,13 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const [leaderHP, setLeaderHP] = useState(100); // We'll initialize properly in an effect
   const [playerHP, setPlayerHP] = useState(100);
   const [message, setMessage] = useState('');
+  const [isFlashing, setIsFlashing] = useState(false);
   
   const battleCanvasRef = useRef(null);
   const trainerImgRef = useRef(null);
   const enemyImgRef = useRef(null);
   const bgImgRef = useRef(null);
+  const playerPkImgRef = useRef(null);
   
   const introRef = useRef({
     state: INTRO_STATES.FADE_IN,
@@ -81,6 +83,19 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     const en = new Image();
     en.src = getAssetPath(`Graphics/battlers/${enemyFormattedId}.png`);
     en.onload = () => { enemyImgRef.current = en; };
+
+    // Player PK
+    const pPk = new Image();
+    // Intentamos cargar el sprite de espalda ('b'). Si no existe, el navegador fallará pero seguiremos adelante (o podríamos añadir un onerror).
+    const starterId = String(user?.starter_id || 152).padStart(3, '0');
+    pPk.src = getAssetPath(`Graphics/battlers/${starterId}b.png`);
+    pPk.onload = () => { playerPkImgRef.current = pPk; };
+    pPk.onerror = () => {
+      // Fallback al sprite frontal si no hay de espalda
+      const pPkFront = new Image();
+      pPkFront.src = getAssetPath(`Graphics/battlers/${starterId}.png`);
+      pPkFront.onload = () => { playerPkImgRef.current = pPkFront; };
+    };
 
     // Initialize HP
     const initialCompleted = habitsForStage.filter(h => h.completado).length;
@@ -213,11 +228,11 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     }
 
     // Trainer
-    if(trainerImgRef.current && intro.state !== INTRO_STATES.FADE_IN) {
+    if(trainerImgRef.current && intro.state !== INTRO_STATES.FADE_IN && intro.state !== INTRO_STATES.READY && intro.state !== INTRO_STATES.HUD_SLIDE) {
       const img = trainerImgRef.current;
       const tw = 64, th = 80;
-      // Asegurar que leemos solo el primer frame (ajusta a 4 si es spritesheet de GBA/GSC estándar)
-      const frames = 4; 
+      // El spritesheet de la espalda del entrenador tiene 5 frames.
+      const frames = 5; 
       const frameWidth = img.width / frames;
       ctx.drawImage(img, 0, 0, frameWidth, img.height, intro.trainerX, H*0.55, tw, th);
     }
@@ -237,6 +252,20 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       ctx.drawImage(img, -48, -48, 96, 96);
       ctx.restore();
       ctx.globalAlpha = 1;
+    }
+
+    // Player PK
+    if(playerPkImgRef.current && (intro.state === INTRO_STATES.READY || intro.state === INTRO_STATES.HUD_SLIDE)) {
+      const img = playerPkImgRef.current;
+      ctx.drawImage(img, W * 0.1, H * 0.45, 96, 96);
+    }
+
+    // Damage Flash
+    if(isFlashing) {
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = 1.0;
     }
 
     // Flash
@@ -282,6 +311,8 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     if (animating || localCompleted[h.habito_id || h.id]) return;
     
     setAnimating(true);
+    setIsFlashing(true);
+    setTimeout(() => setIsFlashing(false), 150);
     setLocalCompleted(prev => ({...prev, [h.habito_id || h.id]: true}));
     
     const hId = h.habito_id || h.id;
@@ -405,6 +436,8 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
             <>
               <button disabled={animating} style={genericActionStyle} onClick={() => {
                 setAnimating(true);
+                setIsFlashing(true);
+                setTimeout(() => setIsFlashing(false), 150);
                 setMessage('¡Usaste PLACAJE!');
                 setTimeout(() => {
                   setLeaderHP(prev => Math.max(0, prev - (100 / 3))); // Pierde vida gradualmente
