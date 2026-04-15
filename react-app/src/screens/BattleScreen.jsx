@@ -27,7 +27,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const enemyName = isWild ? (wildPk?.nombre || 'Wild PKMN') : "LÍDER";
   
   // Data Logic
-  const habitsForStage = !isWild ? habitosHoy.filter(h => h.gym_id === gymId) : [];
+  const habitsForStage = !isWild ? habitosHoy.filter(h => h.gym_id?.toLowerCase() === gymId?.toLowerCase()) : [];
   const currentPk = starter; // Player's starter for habits template
   
   // State
@@ -357,159 +357,171 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       width: '100vw',
       height: '100dvh',
       display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-      background: '#000',
-      fontFamily: '"Press Start 2P", monospace'
+      justifyContent: 'center',
+      alignItems: 'center',
+      background: '#222', // Fondo exterior para desktop
+      fontFamily: '"Press Start 2P", monospace',
+      overflow: 'hidden'
     }}>
-      {/* Arena — 58% */}
-      <div style={{flex: '0 0 58%', position:'relative', overflow: 'hidden'}}>
-        <canvas 
-          ref={battleCanvasRef}
-          width={300}
-          height={200}
-          style={{width:'100%',height:'100%', imageRendering:'pixelated', display:'block'}}
-        />
-        
-        {/* HUD Overlay (Optional but recommended for gameplay) */}
-        {introRef.current.state === INTRO_STATES.READY && (
-          <>
-            <div style={{
-              position: 'absolute', 
-              top: '20px', 
-              left: '10px', 
-              transition: 'transform 0.3s',
-              transform: `translateX(${introRef.current.enemyHudX}px)`
-            }}>
-              <HPBar current={leaderHP} max={100} name={enemyName} level={isWild ? 5 : 30} alignment="enemy" />
-            </div>
-            <div style={{
-              position: 'absolute', 
-              bottom: '20px', 
-              right: '10px',
-              transition: 'transform 0.3s',
-              transform: `translateX(${introRef.current.playerHudX - (battleCanvasRef.current?.width || 300) + 158}px)`
-            }}>
-              <HPBar current={playerHP} max={100} name={user.starter_nombre || 'PKMN'} level={user.starter_nivel || 5} alignment="player" />
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* UI inferior — 42% */}
+      {/* Contenedor responsivo (Estilo móvil en Desktop) */}
       <div style={{
-        flex: '0 0 42%',
+        width: '100%',
+        maxWidth: '480px',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: '#fff',
-        borderTop: '4px solid #111'
+        background: '#000',
+        position: 'relative',
+        boxShadow: '0 0 50px rgba(0,0,0,0.5)',
+        borderLeft: '1px solid #333',
+        borderRight: '1px solid #333'
       }}>
-        {/* Caja mensaje */}
-        <div style={{
-          padding: '10px 14px',
-          fontSize: 9,
-          lineHeight: '1.8em',
-          borderBottom: '3px solid #111',
-          minHeight: 52,
-          color: '#111',
-          position: 'relative'
-        }}>
-          {message}
-          {message && (
-            <span style={{
-              position:'absolute',right:10,bottom:6,
-              animation:'blink 0.6s steps(1) infinite'
-            }}>▼</span>
+        {/* Arena — 58% */}
+        <div style={{flex: '0 0 58%', position:'relative', overflow: 'hidden'}}>
+          <canvas 
+            ref={battleCanvasRef}
+            width={300}
+            height={200}
+            style={{width:'100%',height:'100%', imageRendering:'pixelated', display:'block'}}
+          />
+          
+          {/* HUD Overlay */}
+          {introRef.current.state === INTRO_STATES.READY && (
+            <>
+              <div style={{
+                position: 'absolute', 
+                top: '20px', 
+                left: '10px', 
+                transition: 'transform 0.3s',
+                transform: `translateX(${introRef.current.enemyHudX}px)`
+              }}>
+                <HPBar current={leaderHP} max={100} name={enemyName} level={isWild ? 5 : 30} alignment="enemy" />
+              </div>
+              <div style={{
+                position: 'absolute', 
+                bottom: '20px', 
+                right: '10px',
+                transition: 'transform 0.3s',
+                transform: `translateX(${introRef.current.playerHudX - 300 + 158}px)`
+              }}>
+                <HPBar current={playerHP} max={100} name={user.starter_nombre || 'PKMN'} level={user.starter_nivel || 5} alignment="player" />
+              </div>
+            </>
           )}
         </div>
 
-        {/* Action Grid (Wild Menu vs Gym Habits) */}
+        {/* UI inferior — 42% */}
         <div style={{
-          flex: 1,
-          display: 'grid',
-          gridTemplateColumns: isWild ? 'repeat(3, 1fr)' : '1fr 1fr',
-          gap: 3,
-          padding: 6,
-          background: '#c8c8c8'
+          flex: '0 0 42%',
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#fff',
+          borderTop: '4px solid #111'
         }}>
-          {isWild ? (
-            <>
-              <button disabled={animating} style={genericActionStyle} onClick={() => {
-                setAnimating(true);
-                setIsFlashing(true);
-                setTimeout(() => setIsFlashing(false), 150);
-                setMessage('¡Usaste PLACAJE!');
-                setTimeout(() => {
-                  setLeaderHP(prev => Math.max(0, prev - (100 / 3))); // Pierde vida gradualmente
-                  setAnimating(false);
-                  setMessage('');
-                }, 1000);
-              }}>
-                <span style={{fontSize: 18}}>⚔️</span><span>ATACAR</span>
-              </button>
-              <button disabled={animating} style={genericActionStyle} onClick={async () => {
-                setAnimating(true);
-                setMessage('¡Lanzaste una POKÉBALL!');
-                setTimeout(async () => {
-                  if (leaderHP > 50) {
-                    setMessage('¡Oh no! El Pokémon escapó de la Pokéball.');
+          {/* Caja mensaje */}
+          <div style={{
+            padding: '10px 14px',
+            fontSize: 9,
+            lineHeight: '1.8em',
+            borderBottom: '3px solid #111',
+            minHeight: 52,
+            color: '#111',
+            position: 'relative'
+          }}>
+            {message}
+            {message && (
+              <span style={{
+                position:'absolute',right:10,bottom:6,
+                animation:'blink 0.6s steps(1) infinite'
+              }}>▼</span>
+            )}
+          </div>
+
+          {/* Action Grid */}
+          <div style={{
+            flex: 1,
+            display: 'grid',
+            gridTemplateColumns: isWild ? 'repeat(3, 1fr)' : '1fr 1fr',
+            gap: 3,
+            padding: 6,
+            background: '#c8c8c8'
+          }}>
+            {isWild ? (
+              <>
+                <button disabled={animating} style={genericActionStyle} onClick={() => {
+                  setAnimating(true);
+                  setIsFlashing(true);
+                  setTimeout(() => setIsFlashing(false), 150);
+                  setMessage('¡Usaste PLACAJE!');
+                  setTimeout(() => {
+                    setLeaderHP(prev => Math.max(0, prev - (100 / 3)));
                     setAnimating(false);
-                  } else {
-                    setMessage('¡Pokémon capturado!');
-                    try {
-                      if (capturarPokemon) await capturarPokemon(wildPk.id, wildPk.nombre);
-                    } catch (e) {}
-                    setTimeout(() => navigate('city'), 2000);
-                  }
-                }, 1500);
-              }}>
-                <span style={{fontSize: 18}}>🔴</span><span>POKÉBALL</span>
-              </button>
-              <button disabled={animating} style={genericActionStyle} onClick={() => {
-                setAnimating(true);
-                setMessage('¡Escapaste sin problemas!');
-                setTimeout(() => navigate('city'), 1000);
-              }}>
-                <span style={{fontSize: 18}}>🏃</span><span>HUIR</span>
-              </button>
-            </>
-          ) : (
-            habitsForStage.map(h => {
-              const hId = h.habito_id || h.id;
-              const tpl = currentPk?.habitos?.find(t => t.id === hId);
-              const done = h.completado || localCompleted[hId];
-              return (
-                <button key={hId}
-                  disabled={done || animating}
-                  onClick={() => handleAttack(h)}
-                  style={{
-                    background: done ? '#888':'#f0f0f0',
-                    border: '3px solid #333',
-                    padding: '6px 4px',
-                    fontFamily:'"Press Start 2P",monospace',
-                    fontSize: 6,
-                    color: '#111',
-                    cursor: done||animating ?'default':'pointer',
-                    textDecoration: done?'line-through':'none',
-                    display:'flex',
-                    flexDirection:'column',
-                    alignItems:'center',
-                    justifyContent:'center',
-                    gap: 3,
-                    opacity: done ? 0.5 : 1
-                  }}
-                >
-                  <span style={{fontSize:18}}>
-                    {tpl?.icono || '⚔️'}
-                  </span>
-                  <span>{(h.nombre||tpl?.nombre||'').toUpperCase().substring(0,12)}</span>
-                  <span style={{fontSize:5,color:'#555'}}>
-                    DMG {tpl?.daño || '?'}
-                  </span>
+                    setMessage('');
+                  }, 1000);
+                }}>
+                  <span style={{fontSize: 18}}>⚔️</span><span>ATACAR</span>
                 </button>
-              );
-            })
-          )}
+                <button disabled={animating} style={genericActionStyle} onClick={async () => {
+                  setAnimating(true);
+                  setMessage('¡Lanzaste una POKÉBALL!');
+                  setTimeout(async () => {
+                    if (leaderHP > 50) {
+                      setMessage('¡Oh no! El Pokémon escapó de la Pokéball.');
+                      setAnimating(false);
+                    } else {
+                      setMessage('¡Pokémon capturado!');
+                      try {
+                        if (capturarPokemon) await capturarPokemon(wildPk.id, wildPk.nombre);
+                      } catch (e) {}
+                      setTimeout(() => navigate('city'), 2000);
+                    }
+                  }, 1500);
+                }}>
+                  <span style={{fontSize: 18}}>🔴</span><span>POKÉBALL</span>
+                </button>
+                <button disabled={animating} style={genericActionStyle} onClick={() => {
+                  setAnimating(true);
+                  setMessage('¡Escapaste sin problemas!');
+                  setTimeout(() => navigate('city'), 1000);
+                }}>
+                  <span style={{fontSize: 18}}>🏃</span><span>HUIR</span>
+                </button>
+              </>
+            ) : (
+              <>
+                {habitsForStage.length > 0 ? (
+                  habitsForStage.map(h => {
+                    const hId = h.habito_id || h.id;
+                    const tpl = currentPk?.habitos?.find(t => t.id === hId);
+                    const done = h.completado || localCompleted[hId];
+                    return (
+                      <button key={hId}
+                        disabled={done || animating}
+                        onClick={() => handleAttack(h)}
+                        style={{
+                          background: done ? '#888':'#f0f0f0',
+                          border: '3px solid #333', padding: '6px 4px',
+                          fontFamily:'"Press Start 2P",monospace', fontSize: 6,
+                          color: '#111', cursor: done||animating ?'default':'pointer',
+                          textDecoration: done?'line-through':'none',
+                          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap: 3,
+                          opacity: done ? 0.5 : 1
+                        }}
+                      >
+                        <span style={{fontSize:18}}>{tpl?.icono || '⚔️'}</span>
+                        <span>{(h.nombre||tpl?.nombre||'').toUpperCase().substring(0,12)}</span>
+                        <span style={{fontSize:5,color:'#555'}}>DMG {tpl?.daño || '?'}</span>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div style={{gridColumn:'1/3', display:'flex', alignItems:'center', justifyContent:'center', fontSize:7, color:'#666', textAlign:'center', padding:10}}>
+                    NO TIENES HÁBITOS ASIGNADOS A ESTE GIMNASIO (ID: {gymId?.toUpperCase()})
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
       <style>{`
