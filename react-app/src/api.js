@@ -93,4 +93,7 @@ export const api = {
   capturarPokemon: (data) => fetch(buildUrl('/coleccion/capturar'),
     {method:'POST',headers:h(),
      body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Capture Error:", e); throw e; }),
+
+  ganarBatalla: () => fetch(buildUrl('/battle/victory'),
+    {method:'POST',headers:h()}).then(handleResponse).catch(e => { console.error("Battle Victory Error:", e); throw e; }),
 };

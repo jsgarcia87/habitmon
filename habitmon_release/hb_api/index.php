@@ -81,10 +81,32 @@ try {
     // ─── STARTER ───────────────────────────────────────────────────────────────
     elseif (strpos($route, '/starter/info') === 0) {
         $uid = get_user_id();
-        $stmt = $pdo->prepare("SELECT pokemon_inicial_id, pokemon_inicial_nombre FROM usuarios WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT p.* FROM pokemon_coleccion p 
+                               JOIN usuarios u ON p.usuario_id = u.id 
+                               WHERE u.id = ? AND p.is_partner = 1 
+                               LIMIT 1");
         $stmt->execute([$uid]);
-        $u = $stmt->fetch();
-        echo json_encode(["success" => true, "starter" => $u ? ["pokemon_id" => $u['pokemon_inicial_id'], "pokemon_nombre" => $u['pokemon_inicial_nombre']] : null]);
+        $p = $stmt->fetch();
+        
+        if ($p) {
+            echo json_encode([
+                "success" => true, 
+                "starter" => [
+                    "pokemon_id" => $p['pokemon_id'], 
+                    "pokemon_nombre" => $p['pokemon_nombre'],
+                    "level" => (int)$p['nivel'],
+                    "nivel" => (int)$p['nivel'],
+                    "xp" => (int)$p['xp'],
+                    "exp" => (int)$p['xp']
+                ]
+            ]);
+        } else {
+            // Fallback
+            $stmt = $pdo->prepare("SELECT pokemon_inicial_id, pokemon_inicial_nombre FROM usuarios WHERE id = ?");
+            $stmt->execute([$uid]);
+            $u = $stmt->fetch();
+            echo json_encode(["success" => true, "starter" => $u ? ["pokemon_id" => $u['pokemon_inicial_id'], "pokemon_nombre" => $u['pokemon_inicial_nombre'], "nivel" => 5, "xp" => 0] : null]);
+        }
     }
     elseif (strpos($route, '/starter/elegir') === 0 && $method === 'POST') {
         $uid = get_user_id();
@@ -140,8 +162,36 @@ try {
         $uid = get_user_id();
         $data = get_json_input();
         $today = date('Y-m-d');
+        
+        // Marcar hábito como completado
         $pdo->prepare("UPDATE habitos SET completado = 1 WHERE usuario_id = ? AND gimnasio_id = ? AND habito_id = ? AND fecha = ?")->execute([$uid, $data['gym_id'], $data['habito_id'], $today]);
-        echo json_encode(["success" => true]);
+        
+        // Otorgar XP al partner
+        $xp_gain = 20;
+        $pdo->prepare("UPDATE pokemon_coleccion SET xp = xp + ? WHERE usuario_id = ? AND is_partner = 1")->execute([$xp_gain, $uid]);
+        
+        // Manejar Level Up (XP >= 100)
+        $stmt = $pdo->prepare("SELECT id, xp, nivel FROM pokemon_coleccion WHERE usuario_id = ? AND is_partner = 1");
+        $stmt->execute([$uid]);
+        $p = $stmt->fetch();
+        
+        $leveledUp = false;
+        if ($p && $p['xp'] >= 100) {
+            $newXp = $p['xp'] - 100;
+            $newLevel = $p['nivel'] + 1;
+            $pdo->prepare("UPDATE pokemon_coleccion SET xp = ?, nivel = ? WHERE id = ?")->execute([$newXp, $newLevel, $p['id']]);
+            $leveledUp = true;
+            $p['xp'] = $newXp;
+            $p['nivel'] = $newLevel;
+        }
+
+        echo json_encode([
+            "success" => true, 
+            "xp_gain" => $xp_gain, 
+            "leveled_up" => $leveledUp,
+            "new_xp" => (int)$p['xp'],
+            "new_level" => (int)$p['nivel']
+        ]);
     }
     elseif (strpos($route, '/habitos/reset') === 0 && $method === 'POST') {
         $uid = get_user_id();
@@ -176,6 +226,27 @@ try {
             $pdo->prepare("INSERT INTO progreso_diario (usuario_id, fecha, gimnasios_completados) VALUES (?,?,?) ON DUPLICATE KEY UPDATE gimnasios_completados = ?")->execute([$uid, $today, json_encode($gyms), json_encode($gyms)]);
         }
         echo json_encode(["success" => true]);
+    }
+    elseif (strpos($route, '/battle/victory') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $xp_gain = 10;
+        $pdo->prepare("UPDATE pokemon_coleccion SET xp = xp + ? WHERE usuario_id = ? AND is_partner = 1")->execute([$xp_gain, $uid]);
+        
+        $stmt = $pdo->prepare("SELECT id, xp, nivel FROM pokemon_coleccion WHERE usuario_id = ? AND is_partner = 1");
+        $stmt->execute([$uid]);
+        $p = $stmt->fetch();
+        
+        $leveledUp = false;
+        if ($p && $p['xp'] >= 100) {
+            $newXp = $p['xp'] - 100;
+            $newLevel = $p['nivel'] + 1;
+            $pdo->prepare("UPDATE pokemon_coleccion SET xp = ?, nivel = ? WHERE id = ?")->execute([$newXp, $newLevel, $p['id']]);
+            $leveledUp = true;
+            $p['xp'] = $newXp;
+            $p['nivel'] = $newLevel;
+        }
+
+        echo json_encode(["success" => true, "xp_gain" => $xp_gain, "leveled_up" => $leveledUp, "new_xp" => (int)$p['xp'], "new_level" => (int)$p['nivel']]);
     }
     // ─── COLECCIÓN ────────────────────────────────────────────────────────────
     elseif (strpos($route, '/coleccion') === 0) {

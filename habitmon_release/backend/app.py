@@ -18,6 +18,31 @@ CORS(app)
 @app.route('/')
 def serve_index():
     return send_from_directory(app.static_folder, 'index.html')
+
+# Compatibility Layer for local audit (Proxy PHP style routes to Flask)
+@app.route('/hb_api/index.php', methods=['GET', 'POST'])
+def php_shim():
+    import traceback
+    route = request.args.get('route', '/')
+    print(f"SHIM: Routing {request.method} request for {route}")
+    try:
+        # This is a very basic mapper for common routes used in api.js
+        if route.startswith('/auth/register'): return register()
+        if route.startswith('/auth/login'): return login()
+        if route.startswith('/starter/info'): return get_starter_info()
+        if route.startswith('/starter/elegir'): return elegir_starter()
+        if route.startswith('/habitos/hoy'): return get_habitos_hoy()
+        if route.startswith('/habitos/completar'): return completar_habito()
+        if route.startswith('/gimnasios/hoy'): return get_gimnasios_hoy()
+        if route.startswith('/gimnasios/completar'): return completar_gimnasio()
+        if route.startswith('/admin/config'): return admin_config()
+        if route.startswith('/coleccion'): return get_coleccion()
+        
+        return jsonify({"success":False, "msg": f"Route {route} not shimmed"}), 404
+    except Exception as e:
+        print(f"SHIM ERROR: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"success":False, "error": str(e), "trace": traceback.format_exc()}), 500
 # Use an absolute path for the database to avoid issues with current working directory
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'habitmon.db')
@@ -137,6 +162,20 @@ DEFAULT_HABITOS = [
      {"habito_id":"ponerse_calcetines","nombre":"Ponerse calcetines","icono":"🧦","daño":20}
    ]
   },
+  # GYM: HIGIENE (Incluye Ducha)
+  {"gym_id":"higiene","gym_nombre":"Gym Higiene",
+   "pokemon_fase1":{"id":"088","nombre":"Grimer","nivel":8,"maxhp":70},
+   "pokemon_fase2":{"id":"089","nombre":"Muk","nivel":12,"maxhp":90},
+   "fase1":[
+     {"habito_id":"lavarse_dientes","nombre":"Lavarse dientes","icono":"🪥","daño":35},
+     {"habito_id":"lavarse_cara","nombre":"Lavarse cara","icono":"🧼","daño":35}
+   ],
+   "fase2":[
+     {"habito_id":"lavarse_manos","nombre":"Lavarse hands","icono":"🤲","daño":20},
+     {"habito_id":"peinarse","nombre":"Peinarse","icono":"💇","daño":20},
+     {"habito_id":"ducharse","nombre":"Ducharse","icono":"🚿","daño":40}
+   ]
+  },
   # GYM: DESAYUNO
   {"gym_id":"desayuno","gym_nombre":"Gym Desayuno",
    "pokemon_fase1":{"id":"143","nombre":"Snorlax","nivel":10,"maxhp":100},
@@ -148,18 +187,26 @@ DEFAULT_HABITOS = [
    ],
    "fase2":None
   },
-  # GYM: HIGIENE
-  {"gym_id":"higiene","gym_nombre":"Gym Higiene",
-   "pokemon_fase1":{"id":"088","nombre":"Grimer","nivel":8,"maxhp":70},
-   "pokemon_fase2":{"id":"089","nombre":"Muk","nivel":12,"maxhp":90},
+  # GYM: COMIDA
+  {"gym_id":"comida","gym_nombre":"Gym Comida",
+   "pokemon_fase1":{"id":"056","nombre":"Mankey","nivel":12,"maxhp":80},
+   "pokemon_fase2":None,
    "fase1":[
-     {"habito_id":"lavarse_dientes","nombre":"Lavarse dientes","icono":"🪥","daño":35},
-     {"habito_id":"lavarse_cara","nombre":"Lavarse cara","icono":"🧼","daño":35}
+     {"habito_id":"lavarse_manos_c","nombre":"Lavar manos","icono":"🤲","daño":30},
+     {"habito_id":"comer_verdura","nombre":"Comer verdura","icono":"🥦","daño":40},
+     {"habito_id":"recoger_plato","nombre":"Recoger plato","icono":"🍽️","daño":30}
    ],
-   "fase2":[
-     {"habito_id":"lavarse_manos","nombre":"Lavarse manos","icono":"🤲","daño":30},
-     {"habito_id":"peinarse","nombre":"Peinarse","icono":"💇","daño":30}
-   ]
+   "fase2":None
+  },
+  # GYM: CENA
+  {"gym_id":"cena","gym_nombre":"Gym Cena",
+   "pokemon_fase1":{"id":"006","nombre":"Charizard","nivel":15,"maxhp":120},
+   "pokemon_fase2":None,
+   "fase1":[
+     {"habito_id":"cenar_bien","nombre":"Cenar todo","icono":"🥘","daño":50},
+     {"habito_id":"lavarse_dientes_n","nombre":"Lavar dientes","icono":"🪥","daño":50}
+   ],
+   "fase2":None
   },
   # GYM: ORDEN
   {"gym_id":"orden","gym_nombre":"Gym Orden",
@@ -171,6 +218,17 @@ DEFAULT_HABITOS = [
    "fase2":[
      {"habito_id":"recoger_habitacion","nombre":"Recoger habitación","icono":"🧸","daño":35},
      {"habito_id":"preparar_mochila","nombre":"Preparar mochila","icono":"🎒","daño":35}
+   ]
+  },
+  # GYM: ESTUDIO (Colegio)
+  {"gym_id":"estudio","gym_nombre":"Gym Estudio",
+   "pokemon_fase1":{"id":"063","nombre":"Abra","nivel":10,"maxhp":50},
+   "pokemon_fase2":{"id":"064","nombre":"Kadabra","nivel":16,"maxhp":90},
+   "fase1":[
+     {"habito_id":"hacer_deberes","nombre":"Hacer deberes","icono":"📚","daño":60}
+   ],
+   "fase2":[
+     {"habito_id":"leer_libro","nombre":"Leer 15 min","icono":"📖","daño":40}
    ]
   }
 ]

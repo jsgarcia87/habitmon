@@ -117,9 +117,18 @@ export const GameProvider = ({children}) => {
       }
 
       if(s?.success) {
-        setStarter(s.starter || s);
+        const data = s.starter || s;
+        setStarter({
+          ...data,
+          // Normalización para consistencia interna
+          starter_id: data.pokemon_id,
+          starter_nombre: data.pokemon_nombre,
+          starter_nivel: data.nivel || data.level || 5,
+          xp: data.xp || data.exp || 0
+        });
+        
         // Sync user state if starter was found on server but missing locally
-        const serverStarterId = s.starter?.pokemon_id || s.starter_id || s.pokemon_id;
+        const serverStarterId = data.pokemon_id;
         if (serverStarterId && !user?.starter_id) {
             const updatedUser = { ...user, starter_id: serverStarterId };
             localStorage.setItem('hm_user', JSON.stringify(updatedUser));
@@ -132,9 +141,10 @@ export const GameProvider = ({children}) => {
     } catch (e) {
       console.error("Error loading data:", e);
     } finally {
+      // Solo quitamos loading si ya terminó todo, para evitar parpadeos
       setLoading(false);
     }
-  }, []);
+  }, [user]); // Añadir user como dependencia para que el sync funcione correctamente
 
   const completarHabito = async (gym_id, habito_id) => {
     const r = await api.completarHabito(
@@ -145,6 +155,16 @@ export const GameProvider = ({children}) => {
         h.gym_id === gym_id && h.habito_id === habito_id
           ? {...h, completado: true} : h
       ));
+
+      // Actualizar progreso del starter si viene en la respuesta
+      if (r.new_xp !== undefined) {
+        setStarter(prev => ({
+          ...prev,
+          xp: r.new_xp,
+          nivel: r.new_level,
+          starter_nivel: r.new_level
+        }));
+      }
     }
     return r;
   };
@@ -193,9 +213,23 @@ export const GameProvider = ({children}) => {
     }
   };
 
+  const ganarBatalla = async () => {
+    const r = await api.ganarBatalla();
+    if (r.success && r.new_xp !== undefined) {
+      setStarter(prev => ({
+        ...prev,
+        xp: r.new_xp,
+        nivel: r.new_level,
+        starter_nivel: r.new_level
+      }));
+    }
+    return r;
+  };
 
   useEffect(() => {
     if(token) {
+      // Si no tenemos user heredado de localStorage, forzamos loading inicial
+      if (!user) setLoading(true);
       cargarDatos();
     }
   }, [token, cargarDatos]);
@@ -207,7 +241,7 @@ export const GameProvider = ({children}) => {
       gimnasiosHoy, coleccion, loading, notification, darkMode,
       login, register, logout, notify, toggleDarkMode,
       elegirStarter, completarHabito, resetHabitos,
-      completarGimnasio, cargarDatos, capturarPokemon
+      completarGimnasio, cargarDatos, capturarPokemon, ganarBatalla
     }}>
       {children}
     </Ctx.Provider>

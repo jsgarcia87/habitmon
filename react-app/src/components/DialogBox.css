@@ -1,0 +1,90 @@
+.dialog-container {
+  position: absolute;
+  bottom: 110px;
+  left: 15px;
+  right: 15px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-box {
+  background: #ffffff;
+  border: 4px solid #4a4a4a;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.1),
+    inset -4px -4px 0 #d9d9d9;
+  padding: 16px;
+  position: relative;
+  font-family: 'Press Start 2P', cursive;
+  line-height: 1.6;
+  min-height: 80px;
+  animation: dialog-appear 0.2s ease-out;
+}
+
+.dialog-name {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  background: #ffffff;
+  border: 4px solid #4a4a4a;
+  border-bottom: none;
+  padding: 4px 12px;
+  font-size: 8px;
+  color: #c0392b;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+.dialog-text {
+  font-size: 9px;
+  color: #333;
+  margin: 0;
+}
+
+.dialog-arrow {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-size: 14px;
+  color: #4a4a4a;
+  animation: arrow-blink 0.8s infinite;
+}
+
+.dialog-options {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.dialog-button {
+  background: #ffffff;
+  border: 2px solid #4a4a4a;
+  padding: 8px 16px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+.dialog-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.dialog-button.primary {
+  background: #2ecc71;
+  color: #fff;
+}
+
+@keyframes dialog-appear {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes arrow-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

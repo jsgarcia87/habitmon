@@ -1,178 +1,47 @@
-import React, { useState } from 'react';
-import CityMap from '../components/CityMap';
+import React, { useState, useMemo } from 'react';
 import { useGame } from '../context/GameContext';
+import CityMap from '../components/CityMap';
+import DialogBox from '../components/DialogBox';
+import { WORLD_DATA } from '../data/worldData';
 
-const WORLD_DATA = {
-  Map002: {
-    nombre: 'Pueblo Primavera',
-    npcs: [
-      {
-        nombre: 'Guía del Pueblo',
-        sprite: 'char_ 00_a',
-        posicion: { x: 5, y: 10 },
-        direccion: 2,
-        mensajes: ['¡Hola entrenado! Has empezado tu mañana con fuerza.', 'Si buscas los gimnasios de ORDEN y DESAYUNO...', '¡Cruza la Ruta 29 hacia el Oeste para llegar a Ciudad Fronsaf!']
-      },
-      {
-        nombre: 'Madre',
-        sprite: 'char_ 11_a',
-        posicion: { x: 15, y: 10 },
-        direccion: 0,
-        mensajes: ['¡Pórtate bien y cumple tus hábitos!', 'Recuerda que en casa puedes ver tus LOGROS pulsando A frente a la puerta.']
-      }
-    ],
-    buildings: [
-      { type: 'home', nombre: 'Hogar', x: 15, y: 7, targetMapId: 'Map003', spawn: { x: 12, y: 11 } },
-      { gymId: 'vestirse', nombre: 'Vestirse', x: 8, y: 5, targetMapId: 'Map007', spawn: { x: 10, y: 15 } },
-      { gymId: 'higiene', nombre: 'Higiene', x: 13, y: 15, targetMapId: 'Map005', spawn: { x: 8, y: 11 } },
-      { gymId: 'orden', nombre: 'Orden', x: 5, y: 13, targetMapId: 'Map006', spawn: { x: 8, y: 11 } }
-    ],
-    exits: {
-      left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }
-    }
-  },
-  Map003: {
-    nombre: 'Tu Casa',
-    npcs: [
-      {
-        nombre: 'Madre',
-        sprite: 'mom-johto',
-        posicion: { x: 12, y: 5 },
-        direccion: 0,
-        mensajes: ['¡Descansa un poco, hijo!', 'Has hecho un gran trabajo hoy.']
-      }
-    ],
-    buildings: [],
-    exits: {}
-  },
-  Map004: {
-    nombre: 'Gimnasio Desayuno',
-    npcs: [{ 
-      nombre: 'Líder Desayuno', 
-      sprite: 'char_ 02_a', 
-      posicion: { x: 8, y: 5 }, 
-      direccion: 0,
-      isLeader: true,
-      gymId: 'desayuno',
-      mensajes: ['¡El desayuno es la comida más importante! ¡Lucha con energía!'] 
-    }],
-    buildings: [], exits: {}
-  },
-  Map005: {
-    nombre: 'Gimnasio Higiene',
-    npcs: [{ 
-      nombre: 'Líder Higiene', 
-      sprite: 'char_ 01_a', 
-      posicion: { x: 8, y: 5 }, 
-      direccion: 0,
-      isLeader: true,
-      gymId: 'higiene',
-      mensajes: ['¡Veo que te has lavado las manos! Muéstrame tu disciplina en combate.'] 
-    }],
-    buildings: [], exits: {}
-  },
-  Map006: {
-    nombre: 'Gimnasio Orden',
-    npcs: [{ 
-      nombre: 'Líder Orden', 
-      sprite: 'char_ 00_a', 
-      posicion: { x: 8, y: 5 }, 
-      direccion: 0,
-      isLeader: true,
-      gymId: 'orden',
-      mensajes: ['Un cuarto limpio es una mente limpia. ¡Prepárate!'] 
-    }],
-    buildings: [], exits: {}
-  },
-  Map007: {
-    nombre: 'Gimnasio Vestirse',
-    npcs: [{ 
-      nombre: 'Líder Vestirse', 
-      sprite: 'char_ 11_a', 
-      posicion: { x: 10, y: 10 }, 
-      direccion: 0,
-      isLeader: true,
-      gymId: 'vestirse',
-      mensajes: ['¡Ese estilo es impecable! Veamos si tus ataques lo son también.'] 
-    }],
-    buildings: [], exits: {}
-  },
-  Map008: {
-    nombre: 'Ruta 29',
-    npcs: [
-      {
-        nombre: 'Entrenador Ruta',
-        sprite: 'char_ 01_a',
-        posicion: { x: 30, y: 12 },
-        direccion: 1,
-        mensajes: ['¡El aire puro de la ruta es lo mejor!', 'Sigue hacia el oeste para llegar a la ciudad.']
-      }
-    ],
-    buildings: [],
-    exits: {
-      right: { targetMap: 'Map002', spawn: { x: 1, y: 11 } },
-      left: { targetMap: 'Map070', spawn: { x: 35, y: 13 } }
-    }
-  },
-  Map070: {
-    nombre: 'Ciudad Fronsaf',
-    npcs: [
-      {
-        nombre: 'Guardia',
-        sprite: 'char_ 35_a',
-        posicion: { x: 20, y: 15 },
-        direccion: 2,
-        mensajes: ['Bienvenido a Ciudad Fronsaf.', 'Aquí encontrarás los gimnasios de DESAYUNO y ORDEN.']
-      }
-    ],
-    buildings: [
-      { gymId: 'desayuno', nombre: 'Gimnasio Desayuno', x: 16, y: 15, targetMapId: 'Map004', spawn: { x: 8, y: 11 } },
-      { gymId: 'orden', nombre: 'Gimnasio Orden', x: 25, y: 10, targetMapId: 'Map006', spawn: { x: 8, y: 11 } }
-    ],
-    exits: {
-      right: { targetMap: 'Map008', spawn: { x: 1, y: 13 } }
-    }
-  }
-};
-
-const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
+const CityScreen = ({ 
+  navigate, direction, aPressed, pPos, setPPos,
+  currentMapId, setCurrentMapId, 
+  lastExtMap, setLastExtMap,
+  lastExtPos, setLastExtPos
+}) => {
   const { habitosHoy, template } = useGame();
-  const [currentMapId, setCurrentMapId] = useState('Map002');
-  const [lastExteriorMapId, setLastExteriorMapId] = useState('Map002');
   const [dialog, setDialog] = useState(null);
-  const [exteriorPos, setExteriorPos] = useState(null);
 
   const currentMap = WORLD_DATA[currentMapId];
 
-  // Identificar gimnasios activos no asignados en ningún mapa y forzarlos en Map002
-  const baseBuildings = [...currentMap.buildings];
-  if (currentMapId === 'Map002' && template && template.length > 0) {
-    template.filter(g => g.activo).forEach((g, idx) => {
-      let isAssigned = false;
-      Object.values(WORLD_DATA).forEach(m => {
-        if (m.buildings.some(b => b.gymId === g.gym_id)) isAssigned = true;
-      });
-      // Si el gym no está en ningún edificio de ningún mapa, se dibuja como fallback al sur
-      if (!isAssigned) {
-        baseBuildings.push({ gymId: g.gym_id, nombre: g.gym_nombre || 'Gimnasio', x: 2 + (idx * 4), y: 14 });
-      }
-    });
-  }
-
-  // Filtramos dinámicamente los edificios inactivos basándonos en la template global
-  const activeBuildings = baseBuildings.filter(b => {
-    if (b.type === 'home') return true;
-    if (template && template.length > 0) {
-      const gymConfig = template.find(g => g.gym_id === b.gymId);
-      // Si existe config para el gimnasio y está desactivado, ocúltalo
-      if (gymConfig && gymConfig.activo === false) return false;
-    }
-    return true; // Si no hay config o está activo, lo mostramos por defecto
-  });
+  // Memoizar edificios para evitar reinicios innecesarios en CityMap
+  const activeBuildings = useMemo(() => {
+    // Audit: solo devolvemos los edificios definidos manualmente en WORLD_DATA.
+    // Esto asegura que "solo las casas" son interactivas.
+    return [...currentMap.buildings];
+  }, [currentMapId, currentMap.buildings]);
 
   const handleEvent = (event) => {
+    const totalHabits = habitosHoy?.length || 0;
+    const doneHabits = (habitosHoy || []).filter(h => h.completado).length;
+    const progress = totalHabits > 0 ? doneHabits / totalHabits : 1;
+
     if (event.type === 'gym_entry') {
-      const gymHabits = habitosHoy.filter(h => h.gym_id === event.gymId);
+      const b = event.building || currentMap.buildings.find(b => b.gymId === event.gymId);
+      const safePos = b ? { x: b.x, y: b.y + 1 } : { x: pPos.x, y: pPos.y };
+      
+      setLastExtPos(safePos);
+      if (setPPos) setPPos(safePos);
+
+      const gymConfig = template?.find(g => g.gym_id === event.gymId);
+      
+      if (gymConfig && gymConfig.activo === false) {
+        setDialog("Hoy no te tienes que hacer este hábito.");
+        return;
+      }
+
+      const gymHabits = (habitosHoy || []).filter(h => h.gym_id === event.gymId);
       const isDone = gymHabits.length > 0 && gymHabits.every(h => h.completado);
       
       if (isDone) {
@@ -182,6 +51,12 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
         navigate('gym', { gymId: event.gymId });
       }
     } else if (event.type === 'home_entry') {
+      const b = event.building || currentMap.buildings.find(b => b.type === 'home');
+      if (b) {
+        const safePos = { x: b.x, y: b.y + 1 };
+        setLastExtPos(safePos);
+        if (setPPos) setPPos(safePos);
+      }
       navigate('home');
     } else if (event.type === 'npc_talk') {
       if (event.npc.isLeader) {
@@ -190,28 +65,23 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
         setDialog(event.npc.mensajes[0]);
       }
     } else if (event.type === 'transfer') {
-      // Automatic detection of interior -> exterior
-      const isInterior = currentMapId.startsWith('Map003') || currentMapId.startsWith('Map004') || 
-                        currentMapId.startsWith('Map005') || currentMapId.startsWith('Map006') || 
-                        currentMapId.startsWith('Map007');
-
-      if (isInterior && event.side === 'down') {
-        const targetMap = lastExteriorMapId || 'Map002';
+      // Detección centralizada de tipo de mapa (Interior -> Exterior)
+      if (currentMap.isInterior && event.side === 'down') {
+        const targetMap = lastExtMap || 'Map002';
         setCurrentMapId(targetMap);
         
-        // Door coordinates for consistency
-        const doorFallback = { 
-          'Map003': {x:15,y:8}, 
-          'Map004': {x:16,y:16}, 
-          'Map005': {x:13,y:16}, 
-          'Map006': {x:25,y:11}, 
-          'Map007': {x:8,y:6} 
-        };
-        const pos = exteriorPos || doorFallback[currentMapId] || { x: 15, y: 8 };
+        const pos = lastExtPos || { x: 15, y: 8 };
         if (setPPos) setPPos(pos);
+      } else if (event.targetMap) {
+        // Detección automática (Puertas/Warps dinámicos del JSON)
+        if (!currentMap.isInterior) setLastExtMap(currentMapId);
+        setCurrentMapId(event.targetMap);
+        if (setPPos) setPPos(event.spawn);
       } else {
+        // Detección manual (Bordes de mapa configurados en WORLD_DATA)
         const exit = currentMap.exits[event.side];
         if (exit) {
+          if (!currentMap.isInterior) setLastExtMap(currentMapId);
           setCurrentMapId(exit.targetMap);
           if (setPPos) setPPos(exit.spawn);
         }

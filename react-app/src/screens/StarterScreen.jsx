@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import PokemonSprite from '../components/PokemonSprite';
 import DialogBox from '../components/DialogBox';
-import TileMap from '../components/TileMap';
+import CityMap from '../components/CityMap';
 import { getAssetPath } from '../api';
 
 const STARTERS = [
@@ -32,6 +32,7 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
   const [dialogueStep, setDialogueStep] = useState(0);
   const [mode, setMode] = useState('intro'); // intro, exploration, selection, confirmed
   const [isJumping, setIsJumping] = useState(false);
+  const [playerPos, setPlayerPos] = useState({ x: 7, y: 12 });
 
   const OAK_DIALOGUE = [
     '¡Bienvenido al mundo POKÉMON!',
@@ -81,13 +82,17 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         
         {/* El Mapa base */}
-        <TileMap 
+        <CityMap 
           mapId="Map064"
-          startX={7} startY={12} 
+          playerPos={playerPos}
+          setPlayerPos={setPlayerPos}
           direction={direction}
           aPressed={aPressed}
+          npcs={[]}
+          buildings={[]}
+          onEvent={() => {}}
         >
-          {/* Pokéballs Interactivas (Ahora DENTRO del TileMap para heredar la cámara) */}
+          {/* Pokéballs Interactivas (Ahora DENTRO del CityMap para heredar la cámara) */}
           {mode === 'exploration' && (
             <>
               {/* Bola 1 - Chikorita */}
@@ -115,7 +120,7 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
               />
             </>
           )}
-        </TileMap>
+        </CityMap>
 
         {/* Intro Overlay */}
         {mode === 'intro' && (
@@ -128,7 +133,7 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
           }}>
             <DialogBox 
               text={OAK_DIALOGUE[dialogueStep]} 
-              onNext={handleNextDialogue}
+              onComplete={handleNextDialogue}
               showArrow={true}
             />
           </div>

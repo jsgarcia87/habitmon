@@ -24,21 +24,40 @@ const AdminScreen = ({ onNavigate }) => {
       ]
     },
     {
+      gym_id: 'higiene', gym_nombre: 'Gimnasio Higiene', activo: true,
+      habitos: [
+        {id:'h_dientes', nombre:'Lavar dientes', icono:'🪥', daño:40, activo:true},
+        {id:'h_ducha',   nombre:'Ducha', icono:'🚿', daño:50, activo:true},
+      ]
+    },
+    {
       gym_id: 'desayuno', gym_nombre: 'Gimnasio Desayuno', activo: true,
       habitos: [
         {id:'d_leche', nombre:'Tomar leche', icono:'🥛', daño:30, activo:true},
       ]
     },
     {
-      gym_id: 'higiene', gym_nombre: 'Gimnasio Higiene', activo: true,
+      gym_id: 'comida', gym_nombre: 'Gimnasio Comida', activo: true,
       habitos: [
-        {id:'h_dientes', nombre:'Lavar dientes', icono:'🪥', daño:40, activo:true},
+        {id:'c_verdura', nombre:'Comer verdura', icono:'🥦', daño:30, activo:true},
       ]
     },
     {
       gym_id: 'orden', gym_nombre: 'Gimnasio Orden', activo: true,
       habitos: [
         {id:'o_cuarto', nombre:'Recoger cuarto', icono:'🧸', daño:50, activo:true},
+      ]
+    },
+    {
+      gym_id: 'cena', gym_nombre: 'Gimnasio Cena', activo: true,
+      habitos: [
+        {id:'c_cena', nombre:'Cenar todo', icono:'🥘', daño:40, activo:true},
+      ]
+    },
+    {
+      gym_id: 'estudio', gym_nombre: 'Gimnasio Estudio', activo: true,
+      habitos: [
+        {id:'e_deberes', nombre:'Hacer deberes', icono:'📚', daño:50, activo:true},
       ]
     }
   ];

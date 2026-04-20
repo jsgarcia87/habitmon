@@ -1,60 +1,103 @@
 import React from 'react';
+import { getAssetPath } from '../api/assets';
 
-const HPBar = ({ current, max, name, level, alignment = 'player' }) => {
+const HPBar = ({ current, max, name, level, alignment = 'player', exp = 0 }) => {
   const percentage = Math.max(0, Math.min(100, (current / max) * 100));
+  const expPercentage = Math.min(100, exp % 100); // Simple exp bar for now
   
-  let color = '#2ecc71'; 
-  if (percentage < 50) color = '#f1c40f'; 
-  if (percentage < 20) color = '#e74c3c'; 
+  let hpColor = '#32cd32'; // Green
+  if (percentage < 50) hpColor = '#fdec31'; // Yellow
+  if (percentage < 20) hpColor = '#e74c3c'; // Red
 
-const boxStyle = {
-    backgroundColor: 'var(--bg-panel)',
-    border: '4px double var(--border-color)',
-    padding: '4px',
-    width: '120px',
-    boxShadow: '2px 2px 0 rgba(0,0,0,0.1)',
-    textAlign: 'left',
+  // Dimensions based on databox_normal.png (192 x 78)
+  const containerStyle = {
     position: 'relative',
-    color: 'var(--text-main)'
+    width: '192px',
+    height: '78px',
+    backgroundImage: `url(${getAssetPath(alignment === 'player' ? 'Graphics/pictures/battle/databox_normal.png' : 'Graphics/pictures/battle/databox_normal_foe.png')})`,
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat',
+    imageRendering: 'pixelated',
+    fontFamily: '"Press Start 2P", monospace',
+    color: '#333'
+  };
+
+  const nameStyle = {
+    position: 'absolute',
+    left: '16px',
+    top: '12px',
+    fontSize: '10px',
+    fontWeight: 'bold',
+    color: '#444'
+  };
+
+  const levelStyle = {
+    position: 'absolute',
+    right: '24px',
+    top: '12px',
+    fontSize: '9px',
+    color: '#444'
+  };
+
+  // HP Bar alignment within the databox
+  const hpContainerStyle = {
+    position: 'absolute',
+    left: '82px',
+    top: '38px',
+    width: '96px',
+    height: '12px',
+    backgroundColor: '#000',
+    border: '1px solid #111',
+    borderRadius: '1px',
+    overflow: 'hidden'
+  };
+
+  const hpFillStyle = {
+    width: `${percentage}%`,
+    height: '100%',
+    backgroundColor: hpColor,
+    transition: 'width 0.4s ease-out'
+  };
+
+  // EXP Bar (Only for player)
+  const expBarStyle = {
+    position: 'absolute',
+    left: '42px',
+    bottom: '8px',
+    width: '136px',
+    height: '3px',
+    backgroundColor: '#222',
+    display: alignment === 'player' ? 'block' : 'none'
+  };
+
+  const expFillStyle = {
+    width: `${expPercentage}%`,
+    height: '100%',
+    backgroundColor: '#4080F0'
+  };
+
+  const textHpStyle = {
+    position: 'absolute',
+    right: '24px',
+    bottom: '18px',
+    fontSize: '8px',
+    color: '#444',
+    display: alignment === 'player' ? 'block' : 'none'
   };
 
   return (
-    <div style={boxStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-        <span style={{ fontSize: '7px', fontWeight: 'bold', letterSpacing: '1px' }}>{name?.toUpperCase()}</span>
-        <span style={{ fontSize: '7px' }}>Lv{level}</span>
+    <div style={containerStyle}>
+      <div style={nameStyle}>{name?.toUpperCase()}</div>
+      <div style={levelStyle}>Lv{level}</div>
+      <div style={hpContainerStyle}>
+        <div style={hpFillStyle} />
       </div>
-      
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '4px',
-        backgroundColor: '#444',
-        padding: '2px',
-        borderRadius: '2px'
-      }}>
-        <span style={{ color: '#f1c40f', fontSize: '6px', fontWeight: 'bold' }}>HP:</span>
-        <div style={{ 
-          flex: 1,
-          height: '4px', 
-          backgroundColor: '#222', 
-          border: '1px solid #000',
-          position: 'relative'
-        }}>
-          <div style={{ 
-            width: `${percentage}%`, 
-            height: '100%', 
-            backgroundColor: color,
-            transition: 'width 0.5s ease-in-out'
-          }} />
-        </div>
+      <div style={textHpStyle}>
+        {Math.ceil(current)} / {max}
       </div>
-
-      {alignment === 'player' && (
-        <div style={{ textAlign: 'right', fontSize: '7px', marginTop: '2px' }}>
-          {Math.ceil(current)}/ {max}
-        </div>
-      )}
+      <div style={expBarStyle}>
+        <div style={expFillStyle} />
+      </div>
     </div>
   );
 };

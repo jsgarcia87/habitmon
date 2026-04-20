@@ -118,25 +118,34 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
             width: 90,
             height: 90,
             borderRadius: '50%',
-            background: 'rgba(255,255,255,0.15)',
-            border: '2px solid rgba(255,255,255,0.3)',
+            background: joystickActive ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)',
+            border: joystickActive ? '2px solid rgba(255,255,255,0.6)' : '2px solid rgba(255,255,255,0.3)',
             backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
-            touchAction: 'none'
+            touchAction: 'none',
+            transition: 'all 0.1s ease',
+            transform: joystickActive ? 'scale(1.05)' : 'scale(1)'
           }}
         >
+          {/* Marcadores de dirección sutiles */}
+          <div style={{ position: 'absolute', top: 5, fontSize: 8, color: 'rgba(255,255,255,0.4)', fontFamily: '"Press Start 2P"' }}>▲</div>
+          <div style={{ position: 'absolute', bottom: 5, fontSize: 8, color: 'rgba(255,255,255,0.4)', fontFamily: '"Press Start 2P"' }}>▼</div>
+          <div style={{ position: 'absolute', left: 5, fontSize: 8, color: 'rgba(255,255,255,0.4)', fontFamily: '"Press Start 2P"' }}>◀</div>
+          <div style={{ position: 'absolute', right: 5, fontSize: 8, color: 'rgba(255,255,255,0.4)', fontFamily: '"Press Start 2P"' }}>▶</div>
+
           {/* Punto central del joystick */}
           <div style={{
             width: 35,
             height: 35,
             borderRadius: '50%',
-            background: 'rgba(255,255,255,0.4)',
-            border: '2px solid rgba(255,255,255,0.6)',
+            background: joystickActive ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.4)',
+            border: '2px solid rgba(255,255,255,0.8)',
             transform: `translate(${joystickPos.x}px, ${joystickPos.y}px)`,
-            transition: joystickActive ? 'none' : 'transform 0.1s ease'
+            transition: joystickActive ? 'none' : 'transform 0.1s ease',
+            boxShadow: joystickActive ? '0 0 15px rgba(255,255,255,0.3)' : 'none'
           }}/>
         </div>
       </div>
@@ -148,7 +157,7 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
         right: 30,
         display: 'flex',
         flexDirection: 'column',
-        gap: 12,
+        gap: 15,
         alignItems: 'center',
         pointerEvents: 'auto'
       }}>
@@ -157,25 +166,25 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
           onTouchEnd={() => handleKey('z','up')}
           onMouseDown={() => handleKey('z','down')}
           onMouseUp={() => handleKey('z','up')}
-          className="gb-control-btn"
+          className="gb-control-btn btn-a"
           style={{
-            width: 55,
-            height: 55,
+            width: 60,
+            height: 60,
             borderRadius: '50%',
-            background: 'rgba(220,50,50,0.7)',
-            border: '3px solid rgba(255,100,100,0.9)',
-            color: 'rgba(255,255,255,0.9)',
+            background: 'linear-gradient(145deg, #e74c3c, #c0392b)',
+            border: '3px solid #fff',
+            color: '#fff',
             fontFamily: '"Press Start 2P"',
-            fontSize: 14,
+            fontSize: 16,
             cursor: 'pointer',
-            backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             userSelect: 'none',
             WebkitUserSelect: 'none',
-            boxShadow: '0 4px 0 rgba(0,0,0,0.3)',
-            transition: 'transform 0.05s, box-shadow 0.05s'
+            boxShadow: '0 6px 0 #922b21, 0 10px 15px rgba(0,0,0,0.4)',
+            transition: 'all 0.05s active',
+            outline: 'none'
           }}
         >A</button>
 
@@ -184,28 +193,38 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
           onTouchEnd={() => handleKey('x','up')}
           onMouseDown={() => handleKey('x','down')}
           onMouseUp={() => handleKey('x','up')}
-          className="gb-control-btn"
+          className="gb-control-btn btn-b"
           style={{
-            width: 48,
-            height: 48,
+            width: 52,
+            height: 52,
             borderRadius: '50%',
-            background: 'rgba(50,50,180,0.6)',
-            border: '3px solid rgba(100,100,220,0.8)',
-            color: 'rgba(255,255,255,0.8)',
+            background: 'linear-gradient(145deg, #3498db, #2980b9)',
+            border: '3px solid #fff',
+            color: '#fff',
             fontFamily: '"Press Start 2P"',
-            fontSize: 11,
+            fontSize: 12,
             cursor: 'pointer',
-            backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             userSelect: 'none',
             WebkitUserSelect: 'none',
-            boxShadow: '0 4px 0 rgba(0,0,0,0.3)',
-            transition: 'transform 0.05s, box-shadow 0.05s'
+            boxShadow: '0 6px 0 #1f618d, 0 10px 15px rgba(0,0,0,0.4)',
+            transition: 'all 0.05s active',
+            outline: 'none'
           }}
         >B</button>
       </div>
+
+      <style>{`
+        .gb-control-btn:active {
+          transform: translateY(4px);
+          box-shadow: 0 2px 0 #7b241c, 0 5px 10px rgba(0,0,0,0.4) !important;
+        }
+        .btn-b:active {
+          box-shadow: 0 2px 0 #1a5276, 0 5px 10px rgba(0,0,0,0.4) !important;
+        }
+      `}</style>
 
       {/* START/SELECT — centro inferior */}
       <div style={{
