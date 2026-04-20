@@ -32,18 +32,31 @@ const WORLD_DATA = {
     }
   },
   Map003: {
-    nombre: 'Gimnasio Interior',
+    nombre: 'Tu Casa',
     npcs: [
       {
-        nombre: 'Líder de Gimnasio',
-        sprite: 'char_ 02_a',
-        posicion: { x: 5, y: 2 },
+        nombre: 'Madre',
+        sprite: 'mom-johto',
+        posicion: { x: 12, y: 5 },
         direccion: 0,
-        mensajes: ['¡Bienvenido al reto diario!', 'Demuestra que has cumplido tus hábitos para ganar la medalla.']
+        mensajes: ['¡Descansa un poco, hijo!', 'Has hecho un gran trabajo hoy.']
       }
     ],
     buildings: [],
     exits: {}
+  },
+  Map004: {
+    nombre: 'Gimnasio Desayuno',
+    npcs: [{ 
+      nombre: 'Líder Desayuno', 
+      sprite: 'char_ 02_a', 
+      posicion: { x: 8, y: 5 }, 
+      direccion: 0,
+      isLeader: true,
+      gymId: 'desayuno',
+      mensajes: ['¡El desayuno es la comida más importante! ¡Lucha con energía!'] 
+    }],
+    buildings: [], exits: {}
   },
   Map005: {
     nombre: 'Gimnasio Higiene',
@@ -106,15 +119,15 @@ const WORLD_DATA = {
     npcs: [
       {
         nombre: 'Guardia',
-        sprite: 'char_ 35_A',
+        sprite: 'char_ 35_a',
         posicion: { x: 20, y: 15 },
         direccion: 2,
         mensajes: ['Bienvenido a Ciudad Fronsaf.', 'Aquí encontrarás los gimnasios de DESAYUNO y ORDEN.']
       }
     ],
     buildings: [
-      { gymId: 'desayuno', nombre: 'Gimnasio Desayuno', x: 16, y: 15 },
-      { gymId: 'orden', nombre: 'Gimnasio Orden', x: 25, y: 10 }
+      { gymId: 'desayuno', nombre: 'Gimnasio Desayuno', x: 16, y: 15, targetMapId: 'Map004', spawn: { x: 8, y: 11 } },
+      { gymId: 'orden', nombre: 'Gimnasio Orden', x: 25, y: 10, targetMapId: 'Map006', spawn: { x: 8, y: 11 } }
     ],
     exits: {
       right: { targetMap: 'Map008', spawn: { x: 1, y: 13 } }
@@ -125,6 +138,7 @@ const WORLD_DATA = {
 const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
   const { habitosHoy, template } = useGame();
   const [currentMapId, setCurrentMapId] = useState('Map002');
+  const [lastExteriorMapId, setLastExteriorMapId] = useState('Map002');
   const [dialog, setDialog] = useState(null);
   const [exteriorPos, setExteriorPos] = useState(null);
 
@@ -159,20 +173,16 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
   const handleEvent = (event) => {
     if (event.type === 'gym_entry') {
       const gymHabits = habitosHoy.filter(h => h.gym_id === event.gymId);
-      // Solución Bug Lock-out: `every` da true si la lista está vacía. Exigimos lenght > 0.
       const isDone = gymHabits.length > 0 && gymHabits.every(h => h.completado);
       
       if (isDone) {
         setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId?.toUpperCase() || ''} hoy.`);
       } else {
-        // MEMORIA EXTERIOR
-        setExteriorPos({ ...pPos });
-        const target = event.targetMapId || 'Map003';
-        setCurrentMapId(target);
-        if (setPPos) setPPos(event.spawn || { x: 5, y: 9 });
+        // Redirigir al motor especializado de gimnasios
+        navigate('gym', { gymId: event.gymId });
       }
-    } else if (event.type === 'profile_open') {
-      navigate('profile');
+    } else if (event.type === 'home_entry') {
+      navigate('home');
     } else if (event.type === 'npc_talk') {
       if (event.npc.isLeader) {
         navigate('battle', { tipo: 'gym', gymId: event.npc.gymId });
@@ -180,18 +190,30 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
         setDialog(event.npc.mensajes[0]);
       }
     } else if (event.type === 'transfer') {
-      // Detección de salida universal de interiores (Maps 3, 5, 6, 7)
-      const interiors = ['Map003', 'Map005', 'Map006', 'Map007'];
-      if (interiors.includes(currentMapId) && event.side === 'down') {
-        setCurrentMapId('Map002');
-        // Restaurar posición según el mapa del que venimos (fallback a la puerta correspondiente)
-        const doorFallback = { 'Map003': {x:15,y:8}, 'Map005': {x:13,y:16}, 'Map006': {x:5,y:14}, 'Map007': {x:8,y:6} };
-        if (setPPos) setPPos(exteriorPos || doorFallback[currentMapId] || { x: 15, y: 8 });
+      // Automatic detection of interior -> exterior
+      const isInterior = currentMapId.startsWith('Map003') || currentMapId.startsWith('Map004') || 
+                        currentMapId.startsWith('Map005') || currentMapId.startsWith('Map006') || 
+                        currentMapId.startsWith('Map007');
+
+      if (isInterior && event.side === 'down') {
+        const targetMap = lastExteriorMapId || 'Map002';
+        setCurrentMapId(targetMap);
+        
+        // Door coordinates for consistency
+        const doorFallback = { 
+          'Map003': {x:15,y:8}, 
+          'Map004': {x:16,y:16}, 
+          'Map005': {x:13,y:16}, 
+          'Map006': {x:25,y:11}, 
+          'Map007': {x:8,y:6} 
+        };
+        const pos = exteriorPos || doorFallback[currentMapId] || { x: 15, y: 8 };
+        if (setPPos) setPPos(pos);
       } else {
         const exit = currentMap.exits[event.side];
         if (exit) {
           setCurrentMapId(exit.targetMap);
-          if(setPPos) setPPos(exit.spawn);
+          if (setPPos) setPPos(exit.spawn);
         }
       }
     } else if (event.type === 'encounter') {
@@ -223,9 +245,13 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
         {/* HUD */}
         <div style={{ 
           position: 'absolute', top: '10px', left: '10px', 
-          background: 'rgba(255,255,255,0.8)', padding: '5px 10px',
-          border: '2px solid #333', fontSize: '8px', zIndex: 10,
-          fontFamily: '"Press Start 2P"'
+          background: 'var(--bg-panel)', padding: '5px 10px',
+          border: '2px solid var(--border-color)', 
+          color: 'var(--text-main)',
+          fontSize: '8px', zIndex: 10,
+          fontFamily: '"Press Start 2P"',
+          opacity: 0.9,
+          boxShadow: '2px 2px 0 rgba(0,0,0,0.2)'
         }}>
           {currentMap.nombre.toUpperCase()}
         </div>
@@ -234,10 +260,16 @@ const CityScreen = ({ navigate, direction, aPressed, pPos, setPPos }) => {
           <div 
             onClick={() => setDialog(null)}
             className="gb-dialog"
-            style={{ position: 'absolute', bottom: '20px', left: '20px', right: '20px', fontSize: '10px', zIndex: 100 }}
+            style={{ 
+              position: 'absolute', bottom: '20px', left: '20px', right: '20px', 
+              fontSize: '10px', zIndex: 100,
+              background: 'var(--bg-panel)',
+              color: 'var(--text-main)',
+              border: '4px solid var(--border-color)'
+            }}
           >
             {dialog}
-            <div className="blinker" style={{ textAlign: 'right', fontSize: '14px' }}>▼</div>
+            <div className="blinker" style={{ textAlign: 'right', fontSize: '14px', color: 'var(--text-main)' }}>▼</div>
           </div>
         )}
       </div>

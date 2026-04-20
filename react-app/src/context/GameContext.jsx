@@ -17,6 +17,20 @@ export const GameProvider = ({children}) => {
   const [gimnasiosHoy, setGimnasiosHoy] = useState([]);
   const [coleccion, setColeccion] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState(null); 
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('hm_theme') === 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem('hm_theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode(!darkMode);
+
+  const notify = (message, type = 'info') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 5000);
+  };
 
   const saveAuth = (token, usuario) => {
     localStorage.setItem('hm_token', token);
@@ -50,8 +64,13 @@ export const GameProvider = ({children}) => {
     const r = await api.elegirStarter(
       {pokemon_id, pokemon_nombre});
     if(r.success) {
-      setUser(u => ({...u, starter_id: pokemon_id,
-                          starter_nombre: pokemon_nombre}));
+      const updatedUser = {
+        ...user, 
+        starter_id: pokemon_id,
+        starter_nombre: pokemon_nombre
+      };
+      localStorage.setItem('hm_user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
       await cargarDatos();
     }
     return r;
@@ -97,7 +116,16 @@ export const GameProvider = ({children}) => {
         return;
       }
 
-      if(s?.success) setStarter(s.starter || s);
+      if(s?.success) {
+        setStarter(s.starter || s);
+        // Sync user state if starter was found on server but missing locally
+        const serverStarterId = s.starter?.pokemon_id || s.starter_id || s.pokemon_id;
+        if (serverStarterId && !user?.starter_id) {
+            const updatedUser = { ...user, starter_id: serverStarterId };
+            localStorage.setItem('hm_user', JSON.stringify(updatedUser));
+            setUser(updatedUser);
+        }
+      }
       if(h?.success) setHabitosHoy(h.habitos || []);
       if(g?.success) setGimnasiosHoy(g.gimnasios || []);
       if(c?.success) setColeccion(c.pokemon || []);
@@ -124,6 +152,12 @@ export const GameProvider = ({children}) => {
   const completarGimnasio = async (gym_id, pk_id, pk_nombre) => {
     const r = await api.completarGimnasio(
       {gym_id, pokemon_id:pk_id, pokemon_nombre:pk_nombre});
+    if(r.success) await cargarDatos();
+    return r;
+  };
+
+  const resetHabitos = async () => {
+    const r = await api.resetHabitosHoy();
     if(r.success) await cargarDatos();
     return r;
   };
@@ -170,9 +204,9 @@ export const GameProvider = ({children}) => {
     <Ctx.Provider value={{
       user, token, starter, habitosHoy,
       template, fetchTemplate, saveCustomTemplate,
-      gimnasiosHoy, coleccion, loading,
-      login, register, logout,
-      elegirStarter, completarHabito,
+      gimnasiosHoy, coleccion, loading, notification, darkMode,
+      login, register, logout, notify, toggleDarkMode,
+      elegirStarter, completarHabito, resetHabitos,
       completarGimnasio, cargarDatos, capturarPokemon
     }}>
       {children}

@@ -88,16 +88,16 @@ CREATE TABLE `habitos_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Datos iniciales de ejemplo
-INSERT INTO `gimnasios_template` VALUES ('gym_vestirse', 'Gimnasio Vestirse', 'morning', 'Graphics/battlebacks/room.png', 1);
-INSERT INTO `gimnasios_template` VALUES ('gym_desayuno', 'Gimnasio Desayuno', 'morning', 'Graphics/battlebacks/indoor.png', 2);
-INSERT INTO `gimnasios_template` VALUES ('gym_higiene', 'Gimnasio Higiene', 'day', 'Graphics/battlebacks/outdoor.png', 3);
-INSERT INTO `gimnasios_template` VALUES ('gym_orden', 'Gimnasio Orden', 'night', 'Graphics/battlebacks/room.png', 4);
+INSERT INTO `gimnasios_template` VALUES ('vestirse', 'Gimnasio Vestirse', 'morning', 'Graphics/battlebacks/room.png', 1);
+INSERT INTO `gimnasios_template` VALUES ('desayuno', 'Gimnasio Desayuno', 'morning', 'Graphics/battlebacks/indoor.png', 2);
+INSERT INTO `gimnasios_template` VALUES ('higiene', 'Gimnasio Higiene', 'day', 'Graphics/battlebacks/outdoor.png', 3);
+INSERT INTO `gimnasios_template` VALUES ('orden', 'Gimnasio Orden', 'night', 'Graphics/battlebacks/room.png', 4);
 
 INSERT INTO `pokemon_template` (gym_id, pokemon_id, nombre, nivel, orden_en_gym) VALUES 
-('gym_vestirse', '052', 'Meowth', 5, 0),
-('gym_desayuno', '094', 'Gengar', 8, 0),
-('gym_higiene', '019', 'Rattata', 10, 0),
-('gym_orden', '066', 'Machop', 12, 0);
+('vestirse', '052', 'Meowth', 5, 0),
+('desayuno', '094', 'Gengar', 8, 0),
+('higiene', '019', 'Rattata', 10, 0),
+('orden', '066', 'Machop', 12, 0);
 
 INSERT INTO `habitos_template` (id, pokemon_template_id, nombre, daño, icono) VALUES 
 ('q_pant', 1, 'Quitar pantalones', 20, '👖'),

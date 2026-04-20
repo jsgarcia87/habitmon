@@ -11,40 +11,34 @@ const AdminScreen = ({ onNavigate }) => {
   const { template, fetchTemplate, saveCustomTemplate } = useGame();
   const [config, setConfig] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
 
   const DEFAULT_CONFIG = [
     {
-      gym_id: 'vestirse', gym_nombre: 'Gym Vestirse', activo: true,
+      gym_id: 'vestirse', gym_nombre: 'Gimnasio Vestirse', activo: true,
       habitos: [
-        {id:'quitar_pijama', nombre:'Quitar pijama', icono:'🌙', daño:25, activo:true},
-        {id:'ponerse_pantalones',nombre:'Ponerse pantalones', icono:'👖', daño:25, activo:true},
-        {id:'ponerse_camiseta',nombre:'Ponerse camiseta', icono:'👕', daño:25, activo:true},
-        {id:'ponerse_calcetines',nombre:'Ponerse calcetines', icono:'🧦', daño:15, activo:true},
+        {id:'q_pant', nombre:'Quitar pantalones', icono:'👖', daño:20, activo:true},
+        {id:'q_cam',  nombre:'Quitar camiseta', icono:'👕', daño:20, activo:true},
       ]
     },
     {
-      gym_id: 'desayuno', gym_nombre: 'Gym Desayuno', activo: true,
+      gym_id: 'desayuno', gym_nombre: 'Gimnasio Desayuno', activo: true,
       habitos: [
-        {id:'tomar_leche',nombre:'Tomar leche', icono:'🥛',daño:35,activo:true},
-        {id:'comer_tostadas',nombre:'Comer tostadas', icono:'🍞',daño:35,activo:true},
-        {id:'comer_fruta',nombre:'Comer fruta', icono:'🍊',daño:30,activo:false},
+        {id:'d_leche', nombre:'Tomar leche', icono:'🥛', daño:30, activo:true},
       ]
     },
     {
-      gym_id: 'higiene', gym_nombre: 'Gym Higiene', activo: true,
+      gym_id: 'higiene', gym_nombre: 'Gimnasio Higiene', activo: true,
       habitos: [
-        {id:'lavarse_dientes',nombre:'Lavarse dientes', icono:'🪥',daño:35,activo:true},
-        {id:'lavarse_cara',nombre:'Lavarse cara', icono:'🧼',daño:35,activo:true},
-        {id:'peinarse',nombre:'Peinarse', icono:'💇',daño:20,activo:true},
+        {id:'h_dientes', nombre:'Lavar dientes', icono:'🪥', daño:40, activo:true},
       ]
     },
     {
-      gym_id: 'orden', gym_nombre: 'Gym Orden', activo: true,
+      gym_id: 'orden', gym_nombre: 'Gimnasio Orden', activo: true,
       habitos: [
-        {id:'hacer_cama',nombre:'Hacer la cama', icono:'🛏️',daño:35,activo:true},
-        {id:'recoger_habitacion', nombre:'Recoger habitación', icono:'🧸',daño:35,activo:true},
-        {id:'preparar_mochila',nombre:'Preparar mochila', icono:'🎒',daño:30,activo:true},
+        {id:'o_cuarto', nombre:'Recoger cuarto', icono:'🧸', daño:50, activo:true},
       ]
     }
   ];
@@ -109,6 +103,18 @@ const AdminScreen = ({ onNavigate }) => {
     if(r.success) {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
+    }
+  };
+
+  const { resetHabitos } = useGame();
+  const handleResetDay = async () => {
+    if (!window.confirm('⚠️ ¿Estás seguro? Se borrará TODO el progreso de hoy (hábitos y medallas).')) return;
+    setResetting(true);
+    const r = await resetHabitos();
+    setResetting(false);
+    if (r.success) {
+      setResetDone(true);
+      setTimeout(() => setResetDone(false), 2000);
     }
   };
 
@@ -211,7 +217,16 @@ const AdminScreen = ({ onNavigate }) => {
 
       {/* Botón guardar */}
       <button onClick={handleSave} disabled={saving} style={saveBtnStyle(saved, saving)}>
-        {saving ? 'GUARDANDO...' : saved ? '✓ GUARDADO' : 'GUARDAR CAMBIOS'}
+        {saving ? 'GUARDANDO...' : saved ? '✓ GUARDADO' : 'GUARDAR CONFIG.'}
+      </button>
+
+      {/* Botón Reset Manual */}
+      <button 
+        onClick={handleResetDay} 
+        disabled={resetting} 
+        style={{...saveBtnStyle(resetDone, resetting), background: resetDone ? '#4CAF50' : '#444', marginTop: 12}}
+      >
+        {resetting ? 'REINICIANDO...' : resetDone ? '✓ DÍA REINICIADO' : '🔄 RESETEAR PROGRESO HOY'}
       </button>
     </div>
   );

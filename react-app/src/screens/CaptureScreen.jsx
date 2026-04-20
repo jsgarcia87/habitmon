@@ -86,7 +86,12 @@ const CaptureScreen = ({ navigate, gymId }) => {
 
         {/* Results Window */}
         {step >= 5 && (
-          <div className="gb-window" style={{ width: '90%', maxWidth: '300px', color: '#333' }}>
+          <div className="gb-window" style={{ 
+            width: '90%', maxWidth: '300px', 
+            background: 'var(--bg-panel)',
+            color: 'var(--text-main)',
+            border: '4px solid var(--border-color)'
+          }}>
              {step === 5 ? (
                <>
                  <p style={{ fontSize: '10px' }}>¡{pkName.toUpperCase()} fue capturado!</p>
@@ -96,10 +101,23 @@ const CaptureScreen = ({ navigate, gymId }) => {
              ) : (
                <>
                   <p style={{ fontSize: '10px' }}>{user.starter_nombre.toUpperCase()} ganó 350 EXP.</p>
-                  <div style={{ height: '10px', background: '#eee', border: '2px solid #333', marginTop: '15px', position: 'relative' }}>
-                     <div style={{ width: `${expProgress}%`, height: '100%', background: '#3498db', transition: 'width 0.1s' }} />
+                  <div style={{ 
+                    height: '14px', 
+                    background: 'var(--bg-color)', 
+                    border: '2px solid var(--border-color)', 
+                    marginTop: '15px', 
+                    position: 'relative',
+                    padding: '2px'
+                  }}>
+                     <div style={{ 
+                       width: `${expProgress}%`, 
+                       height: '100%', 
+                       background: '#3498db', 
+                       transition: 'width 0.1s',
+                       boxShadow: 'inset 0 0 4px rgba(0,0,0,0.3)'
+                     }} />
                   </div>
-                  {showLevelUp && <p style={{ color: '#e74c3c', fontSize: '10px', marginTop: '10px' }} className="blinker">¡SUBIÓ AL NIVEL {user.starter_nivel + 1}!</p>}
+                  {showLevelUp && <p style={{ color: 'var(--secondary-color)', fontSize: '10px', marginTop: '10px' }} className="blinker">¡SUBIÓ AL NIVEL {user.starter_nivel + 1}!</p>}
                   <button className="gb-button primary" style={{ marginTop: '20px', width: '100%' }} onClick={() => navigate('city')}>CONTINUAR</button>
                </>
              )}

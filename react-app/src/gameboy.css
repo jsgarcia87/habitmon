@@ -4,8 +4,48 @@
   --primary-color: #333333;
   --secondary-color: #e74c3c;
   --accent-color: #2ecc71;
-  --bg-color: #F8F0D8; /* Fondo estilo pergamino GBC */
+  --bg-color: #F8F0D8; 
   --font-main: 'Press Start 2P', cursive;
+  
+  /* Dark Mode support */
+  --bg-panel: #ffffff;
+  --text-main: #333333;
+  --border-color: #333333;
+}
+
+[data-theme='dark'] {
+  --primary-color: #ecf0f1;
+  --secondary-color: #e74c3c;
+  --accent-color: #2ecc71;
+  --bg-color: #2c3e50;
+  --bg-panel: #34495e;
+  --text-main: #ecf0f1;
+  --border-color: #ecf0f1;
+}
+
+.notification-toast {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-panel);
+  border: 4px solid var(--border-color);
+  padding: 10px;
+  z-index: 1000;
+  font-size: 8px;
+  text-align: center;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+  width: 80%;
+  color: var(--text-main);
+  animation: slideDown 0.3s ease-out;
+}
+
+.notification-toast.error { border-color: var(--secondary-color); color: var(--secondary-color); }
+.notification-toast.success { border-color: var(--accent-color); color: var(--accent-color); }
+
+@keyframes slideDown {
+  from { top: -50px; opacity: 0; }
+  to { top: 10px; opacity: 1; }
 }
 
 * {
@@ -166,17 +206,77 @@ body {
   opacity: 0;
 }
 
-/* TYPOGRAPHY HELPER */
-.text-small { font-size: 8px; line-height: 1.6; }
-.text-medium { font-size: 10px; line-height: 1.6; }
-.text-large { font-size: 14px; line-height: 1.6; }
+/* LEGACY FORM & LIST STYLES (Merged from styles/gameboy.css) */
+.gb-input-group { margin-bottom: 20px; }
+.gb-label { display: block; font-size: 8px; margin-bottom: 10px; color: var(--text-main); }
+.gb-input { 
+  width: 100%; padding: 10px; border: 4px solid var(--border-color); 
+  font-family: var(--font-main); font-size: 10px; outline: none; background: #fff;
+}
+.gb-list { list-style: none; padding: 0; }
+.gb-list-item { 
+  padding: 10px; border: 4px solid var(--border-color); margin-bottom: 10px; 
+  cursor: pointer; display: flex; align-items: center; gap: 10px; background: #fff;
+}
+.gb-list-item:hover { background-color: #eee; }
+.gb-list-item.active { background-color: #ddd; border-color: var(--primary-color); }
 
-/* ANIMATIONS */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+/* Retro Effects */
+.scanlines {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.1) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 155, 0.03)
+  );
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.35;
 }
 
-.blinker {
-  animation: blink 0.8s infinite;
+.gb-control-btn {
+  transition: transform 0.05s, box-shadow 0.05s;
 }
+
+.gb-control-btn:active {
+  transform: translateY(2px) scale(0.95) !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4) !important;
+}
+
+.loading-screen {
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-family: "Press Start 2P";
+}
+
+.loading-bar {
+  width: 150px;
+  height: 10px;
+  border: 4px solid #fff;
+  padding: 2px;
+}
+
+.loading-progress {
+  height: 100%;
+  background: #fff;
+  animation: loading-bar-anim 2s infinite;
+}
+
+@keyframes loading-bar-anim {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+
+

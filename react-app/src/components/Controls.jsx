@@ -157,22 +157,25 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
           onTouchEnd={() => handleKey('z','up')}
           onMouseDown={() => handleKey('z','down')}
           onMouseUp={() => handleKey('z','up')}
+          className="gb-control-btn"
           style={{
-            width: 50,
-            height: 50,
+            width: 55,
+            height: 55,
             borderRadius: '50%',
-            background: 'rgba(220,50,50,0.6)',
-            border: '2px solid rgba(255,100,100,0.8)',
+            background: 'rgba(220,50,50,0.7)',
+            border: '3px solid rgba(255,100,100,0.9)',
             color: 'rgba(255,255,255,0.9)',
             fontFamily: '"Press Start 2P"',
-            fontSize: 12,
+            fontSize: 14,
             cursor: 'pointer',
             backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             userSelect: 'none',
-            WebkitUserSelect: 'none'
+            WebkitUserSelect: 'none',
+            boxShadow: '0 4px 0 rgba(0,0,0,0.3)',
+            transition: 'transform 0.05s, box-shadow 0.05s'
           }}
         >A</button>
 
@@ -181,22 +184,25 @@ const Controls = ({ onDirectionChange, onA, onB, onStart }) => {
           onTouchEnd={() => handleKey('x','up')}
           onMouseDown={() => handleKey('x','down')}
           onMouseUp={() => handleKey('x','up')}
+          className="gb-control-btn"
           style={{
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             borderRadius: '50%',
-            background: 'rgba(50,50,180,0.5)',
-            border: '2px solid rgba(100,100,220,0.7)',
+            background: 'rgba(50,50,180,0.6)',
+            border: '3px solid rgba(100,100,220,0.8)',
             color: 'rgba(255,255,255,0.8)',
             fontFamily: '"Press Start 2P"',
-            fontSize: 10,
+            fontSize: 11,
             cursor: 'pointer',
             backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             userSelect: 'none',
-            WebkitUserSelect: 'none'
+            WebkitUserSelect: 'none',
+            boxShadow: '0 4px 0 rgba(0,0,0,0.3)',
+            transition: 'transform 0.05s, box-shadow 0.05s'
           }}
         >B</button>
       </div>

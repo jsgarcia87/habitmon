@@ -15,7 +15,7 @@ const INTRO_STATES = {
 };
 
 const BattleScreen = ({ navigate, battleData, aPressed }) => {
-  const { user, habitosHoy, completarHabito, starter, capturarPokemon } = useGame();
+  const { user, habitosHoy, completarHabito, starter, capturarPokemon, completarGimnasio } = useGame();
   
   if (!user || !habitosHoy) {
     return <div className="screen-container">Cargando datos de batalla...</div>;
@@ -27,7 +27,8 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const enemyName = isWild ? (wildPk?.nombre || 'Wild PKMN') : "LÍDER";
   
   // Data Logic
-  const habitsForStage = !isWild ? habitosHoy.filter(h => h.gym_id?.toLowerCase() === gymId?.toLowerCase()) : [];
+  const normalizedGymId = String(gymId || '').trim().toLowerCase();
+  const habitsForStage = !isWild ? habitosHoy.filter(h => String(h.gym_id || '').trim().toLowerCase() === normalizedGymId) : [];
   const currentPk = starter; // Player's starter for habits template
   
   // State
@@ -334,6 +335,13 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       if (newHP <= 0) {
         setMessage(`¡LÍDER derrotado! ¡Ganaste medalla!`);
+        
+        // Registrar victoria del gimnasio si no es combate salvaje
+        if (!isWild && gymId) {
+          completarGimnasio(gymId, starter?.pokemon_id || 1, starter?.pokemon_nombre || 'PKMN')
+            .catch(e => console.error("Error al registrar victoria del gimnasio:", e));
+        }
+
         setTimeout(() => {
           navigate('city');
         }, 2000);
@@ -415,17 +423,17 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           flex: '0 0 42%',
           display: 'flex',
           flexDirection: 'column',
-          background: '#fff',
-          borderTop: '4px solid #111'
+          background: 'var(--bg-panel)',
+          borderTop: '4px solid var(--border-color)'
         }}>
           {/* Caja mensaje */}
           <div style={{
             padding: '10px 14px',
             fontSize: 9,
             lineHeight: '1.8em',
-            borderBottom: '3px solid #111',
+            borderBottom: '3px solid var(--border-color)',
             minHeight: 52,
-            color: '#111',
+            color: 'var(--text-main)',
             position: 'relative'
           }}>
             {message}
@@ -508,15 +516,30 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
                           opacity: done ? 0.5 : 1
                         }}
                       >
-                        <span style={{fontSize:18}}>{tpl?.icono || '⚔️'}</span>
-                        <span>{(h.nombre||tpl?.nombre||'').toUpperCase().substring(0,12)}</span>
-                        <span style={{fontSize:5,color:'#555'}}>DMG {tpl?.daño || '?'}</span>
+                        <span style={{fontSize:18}}>{tpl?.icono || h.icono || '⚔️'}</span>
+                        <span>{(h.nombre || tpl?.nombre || '').toUpperCase().substring(0,12)}</span>
+                        <span style={{fontSize:5,color:'#555'}}>DMG {tpl?.daño || h.daño || '?'}</span>
                       </button>
                     );
                   })
                 ) : (
-                  <div style={{gridColumn:'1/3', display:'flex', alignItems:'center', justifyContent:'center', fontSize:7, color:'#666', textAlign:'center', padding:10}}>
-                    NO TIENES HÁBITOS ASIGNADOS A ESTE GIMNASIO (ID: {gymId?.toUpperCase()})
+                  <div style={{gridColumn:'1/3', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap: 10, padding: 10}}>
+                    <p style={{fontSize:7, color:'#666', textAlign:'center'}}>
+                      NO TIENES HÁBITOS ASIGNADOS A ESTE GIMNASIO
+                    </p>
+                    <button 
+                      onClick={() => navigate('city')}
+                      style={{
+                        padding: '8px 16px',
+                        background: '#f0f0f0',
+                        border: '2px solid #333',
+                        fontFamily: '"Press Start 2P"',
+                        fontSize: 7,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      RETROCEDER
+                    </button>
                   </div>
                 )}
               </>

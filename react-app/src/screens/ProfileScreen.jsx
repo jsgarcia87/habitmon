@@ -2,12 +2,12 @@ import React from 'react';
 import { useGame } from '../context/GameContext';
 
 const ProfileScreen = ({ onNavigate }) => {
-  const { user, starter, coleccion, gimnasiosHoy } = useGame();
+  const { user, starter, coleccion, gimnasiosHoy, darkMode, toggleDarkMode } = useGame();
   
   return (
     <div style={{
       width:'100%', height:'100%',
-      background:'var(--bg-color)', color:'#333',
+      background:'var(--bg-color)', color:'var(--text-main)',
       fontFamily:'"Press Start 2P",monospace',
       display:'flex', flexDirection:'column',
       alignItems:'center', padding:'20px',
@@ -18,7 +18,26 @@ const ProfileScreen = ({ onNavigate }) => {
         FICHA ENTRENADOR
       </h2>
 
+      {/* Dark Mode Toggle */}
+      <div style={{ marginBottom: 20, width: '100%', maxWidth: 300 }}>
+        <button 
+          onClick={toggleDarkMode}
+          style={{
+            width: '100%', padding: '10px',
+            background: 'var(--bg-panel)',
+            color: 'var(--text-main)',
+            border: '3px solid var(--border-color)',
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: 7, cursor: 'pointer'
+          }}
+        >
+          {darkMode ? '☀️ MODO CLARO' : '🌙 MODO OSCURO'}
+        </button>
+      </div>
+
       {/* Avatar + nombre (CORREGIDO) */}
+...
+
       <div style={{
         border:'3px solid #FFD700',
         padding:'20px', marginBottom:16,

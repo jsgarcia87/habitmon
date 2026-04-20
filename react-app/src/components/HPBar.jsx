@@ -7,14 +7,15 @@ const HPBar = ({ current, max, name, level, alignment = 'player' }) => {
   if (percentage < 50) color = '#f1c40f'; 
   if (percentage < 20) color = '#e74c3c'; 
 
-  const boxStyle = {
-    backgroundColor: '#fff',
-    border: '4px double #333',
+const boxStyle = {
+    backgroundColor: 'var(--bg-panel)',
+    border: '4px double var(--border-color)',
     padding: '4px',
     width: '120px',
     boxShadow: '2px 2px 0 rgba(0,0,0,0.1)',
     textAlign: 'left',
-    position: 'relative'
+    position: 'relative',
+    color: 'var(--text-main)'
   };
 
   return (

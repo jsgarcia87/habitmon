@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteBase /hb_api/
+
+# Preservar Cabecera de Autorización para PHP
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]

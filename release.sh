@@ -37,6 +37,11 @@ cp -r Graphics "$DIST_DIR/"
 cp -r Data "$DIST_DIR/"
 cp -r Audio "$DIST_DIR/" 2>/dev/null || :
 cp -r Fonts "$DIST_DIR/" 2>/dev/null || :
+# Sync assets to public folder for dev server
+mkdir -p react-app/public/Data
+mkdir -p react-app/public/Graphics
+cp -r Data/* react-app/public/Data/
+cp -r Graphics/* react-app/public/Graphics/
 
 # 5. Copiar Backend (PHP & Flask)
 echo "📂 Preparando Backend..."
@@ -53,14 +58,14 @@ cat << 'EOF' > "$DIST_DIR/README.md"
 
 ## Estructura
 - Root: Contiene los archivos estáticos del juego (React).
-- `/api`: Backend para servidores **PHP** (Apache/MariaDB).
+- `/hb_api`: Backend para servidores **PHP** (Apache/MariaDB).
 - `/backend`: Backend para servidores **Python/Flask**.
 
 ## Instalación en Producción (Opción PHP - Recomendada para Apache)
 1. Sube todo el contenido de la carpeta de lanzamiento a tu servidor.
-2. Asegúrate de que la carpeta `/api` tenga permisos de lectura.
-3. Configura tus datos de acceso en **`api/db.php`**.
-4. Importa **`api/habitmon_setup.sql`** en tu base de datos MariaDB.
+2. Asegúrate de que la carpeta `/hb_api` tenga permisos de lectura.
+3. Configura tus datos de acceso en **`hb_api/db.php`**.
+4. Importa **`hb_api/habitmon_setup.sql`** en tu base de datos MariaDB.
 
 ## Instalación en Producción (Opción Python/Flask)
 1. Instala las dependencias: `pip install -r backend/requirements.txt`

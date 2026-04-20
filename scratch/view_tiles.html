@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><body>
+<img src="../Graphics/tilesets/gsc cave-gym a.png" id="img" style="display:none;">
+<canvas id="c"></canvas>
+<script>
+window.onload = () => {
+  const img = document.getElementById('img');
+  const c = document.getElementById('c');
+  c.width = img.width; c.height = img.height;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  ctx.fillStyle = 'white';
+  ctx.font = '10px Arial';
+  for(let y=0; y<img.height/32; y++){
+    for(let x=0; x<img.width/32; x++){
+      ctx.strokeRect(x*32, y*32, 32, 32);
+      ctx.fillText((y*8+x)+384, x*32+2, y*32+15);
+    }
+  }
+}
+</script>
+</body></html>

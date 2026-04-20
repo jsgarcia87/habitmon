@@ -8,7 +8,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/data_json': 'http://localhost:8000',
-      '/api': 'http://localhost:8000'
+      '/api': 'http://localhost:8000',
+      '/hb_api': 'http://localhost:8000'
     }
   }
 })

@@ -13,11 +13,20 @@ import CaptureScreen from './screens/CaptureScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import HabitEditScreen from './screens/HabitEditScreen';
 import AdminScreen from './screens/AdminScreen';
+import HomeScreen from './screens/HomeScreen';
 
-import './gameboy.css';
+const LoadingScreen = () => (
+  <div className="screen-container loading-screen">
+    <img src="Graphics/characters/trchar000.png" style={{imageRendering:'pixelated', transform:'scale(2)', marginBottom: 20}} />
+    <div style={{fontSize: 10, letterSpacing: 2}}>LOADING...</div>
+    <div className="loading-bar">
+      <div className="loading-progress"></div>
+    </div>
+  </div>
+);
 
 function App() {
-  const { token, user, loading } = useGame();
+  const { token, user, loading, notification } = useGame();
   const [screen, setScreen] = useState('login');
   const [screenData, setScreenData] = useState(null);
   const [fadeOut, setFadeOut] = useState(false);
@@ -51,11 +60,11 @@ function App() {
     } else if (screen === 'login' || screen === 'register' || screen === 'starter') {
       setScreen('city');
     }
-  }, [token, user, loading, showRegister]);
-
-  if (loading) return <div className="screen-loader">Cargando...</div>;
+  }, [token, user, loading, showRegister, screen]);
 
   const renderScreen = () => {
+    if (loading) return <LoadingScreen />;
+
     switch(screen) {
       case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} />;
       case 'register': return <RegisterScreen onLoginClick={() => setShowRegister(false)} />;
@@ -65,6 +74,7 @@ function App() {
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={aPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
       case 'profile': return <ProfileScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
+      case 'home': return <HomeScreen navigate={navigate} direction={direction} aPressed={aPressed} />;
       case 'habits_edit': return <HabitEditScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
       case 'admin': return <AdminScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
       default: return <CityScreen navigate={navigate} />;
@@ -73,8 +83,17 @@ function App() {
 
   return (
     <div className="game-container">
+      <div className="scanlines"></div>
+      
       {/* Black Fade Overlay */}
       <div className={`fade-overlay ${fadeOut ? 'active' : 'inactive'}`} />
+
+      {/* Notifications */}
+      {notification && (
+        <div className={`notification-toast ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
 
       {/* Screen Area */}
       <div className="screen-layout">
@@ -82,7 +101,7 @@ function App() {
       </div>
 
       {/* Global Controls (Only visible in game screens) */}
-      {token && ['city', 'gym', 'starter'].includes(screen) && (
+      {token && ['city', 'gym', 'starter', 'home'].includes(screen) && (
         <Controls 
           onDirectionChange={(dir) => setDirection(dir)}
           onA={() => { setAPressed(true); setTimeout(() => setAPressed(false), 100); }}
