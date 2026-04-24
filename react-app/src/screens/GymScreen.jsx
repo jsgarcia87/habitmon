@@ -1,71 +1,89 @@
-import React, { useState, useMemo } from 'react';
-import { useGame } from '../context/GameContext';
-import CityMap from '../components/CityMap';
+import React, { useState } from 'react';
 import DialogBox from '../components/DialogBox';
+import InteriorMap from '../components/InteriorMap';
+import { INTERIOR_CONFIGS, INTERIOR_MAPS } from '../data/interiorData';
 import { WORLD_DATA } from '../data/worldData';
 
-const GYM_ID_TO_MAP = {
-  vestirse: 'Map005',
-  higiene: 'Map085',
-  orden: 'Map006',
-  desayuno: 'Map082',
-  comida: 'Map084',
-  cena: 'Map086'
-};
-
 const GymScreen = ({ navigate, gymId, direction, aPressed }) => {
-  const currentMapId = GYM_ID_TO_MAP[gymId] || 'Map005';
-  const [playerPos, setPlayerPos] = useState({ x: 4, y: 12 });
   const [dialogue, setDialogue] = useState(null);
+  
+  // v2.0 Stable Logic: Procedural Retrieval
+  const config = INTERIOR_CONFIGS[gymId] || INTERIOR_CONFIGS.vestirse;
+  const mapMatrix = INTERIOR_MAPS.gym_default;
 
   const handleEvent = (event) => {
-    if (event.type === 'transfer') {
-      if (event.side === 'down' || event.targetMap === 'Map002' || event.targetMap === 'Map008' || event.targetMap === 'Map070') {
-        navigate('city');
-      }
-    } else if (event.type === 'npc_talk') {
-      if (event.npc.isLeader) {
-        setDialogue({
-          name: event.npc.nombre,
-          text: ["¿Aceptas el desafío?"],
-          options: [
-            { label: "¡LUCHAR!", value: "battle", primary: true },
-            { label: "AHORA NO", value: "cancel" }
-          ]
-        });
-      } else {
-        setDialogue({ name: event.npc.nombre, text: event.npc.mensajes });
-      }
+    console.log("Gym v2.0 Event:", event);
+    
+    if (event.type === 'npc_talk') {
+      setDialogue({
+        name: config.nombre,
+        text: config.dialogo,
+        options: [
+          { label: "¡LUCHAR!", value: "battle", primary: true },
+          { label: "AHORA NO", value: "cancel" }
+        ]
+      });
     }
   };
 
+  const handleExit = () => {
+    navigate('city');
+  };
+
+  // NPCs list for the leader (Shifted by padding)
+  const npcs = [
+    {
+      id: 'leader',
+      nombre: config.nombre,
+      sprite: config.sprite,
+      x: 9,
+      y: 2,
+      isLeader: true
+    }
+  ];
+
+  const tileConfig = {
+    floor: config.tiles.floor,
+    wall: config.tiles.wall,
+    exit: config.tiles.carpet,
+    stair: config.tiles.stair || 32
+  };
+
   return (
-    <div style={{ width: '100vw', height: '100dvh', position: 'relative', overflow: 'hidden', background: '#000' }}>
-      <CityMap 
-        mapId={currentMapId}
-        playerPos={playerPos}
-        setPlayerPos={setPlayerPos}
-        direction={direction}
-        aPressed={aPressed}
-        onEvent={handleEvent}
-      />
-
-      <button onClick={() => navigate('city')} style={{ position: 'absolute', top: 8, left: 8, padding: '4px 10px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: '2px solid rgba(255,255,255,0.4)', fontFamily: '"Press Start 2P",monospace', fontSize: 7, cursor: 'pointer', zIndex: 10 }}>SALIR</button>
-
-      <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.6)', color: '#FFD700', fontFamily: '"Press Start 2P",monospace', fontSize: 7, padding: '4px 10px', border: '1px solid rgba(255,215,0,0.4)', zIndex: 10 }}>
-        {WORLD_DATA[currentMapId]?.nombre || `GYM ${gymId?.toUpperCase()}`}
+    <div style={{ width: '100vw', height: '100dvh', background: '#000', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ transform: 'scale(1.2)', transformOrigin: 'center', height: '100%', display: 'flex', alignItems: 'center' }}>
+        <InteriorMap 
+          map={mapMatrix}
+          tileset={config.tileset}
+          tileConfig={tileConfig}
+          initialPos={{ x: 9, y: 13 }}
+          npcs={npcs}
+          onEvent={handleEvent}
+          onExit={handleExit}
+          direction={direction}
+          aPressed={aPressed}
+          name={config.nombre}
+        />
       </div>
+
+      <div style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.8)', color: '#FFD700', border: '2px solid #555', padding: '6px 16px', fontFamily: '"Press Start 2P"', fontSize: 8, zIndex: 10, borderRadius: 4 }}>
+        GIMNASIO {gymId?.toUpperCase()}
+      </div>
+
+      <button 
+        onClick={() => navigate('city')} 
+        style={{ position: 'absolute', top: 10, left: 10, padding: '8px 12px', background: '#222', color: '#fff', border: '2px solid #666', borderRadius: 4, fontFamily: '"Press Start 2P"', fontSize: 8, cursor: 'pointer', zIndex: 10 }}
+      >
+        SALIR
+      </button>
 
       {dialogue && (
         <DialogBox 
-          key={Array.isArray(dialogue.text) ? dialogue.text[0] : dialogue.text}
           name={dialogue.name}
           text={dialogue.text}
-          onComplete={() => {
-            if (!dialogue.options) setDialogue(null);
-          }}
+          onComplete={() => { if (!dialogue.options) setDialogue(null); }}
           onOptionSelect={(val) => {
-            if (val === 'battle') navigate('battle', { gymId });
+            if (val === 'battle') navigate('battle', { gymId, leader: dialogue.name });
             else setDialogue(null);
           }}
           options={dialogue.options}

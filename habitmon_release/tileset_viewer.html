@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .tileset-container { margin-bottom: 40px; }
+        .tile-grid { 
+            display: grid; 
+            grid-template-columns: repeat(8, 32px); 
+            gap: 1px; 
+            background: #ccc; 
+            width: fit-content;
+        }
+        .tile { 
+            width: 32px; 
+            height: 32px; 
+            background-size: 256px auto; 
+            position: relative;
+            background-color: #fff;
+        }
+        .tile:hover::after {
+            content: attr(data-id);
+            position: absolute;
+            top: 0; left: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 10px;
+            padding: 2px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    
+        <div class="tileset-container">
+            <h2>gsc house 1.png</h2>
+            <div class="tile-grid">
+                
+                    <div class="tile" data-id="0" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -0px;"></div>
+                
+                    <div class="tile" data-id="1" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -0px;"></div>
+                
+                    <div class="tile" data-id="2" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -0px;"></div>
+                
+                    <div class="tile" data-id="3" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -0px;"></div>
+                
+                    <div class="tile" data-id="4" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -0px;"></div>
+                
+                    <div class="tile" data-id="5" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -0px;"></div>
+                
+                    <div class="tile" data-id="6" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -0px;"></div>
+                
+                    <div class="tile" data-id="7" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -0px;"></div>
+                
+                    <div class="tile" data-id="8" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -32px;"></div>
+                
+                    <div class="tile" data-id="9" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -32px;"></div>
+                
+                    <div class="tile" data-id="10" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -32px;"></div>
+                
+                    <div class="tile" data-id="11" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -32px;"></div>
+                
+                    <div class="tile" data-id="12" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -32px;"></div>
+                
+                    <div class="tile" data-id="13" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -32px;"></div>
+                
+                    <div class="tile" data-id="14" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -32px;"></div>
+                
+                    <div class="tile" data-id="15" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -32px;"></div>
+                
+                    <div class="tile" data-id="16" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -64px;"></div>
+                
+                    <div class="tile" data-id="17" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -64px;"></div>
+                
+                    <div class="tile" data-id="18" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -64px;"></div>
+                
+                    <div class="tile" data-id="19" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -64px;"></div>
+                
+                    <div class="tile" data-id="20" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -64px;"></div>
+                
+                    <div class="tile" data-id="21" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -64px;"></div>
+                
+                    <div class="tile" data-id="22" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -64px;"></div>
+                
+                    <div class="tile" data-id="23" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -64px;"></div>
+                
+                    <div class="tile" data-id="24" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -96px;"></div>
+                
+                    <div class="tile" data-id="25" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -96px;"></div>
+                
+                    <div class="tile" data-id="26" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -96px;"></div>
+                
+                    <div class="tile" data-id="27" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -96px;"></div>
+                
+                    <div class="tile" data-id="28" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -96px;"></div>
+                
+                    <div class="tile" data-id="29" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -96px;"></div>
+                
+                    <div class="tile" data-id="30" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -96px;"></div>
+                
+                    <div class="tile" data-id="31" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -96px;"></div>
+                
+                    <div class="tile" data-id="32" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -128px;"></div>
+                
+                    <div class="tile" data-id="33" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -128px;"></div>
+                
+                    <div class="tile" data-id="34" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -128px;"></div>
+                
+                    <div class="tile" data-id="35" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -128px;"></div>
+                
+                    <div class="tile" data-id="36" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -128px;"></div>
+                
+                    <div class="tile" data-id="37" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -128px;"></div>
+                
+                    <div class="tile" data-id="38" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -128px;"></div>
+                
+                    <div class="tile" data-id="39" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -128px;"></div>
+                
+                    <div class="tile" data-id="40" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -160px;"></div>
+                
+                    <div class="tile" data-id="41" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -160px;"></div>
+                
+                    <div class="tile" data-id="42" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -160px;"></div>
+                
+                    <div class="tile" data-id="43" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -160px;"></div>
+                
+                    <div class="tile" data-id="44" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -160px;"></div>
+                
+                    <div class="tile" data-id="45" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -160px;"></div>
+                
+                    <div class="tile" data-id="46" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -160px;"></div>
+                
+                    <div class="tile" data-id="47" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -160px;"></div>
+                
+                    <div class="tile" data-id="48" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -192px;"></div>
+                
+                    <div class="tile" data-id="49" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -192px;"></div>
+                
+                    <div class="tile" data-id="50" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -192px;"></div>
+                
+                    <div class="tile" data-id="51" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -192px;"></div>
+                
+                    <div class="tile" data-id="52" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -192px;"></div>
+                
+                    <div class="tile" data-id="53" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -192px;"></div>
+                
+                    <div class="tile" data-id="54" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -192px;"></div>
+                
+                    <div class="tile" data-id="55" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -192px;"></div>
+                
+                    <div class="tile" data-id="56" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -224px;"></div>
+                
+                    <div class="tile" data-id="57" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -224px;"></div>
+                
+                    <div class="tile" data-id="58" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -224px;"></div>
+                
+                    <div class="tile" data-id="59" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -224px;"></div>
+                
+                    <div class="tile" data-id="60" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -224px;"></div>
+                
+                    <div class="tile" data-id="61" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -224px;"></div>
+                
+                    <div class="tile" data-id="62" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -224px;"></div>
+                
+                    <div class="tile" data-id="63" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -224px;"></div>
+                
+                    <div class="tile" data-id="64" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -256px;"></div>
+                
+                    <div class="tile" data-id="65" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -256px;"></div>
+                
+                    <div class="tile" data-id="66" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -256px;"></div>
+                
+                    <div class="tile" data-id="67" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -256px;"></div>
+                
+                    <div class="tile" data-id="68" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -256px;"></div>
+                
+                    <div class="tile" data-id="69" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -256px;"></div>
+                
+                    <div class="tile" data-id="70" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -256px;"></div>
+                
+                    <div class="tile" data-id="71" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -256px;"></div>
+                
+                    <div class="tile" data-id="72" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -288px;"></div>
+                
+                    <div class="tile" data-id="73" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -288px;"></div>
+                
+                    <div class="tile" data-id="74" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -288px;"></div>
+                
+                    <div class="tile" data-id="75" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -288px;"></div>
+                
+                    <div class="tile" data-id="76" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -288px;"></div>
+                
+                    <div class="tile" data-id="77" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -288px;"></div>
+                
+                    <div class="tile" data-id="78" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -288px;"></div>
+                
+                    <div class="tile" data-id="79" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -288px;"></div>
+                
+                    <div class="tile" data-id="80" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -320px;"></div>
+                
+                    <div class="tile" data-id="81" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -320px;"></div>
+                
+                    <div class="tile" data-id="82" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -320px;"></div>
+                
+                    <div class="tile" data-id="83" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -320px;"></div>
+                
+                    <div class="tile" data-id="84" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -320px;"></div>
+                
+                    <div class="tile" data-id="85" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -320px;"></div>
+                
+                    <div class="tile" data-id="86" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -320px;"></div>
+                
+                    <div class="tile" data-id="87" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -320px;"></div>
+                
+                    <div class="tile" data-id="88" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -352px;"></div>
+                
+                    <div class="tile" data-id="89" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -352px;"></div>
+                
+                    <div class="tile" data-id="90" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -352px;"></div>
+                
+                    <div class="tile" data-id="91" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -352px;"></div>
+                
+                    <div class="tile" data-id="92" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -352px;"></div>
+                
+                    <div class="tile" data-id="93" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -352px;"></div>
+                
+                    <div class="tile" data-id="94" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -352px;"></div>
+                
+                    <div class="tile" data-id="95" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -352px;"></div>
+                
+                    <div class="tile" data-id="96" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -384px;"></div>
+                
+                    <div class="tile" data-id="97" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -384px;"></div>
+                
+                    <div class="tile" data-id="98" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -384px;"></div>
+                
+                    <div class="tile" data-id="99" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -384px;"></div>
+                
+                    <div class="tile" data-id="100" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -384px;"></div>
+                
+                    <div class="tile" data-id="101" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -384px;"></div>
+                
+                    <div class="tile" data-id="102" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -384px;"></div>
+                
+                    <div class="tile" data-id="103" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -384px;"></div>
+                
+                    <div class="tile" data-id="104" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -416px;"></div>
+                
+                    <div class="tile" data-id="105" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -416px;"></div>
+                
+                    <div class="tile" data-id="106" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -416px;"></div>
+                
+                    <div class="tile" data-id="107" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -416px;"></div>
+                
+                    <div class="tile" data-id="108" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -416px;"></div>
+                
+                    <div class="tile" data-id="109" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -416px;"></div>
+                
+                    <div class="tile" data-id="110" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -416px;"></div>
+                
+                    <div class="tile" data-id="111" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -416px;"></div>
+                
+                    <div class="tile" data-id="112" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -448px;"></div>
+                
+                    <div class="tile" data-id="113" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -448px;"></div>
+                
+                    <div class="tile" data-id="114" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -448px;"></div>
+                
+                    <div class="tile" data-id="115" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -448px;"></div>
+                
+                    <div class="tile" data-id="116" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -448px;"></div>
+                
+                    <div class="tile" data-id="117" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -448px;"></div>
+                
+                    <div class="tile" data-id="118" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -448px;"></div>
+                
+                    <div class="tile" data-id="119" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -448px;"></div>
+                
+                    <div class="tile" data-id="120" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -0px -480px;"></div>
+                
+                    <div class="tile" data-id="121" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -32px -480px;"></div>
+                
+                    <div class="tile" data-id="122" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -64px -480px;"></div>
+                
+                    <div class="tile" data-id="123" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -96px -480px;"></div>
+                
+                    <div class="tile" data-id="124" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -128px -480px;"></div>
+                
+                    <div class="tile" data-id="125" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -160px -480px;"></div>
+                
+                    <div class="tile" data-id="126" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -192px -480px;"></div>
+                
+                    <div class="tile" data-id="127" style="background-image: url('/Graphics/tilesets/gsc house 1.png'); background-position: -224px -480px;"></div>
+                
+            </div>
+        </div>
+    
+        <div class="tileset-container">
+            <h2>gsc house 2.png</h2>
+            <div class="tile-grid">
+                
+                    <div class="tile" data-id="0" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -0px;"></div>
+                
+                    <div class="tile" data-id="1" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -0px;"></div>
+                
+                    <div class="tile" data-id="2" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -0px;"></div>
+                
+                    <div class="tile" data-id="3" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -0px;"></div>
+                
+                    <div class="tile" data-id="4" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -0px;"></div>
+                
+                    <div class="tile" data-id="5" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -0px;"></div>
+                
+                    <div class="tile" data-id="6" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -0px;"></div>
+                
+                    <div class="tile" data-id="7" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -0px;"></div>
+                
+                    <div class="tile" data-id="8" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -32px;"></div>
+                
+                    <div class="tile" data-id="9" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -32px;"></div>
+                
+                    <div class="tile" data-id="10" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -32px;"></div>
+                
+                    <div class="tile" data-id="11" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -32px;"></div>
+                
+                    <div class="tile" data-id="12" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -32px;"></div>
+                
+                    <div class="tile" data-id="13" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -32px;"></div>
+                
+                    <div class="tile" data-id="14" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -32px;"></div>
+                
+                    <div class="tile" data-id="15" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -32px;"></div>
+                
+                    <div class="tile" data-id="16" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -64px;"></div>
+                
+                    <div class="tile" data-id="17" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -64px;"></div>
+                
+                    <div class="tile" data-id="18" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -64px;"></div>
+                
+                    <div class="tile" data-id="19" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -64px;"></div>
+                
+                    <div class="tile" data-id="20" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -64px;"></div>
+                
+                    <div class="tile" data-id="21" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -64px;"></div>
+                
+                    <div class="tile" data-id="22" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -64px;"></div>
+                
+                    <div class="tile" data-id="23" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -64px;"></div>
+                
+                    <div class="tile" data-id="24" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -96px;"></div>
+                
+                    <div class="tile" data-id="25" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -96px;"></div>
+                
+                    <div class="tile" data-id="26" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -96px;"></div>
+                
+                    <div class="tile" data-id="27" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -96px;"></div>
+                
+                    <div class="tile" data-id="28" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -96px;"></div>
+                
+                    <div class="tile" data-id="29" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -96px;"></div>
+                
+                    <div class="tile" data-id="30" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -96px;"></div>
+                
+                    <div class="tile" data-id="31" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -96px;"></div>
+                
+                    <div class="tile" data-id="32" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -128px;"></div>
+                
+                    <div class="tile" data-id="33" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -128px;"></div>
+                
+                    <div class="tile" data-id="34" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -128px;"></div>
+                
+                    <div class="tile" data-id="35" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -128px;"></div>
+                
+                    <div class="tile" data-id="36" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -128px;"></div>
+                
+                    <div class="tile" data-id="37" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -128px;"></div>
+                
+                    <div class="tile" data-id="38" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -128px;"></div>
+                
+                    <div class="tile" data-id="39" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -128px;"></div>
+                
+                    <div class="tile" data-id="40" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -160px;"></div>
+                
+                    <div class="tile" data-id="41" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -160px;"></div>
+                
+                    <div class="tile" data-id="42" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -160px;"></div>
+                
+                    <div class="tile" data-id="43" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -160px;"></div>
+                
+                    <div class="tile" data-id="44" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -160px;"></div>
+                
+                    <div class="tile" data-id="45" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -160px;"></div>
+                
+                    <div class="tile" data-id="46" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -160px;"></div>
+                
+                    <div class="tile" data-id="47" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -160px;"></div>
+                
+                    <div class="tile" data-id="48" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -192px;"></div>
+                
+                    <div class="tile" data-id="49" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -192px;"></div>
+                
+                    <div class="tile" data-id="50" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -192px;"></div>
+                
+                    <div class="tile" data-id="51" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -192px;"></div>
+                
+                    <div class="tile" data-id="52" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -192px;"></div>
+                
+                    <div class="tile" data-id="53" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -192px;"></div>
+                
+                    <div class="tile" data-id="54" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -192px;"></div>
+                
+                    <div class="tile" data-id="55" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -192px;"></div>
+                
+                    <div class="tile" data-id="56" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -224px;"></div>
+                
+                    <div class="tile" data-id="57" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -224px;"></div>
+                
+                    <div class="tile" data-id="58" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -224px;"></div>
+                
+                    <div class="tile" data-id="59" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -224px;"></div>
+                
+                    <div class="tile" data-id="60" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -224px;"></div>
+                
+                    <div class="tile" data-id="61" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -224px;"></div>
+                
+                    <div class="tile" data-id="62" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -224px;"></div>
+                
+                    <div class="tile" data-id="63" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -224px;"></div>
+                
+                    <div class="tile" data-id="64" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -256px;"></div>
+                
+                    <div class="tile" data-id="65" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -256px;"></div>
+                
+                    <div class="tile" data-id="66" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -256px;"></div>
+                
+                    <div class="tile" data-id="67" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -256px;"></div>
+                
+                    <div class="tile" data-id="68" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -256px;"></div>
+                
+                    <div class="tile" data-id="69" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -256px;"></div>
+                
+                    <div class="tile" data-id="70" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -256px;"></div>
+                
+                    <div class="tile" data-id="71" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -256px;"></div>
+                
+                    <div class="tile" data-id="72" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -288px;"></div>
+                
+                    <div class="tile" data-id="73" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -288px;"></div>
+                
+                    <div class="tile" data-id="74" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -288px;"></div>
+                
+                    <div class="tile" data-id="75" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -288px;"></div>
+                
+                    <div class="tile" data-id="76" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -288px;"></div>
+                
+                    <div class="tile" data-id="77" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -288px;"></div>
+                
+                    <div class="tile" data-id="78" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -288px;"></div>
+                
+                    <div class="tile" data-id="79" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -288px;"></div>
+                
+                    <div class="tile" data-id="80" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -320px;"></div>
+                
+                    <div class="tile" data-id="81" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -320px;"></div>
+                
+                    <div class="tile" data-id="82" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -320px;"></div>
+                
+                    <div class="tile" data-id="83" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -320px;"></div>
+                
+                    <div class="tile" data-id="84" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -320px;"></div>
+                
+                    <div class="tile" data-id="85" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -320px;"></div>
+                
+                    <div class="tile" data-id="86" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -320px;"></div>
+                
+                    <div class="tile" data-id="87" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -320px;"></div>
+                
+                    <div class="tile" data-id="88" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -352px;"></div>
+                
+                    <div class="tile" data-id="89" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -352px;"></div>
+                
+                    <div class="tile" data-id="90" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -352px;"></div>
+                
+                    <div class="tile" data-id="91" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -352px;"></div>
+                
+                    <div class="tile" data-id="92" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -352px;"></div>
+                
+                    <div class="tile" data-id="93" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -352px;"></div>
+                
+                    <div class="tile" data-id="94" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -352px;"></div>
+                
+                    <div class="tile" data-id="95" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -352px;"></div>
+                
+                    <div class="tile" data-id="96" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -384px;"></div>
+                
+                    <div class="tile" data-id="97" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -384px;"></div>
+                
+                    <div class="tile" data-id="98" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -384px;"></div>
+                
+                    <div class="tile" data-id="99" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -384px;"></div>
+                
+                    <div class="tile" data-id="100" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -384px;"></div>
+                
+                    <div class="tile" data-id="101" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -384px;"></div>
+                
+                    <div class="tile" data-id="102" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -384px;"></div>
+                
+                    <div class="tile" data-id="103" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -384px;"></div>
+                
+                    <div class="tile" data-id="104" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -416px;"></div>
+                
+                    <div class="tile" data-id="105" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -416px;"></div>
+                
+                    <div class="tile" data-id="106" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -416px;"></div>
+                
+                    <div class="tile" data-id="107" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -416px;"></div>
+                
+                    <div class="tile" data-id="108" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -416px;"></div>
+                
+                    <div class="tile" data-id="109" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -416px;"></div>
+                
+                    <div class="tile" data-id="110" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -416px;"></div>
+                
+                    <div class="tile" data-id="111" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -416px;"></div>
+                
+                    <div class="tile" data-id="112" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -448px;"></div>
+                
+                    <div class="tile" data-id="113" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -448px;"></div>
+                
+                    <div class="tile" data-id="114" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -448px;"></div>
+                
+                    <div class="tile" data-id="115" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -448px;"></div>
+                
+                    <div class="tile" data-id="116" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -448px;"></div>
+                
+                    <div class="tile" data-id="117" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -448px;"></div>
+                
+                    <div class="tile" data-id="118" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -448px;"></div>
+                
+                    <div class="tile" data-id="119" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -448px;"></div>
+                
+                    <div class="tile" data-id="120" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -0px -480px;"></div>
+                
+                    <div class="tile" data-id="121" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -32px -480px;"></div>
+                
+                    <div class="tile" data-id="122" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -64px -480px;"></div>
+                
+                    <div class="tile" data-id="123" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -96px -480px;"></div>
+                
+                    <div class="tile" data-id="124" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -128px -480px;"></div>
+                
+                    <div class="tile" data-id="125" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -160px -480px;"></div>
+                
+                    <div class="tile" data-id="126" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -192px -480px;"></div>
+                
+                    <div class="tile" data-id="127" style="background-image: url('/Graphics/tilesets/gsc house 2.png'); background-position: -224px -480px;"></div>
+                
+            </div>
+        </div>
+    
+        <div class="tileset-container">
+            <h2>gsc house 3.png</h2>
+            <div class="tile-grid">
+                
+                    <div class="tile" data-id="0" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -0px;"></div>
+                
+                    <div class="tile" data-id="1" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -0px;"></div>
+                
+                    <div class="tile" data-id="2" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -0px;"></div>
+                
+                    <div class="tile" data-id="3" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -0px;"></div>
+                
+                    <div class="tile" data-id="4" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -0px;"></div>
+                
+                    <div class="tile" data-id="5" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -0px;"></div>
+                
+                    <div class="tile" data-id="6" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -0px;"></div>
+                
+                    <div class="tile" data-id="7" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -0px;"></div>
+                
+                    <div class="tile" data-id="8" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -32px;"></div>
+                
+                    <div class="tile" data-id="9" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -32px;"></div>
+                
+                    <div class="tile" data-id="10" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -32px;"></div>
+                
+                    <div class="tile" data-id="11" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -32px;"></div>
+                
+                    <div class="tile" data-id="12" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -32px;"></div>
+                
+                    <div class="tile" data-id="13" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -32px;"></div>
+                
+                    <div class="tile" data-id="14" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -32px;"></div>
+                
+                    <div class="tile" data-id="15" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -32px;"></div>
+                
+                    <div class="tile" data-id="16" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -64px;"></div>
+                
+                    <div class="tile" data-id="17" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -64px;"></div>
+                
+                    <div class="tile" data-id="18" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -64px;"></div>
+                
+                    <div class="tile" data-id="19" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -64px;"></div>
+                
+                    <div class="tile" data-id="20" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -64px;"></div>
+                
+                    <div class="tile" data-id="21" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -64px;"></div>
+                
+                    <div class="tile" data-id="22" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -64px;"></div>
+                
+                    <div class="tile" data-id="23" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -64px;"></div>
+                
+                    <div class="tile" data-id="24" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -96px;"></div>
+                
+                    <div class="tile" data-id="25" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -96px;"></div>
+                
+                    <div class="tile" data-id="26" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -96px;"></div>
+                
+                    <div class="tile" data-id="27" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -96px;"></div>
+                
+                    <div class="tile" data-id="28" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -96px;"></div>
+                
+                    <div class="tile" data-id="29" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -96px;"></div>
+                
+                    <div class="tile" data-id="30" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -96px;"></div>
+                
+                    <div class="tile" data-id="31" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -96px;"></div>
+                
+                    <div class="tile" data-id="32" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -128px;"></div>
+                
+                    <div class="tile" data-id="33" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -128px;"></div>
+                
+                    <div class="tile" data-id="34" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -128px;"></div>
+                
+                    <div class="tile" data-id="35" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -128px;"></div>
+                
+                    <div class="tile" data-id="36" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -128px;"></div>
+                
+                    <div class="tile" data-id="37" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -128px;"></div>
+                
+                    <div class="tile" data-id="38" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -128px;"></div>
+                
+                    <div class="tile" data-id="39" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -128px;"></div>
+                
+                    <div class="tile" data-id="40" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -160px;"></div>
+                
+                    <div class="tile" data-id="41" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -160px;"></div>
+                
+                    <div class="tile" data-id="42" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -160px;"></div>
+                
+                    <div class="tile" data-id="43" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -160px;"></div>
+                
+                    <div class="tile" data-id="44" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -160px;"></div>
+                
+                    <div class="tile" data-id="45" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -160px;"></div>
+                
+                    <div class="tile" data-id="46" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -160px;"></div>
+                
+                    <div class="tile" data-id="47" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -160px;"></div>
+                
+                    <div class="tile" data-id="48" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -192px;"></div>
+                
+                    <div class="tile" data-id="49" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -192px;"></div>
+                
+                    <div class="tile" data-id="50" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -192px;"></div>
+                
+                    <div class="tile" data-id="51" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -192px;"></div>
+                
+                    <div class="tile" data-id="52" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -192px;"></div>
+                
+                    <div class="tile" data-id="53" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -192px;"></div>
+                
+                    <div class="tile" data-id="54" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -192px;"></div>
+                
+                    <div class="tile" data-id="55" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -192px;"></div>
+                
+                    <div class="tile" data-id="56" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -224px;"></div>
+                
+                    <div class="tile" data-id="57" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -224px;"></div>
+                
+                    <div class="tile" data-id="58" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -224px;"></div>
+                
+                    <div class="tile" data-id="59" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -224px;"></div>
+                
+                    <div class="tile" data-id="60" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -224px;"></div>
+                
+                    <div class="tile" data-id="61" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -224px;"></div>
+                
+                    <div class="tile" data-id="62" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -224px;"></div>
+                
+                    <div class="tile" data-id="63" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -224px;"></div>
+                
+                    <div class="tile" data-id="64" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -256px;"></div>
+                
+                    <div class="tile" data-id="65" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -256px;"></div>
+                
+                    <div class="tile" data-id="66" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -256px;"></div>
+                
+                    <div class="tile" data-id="67" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -256px;"></div>
+                
+                    <div class="tile" data-id="68" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -256px;"></div>
+                
+                    <div class="tile" data-id="69" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -256px;"></div>
+                
+                    <div class="tile" data-id="70" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -256px;"></div>
+                
+                    <div class="tile" data-id="71" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -256px;"></div>
+                
+                    <div class="tile" data-id="72" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -288px;"></div>
+                
+                    <div class="tile" data-id="73" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -288px;"></div>
+                
+                    <div class="tile" data-id="74" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -288px;"></div>
+                
+                    <div class="tile" data-id="75" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -288px;"></div>
+                
+                    <div class="tile" data-id="76" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -288px;"></div>
+                
+                    <div class="tile" data-id="77" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -288px;"></div>
+                
+                    <div class="tile" data-id="78" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -288px;"></div>
+                
+                    <div class="tile" data-id="79" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -288px;"></div>
+                
+                    <div class="tile" data-id="80" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -320px;"></div>
+                
+                    <div class="tile" data-id="81" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -320px;"></div>
+                
+                    <div class="tile" data-id="82" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -320px;"></div>
+                
+                    <div class="tile" data-id="83" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -320px;"></div>
+                
+                    <div class="tile" data-id="84" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -320px;"></div>
+                
+                    <div class="tile" data-id="85" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -320px;"></div>
+                
+                    <div class="tile" data-id="86" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -320px;"></div>
+                
+                    <div class="tile" data-id="87" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -320px;"></div>
+                
+                    <div class="tile" data-id="88" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -352px;"></div>
+                
+                    <div class="tile" data-id="89" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -352px;"></div>
+                
+                    <div class="tile" data-id="90" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -352px;"></div>
+                
+                    <div class="tile" data-id="91" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -352px;"></div>
+                
+                    <div class="tile" data-id="92" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -352px;"></div>
+                
+                    <div class="tile" data-id="93" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -352px;"></div>
+                
+                    <div class="tile" data-id="94" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -352px;"></div>
+                
+                    <div class="tile" data-id="95" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -352px;"></div>
+                
+                    <div class="tile" data-id="96" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -384px;"></div>
+                
+                    <div class="tile" data-id="97" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -384px;"></div>
+                
+                    <div class="tile" data-id="98" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -384px;"></div>
+                
+                    <div class="tile" data-id="99" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -384px;"></div>
+                
+                    <div class="tile" data-id="100" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -384px;"></div>
+                
+                    <div class="tile" data-id="101" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -384px;"></div>
+                
+                    <div class="tile" data-id="102" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -384px;"></div>
+                
+                    <div class="tile" data-id="103" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -384px;"></div>
+                
+                    <div class="tile" data-id="104" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -416px;"></div>
+                
+                    <div class="tile" data-id="105" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -416px;"></div>
+                
+                    <div class="tile" data-id="106" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -416px;"></div>
+                
+                    <div class="tile" data-id="107" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -416px;"></div>
+                
+                    <div class="tile" data-id="108" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -416px;"></div>
+                
+                    <div class="tile" data-id="109" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -416px;"></div>
+                
+                    <div class="tile" data-id="110" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -416px;"></div>
+                
+                    <div class="tile" data-id="111" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -416px;"></div>
+                
+                    <div class="tile" data-id="112" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -448px;"></div>
+                
+                    <div class="tile" data-id="113" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -448px;"></div>
+                
+                    <div class="tile" data-id="114" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -448px;"></div>
+                
+                    <div class="tile" data-id="115" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -448px;"></div>
+                
+                    <div class="tile" data-id="116" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -448px;"></div>
+                
+                    <div class="tile" data-id="117" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -448px;"></div>
+                
+                    <div class="tile" data-id="118" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -448px;"></div>
+                
+                    <div class="tile" data-id="119" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -448px;"></div>
+                
+                    <div class="tile" data-id="120" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -0px -480px;"></div>
+                
+                    <div class="tile" data-id="121" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -32px -480px;"></div>
+                
+                    <div class="tile" data-id="122" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -64px -480px;"></div>
+                
+                    <div class="tile" data-id="123" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -96px -480px;"></div>
+                
+                    <div class="tile" data-id="124" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -128px -480px;"></div>
+                
+                    <div class="tile" data-id="125" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -160px -480px;"></div>
+                
+                    <div class="tile" data-id="126" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -192px -480px;"></div>
+                
+                    <div class="tile" data-id="127" style="background-image: url('/Graphics/tilesets/gsc house 3.png'); background-position: -224px -480px;"></div>
+                
+            </div>
+        </div>
+    
+</body>
+</html>

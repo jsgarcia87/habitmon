@@ -6,46 +6,42 @@
 export const TILE_SIZE = 32;
 
 export const parseRMXPTable = (rawTable) => {
-  if (!rawTable || !rawTable['@data']) return null;
-  const bytes = rawTable['@data'];
-  
-  // Table header (RMXP Table class serialization):
-  // [0..3]: Dimensions (usually 3)
-  // [4..7]: Width
-  // [8..11]: Height
-  // [12..15]: Layers (usually 3)
-  // [16..19]: Total size (w * h * l)
-  
-  const read32 = (offset) => {
-    return bytes[offset] + (bytes[offset + 1] << 8) + (bytes[offset + 2] << 16) + (bytes[offset + 3] << 24);
-  };
+  if (!rawTable) return null;
 
-  const dim = read32(0);
-  const width = read32(4);
-  const height = read32(8);
-  const layers = read32(12);
-  const size = read32(16);
+  // Case 1: Raw Byte Table (@data used by RMXP/Pokemon Essentials)
+  if (rawTable['@data']) {
+    const bytes = rawTable['@data'];
+    const read32 = (offset) => {
+      return bytes[offset] + (bytes[offset + 1] << 8) + (bytes[offset + 2] << 16) + (bytes[offset + 3] << 24);
+    };
 
-  // The actual data starts at index 20
-  const dataStart = 20;
-  const tileIds = new Int16Array(size);
-  
-  for (let i = 0; i < size; i++) {
-    // Each tile ID is a 16-bit signed integer (2 bytes)
-    const b1 = bytes[dataStart + i * 2];
-    const b2 = bytes[dataStart + i * 2 + 1];
-    let val = b1 + (b2 << 8);
-    // Handle signed 16-bit
-    if (val > 32767) val -= 65536;
-    tileIds[i] = val;
+    const width = read32(4);
+    const height = read32(8);
+    const layers = read32(12);
+    const size = read32(16);
+
+    const dataStart = 20;
+    const tileIds = new Int16Array(size);
+    for (let i = 0; i < size; i++) {
+      const b1 = bytes[dataStart + i * 2];
+      const b2 = bytes[dataStart + i * 2 + 1];
+      let val = b1 + (b2 << 8);
+      if (val > 32767) val -= 65536;
+      tileIds[i] = val;
+    }
+
+    return { width, height, layers, tileIds };
   }
 
-  return {
-    width,
-    height,
-    layers,
-    tileIds
-  };
+  // Case 2: Pre-parsed Flat Array (from tools like Tiled or custom converters)
+  if (Array.isArray(rawTable)) {
+    return {
+      tileIds: new Int16Array(rawTable),
+      isFlat: true
+    };
+  }
+
+  return null;
 };
 
 /**
@@ -53,11 +49,15 @@ export const parseRMXPTable = (rawTable) => {
  * RMXP Tables have a 20-byte header, followed by 2 bytes per entry.
  */
 export const parseRMXPPassages = (rawPassages) => {
-  const bytes = rawPassages?.['@data'] || rawPassages || [];
-  if (bytes.length < 20) return [];
+  if (!rawPassages) return new Int32Array(0);
+  const bytes = rawPassages?.['@data'] || (Array.isArray(rawPassages) ? null : rawPassages);
+  
+  // If it's already an array of numbers, return as typed array
+  if (Array.isArray(rawPassages)) return new Int32Array(rawPassages);
+  if (!bytes || bytes.length < 20) return new Int32Array(0);
   
   const size = (bytes.length - 20) / 2;
-  const passages = new Int16Array(size);
+  const passages = new Int32Array(size);
   for (let i = 0; i < size; i++) {
     const b1 = bytes[20 + i * 2];
     const b2 = bytes[20 + i * 2 + 1];
@@ -70,14 +70,16 @@ export const parseRMXPPassages = (rawPassages) => {
  * Parses the raw priorities '@data' array from Tilesets.json
  */
 export const parseRMXPPriorities = (rawPriorities) => {
-  const bytes = rawPriorities?.['@data'] || rawPriorities || [];
-  if (bytes.length < 20) return [];
+  if (!rawPriorities) return new Int8Array(0);
+  const bytes = rawPriorities?.['@data'] || (Array.isArray(rawPriorities) ? null : rawPriorities);
+  
+  if (Array.isArray(rawPriorities)) return new Int8Array(rawPriorities);
+  if (!bytes || bytes.length < 20) return new Int8Array(0);
   
   const size = (bytes.length - 20) / 2;
   const priorities = new Int8Array(size);
   for (let i = 0; i < size; i++) {
     const b1 = bytes[20 + i * 2];
-    // Priorities are usually 0-5, fits in a byte.
     priorities[i] = b1 ?? 0;
   }
   return priorities;

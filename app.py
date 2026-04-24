@@ -24,7 +24,7 @@ def serve_index():
 def php_shim():
     import traceback
     route = request.args.get('route', '/')
-    print(f"SHIM: Routing {request.method} request for {route}")
+    # print(f"SHIM: Routing {request.method} request for {route}")
     try:
         # This is a very basic mapper for common routes used in api.js
         if route.startswith('/auth/register'): return register()
@@ -40,7 +40,7 @@ def php_shim():
         
         return jsonify({"success":False, "msg": f"Route {route} not shimmed"}), 404
     except Exception as e:
-        print(f"SHIM ERROR: {str(e)}")
+        # print(f"SHIM ERROR: {str(e)}")
         traceback.print_exc()
         return jsonify({"success":False, "error": str(e), "trace": traceback.format_exc()}), 500
 # Use an absolute path for the database to avoid issues with current working directory
@@ -59,17 +59,17 @@ jwt = JWTManager(app)
 # IMPORTANTE: Añade este handler para debug
 @jwt.invalid_token_loader
 def invalid_token_callback(error):
-    print(f"JWT Invalid: {error}")
+    # print(f"JWT Invalid: {error}")
     return jsonify({"success":False,"msg":"Invalid"}), 401
 
 @jwt.expired_token_loader  
 def expired_token_callback(jwt_header, jwt_data):
-    print(f"JWT Expired")
+    # print(f"JWT Expired")
     return jsonify({"success":False,"msg":"Expired"}), 401
 
 @jwt.unauthorized_loader
 def unauthorized_callback(error):
-    print(f"JWT Missing: {error}")
+    # print(f"JWT Missing: {error}")
     return jsonify({"success":False,"msg":"Missing"}), 401
 
 

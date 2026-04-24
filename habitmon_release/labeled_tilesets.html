@@ -1,0 +1,32 @@
+<html>
+<head><title>Tilesets</title></head>
+<body style="background:#222; font-family:sans-serif;">
+  <div style="display:inline-block; margin:20px; text-align:center;">
+    <h2>gsc house 1.png</h2>
+    <div style="position:relative; display:inline-block; margin-bottom: 200px;">
+      <img src="Graphics/tilesets/gsc house 1.png" style="width: 512px; height: auto; image-rendering: pixelated;" />
+      <div id="grid1" style="position:absolute; top:0; left:0; display:grid; grid-template-columns: repeat(8, 64px); grid-auto-rows: 64px;">
+      </div>
+    </div>
+  </div>
+  <div style="display:inline-block; margin:20px; text-align:center;">
+    <h2>gsc house 2.png</h2>
+    <div style="position:relative; display:inline-block; margin-bottom: 200px;">
+      <img src="Graphics/tilesets/gsc house 2.png" style="width: 512px; height: auto; image-rendering: pixelated;" />
+      <div id="grid2" style="position:absolute; top:0; left:0; display:grid; grid-template-columns: repeat(8, 64px); grid-auto-rows: 64px;">
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const addBoxes = (id, count) => {
+        const grid = document.getElementById(id);
+        for(let i=0; i<count; i++) {
+            grid.innerHTML += `<div style="border:1px solid red; color:yellow; font-weight:bold; font-size:20px; text-shadow: 2px 2px 0 black, -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black; display:flex; justify-content:flex-end; align-items:flex-end; padding:2px; box-sizing:border-box;">${i}</div>`;
+        }
+    }
+    addBoxes('grid1', 112); // house 1 is taller
+    addBoxes('grid2', 48);
+  </script>
+</body>
+</html>

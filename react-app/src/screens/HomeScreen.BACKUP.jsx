@@ -7,23 +7,25 @@ import { useGame } from '../context/GameContext';
 const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   const [currentMapId, setCurrentMapId] = useState(screenData?.targetMapId || 'house_1');
   const { habitosHoy = [], gimnasiosHoy = [], template } = useGame();
-  const [isFading, setIsFading] = useState(false);
+  const [playerPos, setPlayerPos] = useState(screenData?.spawn || { x: 9, y: 11 }); 
   const [dialogue, setDialogue] = useState(null);
+  const [isFading, setIsFading] = useState(false);
 
-  const config = INTERIOR_CONFIGS[currentMapId] || INTERIOR_CONFIGS.house_1 || { nombre: 'Interiores' };
+  const config = INTERIOR_CONFIGS[currentMapId] || INTERIOR_CONFIGS.house_1;
   const mapMatrix = INTERIOR_MAPS[currentMapId] || INTERIOR_MAPS.house_1;
-  
-  // Posición inicial basada en config o screenData
-  const [playerPos, setPlayerPos] = useState(screenData?.spawn || config.spawn || { x: 9, y: 9 }); 
 
   const handleEvent = (event) => {
     console.log("Home HUB Event:", event);
     
-    // TRANSICIÓN DE ESCALERAS
+    // TRANSICIÓN DE ESCALERAS (Sincronizadas con Generador v8.0)
     if (event.type === 'stair') {
       const isBasement = currentMapId === 'house_1';
       const nextMap = isBasement ? 'house_2' : 'house_1';
-      const nextSpawn = isBasement ? { x: 10, y: 4 } : { x: 13, y: 3 };
+      
+      // Coordenadas ajustadas a la matriz del usuario
+      // house_1 -> house_2: Al pie de la escalera en P1
+      // house_2 -> house_1: Al pie de la escalera en PB
+      const nextSpawn = isBasement ? { x: 10, y: 4 } : { x: 12, y: 3 };
 
       setIsFading(true);
       setTimeout(() => {
@@ -35,9 +37,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
     
     // HABLAR CON NPCs
     if (event.type === 'npc_talk') {
-       const npc = event.npc;
-       
-       if (npc.id === 'madre') {
+       if (event.npc.id === 'madre') {
          const completedHabits = habitosHoy.filter(h => h.completado).length;
          const totalMedals = gimnasiosHoy.filter(g => g.completado).length;
          
@@ -57,47 +57,38 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
              { label: "NO, ESTOY BIEN", value: "cancel" }
            ]
          });
-       } else if (npc.id === 'leader') {
-         // Diálogo del líder del gimnasio
-         const gymConfig = INTERIOR_CONFIGS[currentMapId];
-         setDialogue({
-           name: gymConfig.nombre,
-           text: gymConfig.dialogo || ["¡Hola! Prepárate para el desafío."],
-           options: [
-             { label: "¡DESAFÍO!", value: "battle" },
-             { label: "LUEGO...", value: "cancel" }
-           ]
-         });
        }
     }
 
-    // INTERACCIÓN CON OBJETOS
+    // INTERACCIÓN CON OBJETOS (Data-Driven v9.0)
     if (event.type === 'object_interact') {
       const tileId = event.tileType;
 
+      // --- PLANTA BAJA ---
       if (currentMapId === 'house_1') {
-        if ([3, 22, 26].includes(tileId)) {
+        if ([3, 22, 26].includes(tileId)) { // Cocina / TV
           setDialogue({ name: "HOGAR", text: ["Huele a comida recién hecha.", "¡Mamá siempre cuida de todos!"] });
-        } else if ([32, 33, 13, 14].includes(tileId)) {
+        } else if ([32, 33, 13, 14].includes(tileId)) { // Mesa
           setDialogue({ name: "MESA", text: ["Una mesa robusta de madera.", "Perfecta para estudiar o comer."] });
         }
       }
 
+      // --- PLANTA ALTA ---
       if (currentMapId === 'house_2') {
-        if ([1, 9].includes(tileId)) {
+        if (tileId === 1) { // PC
           setDialogue({ 
             name: "PC", 
             text: ["Conectando al Sistema de Habitmon...", "¿Quieres revisar tus tareas?"],
             options: [{ label: "REVISAR", value: "profile" }, { label: "SALIR", value: "close" }]
           });
-        } else if ([40, 48].includes(tileId)) {
+        } else if ([40, 48].includes(tileId)) { // Cama
           setDialogue({ 
             name: "CAMA", 
             text: ["Es tu cama. Se ve muy cómoda.", "¿Quieres descansar?"],
             options: [{ label: "DORMIR", value: "heal" }, { label: "CANCELAR", value: "cancel" }]
           });
-        } else if ([41, 10].includes(tileId)) {
-          setDialogue({ name: "OBJETO", text: ["Es tu radio favorita.", "Emite una melodía relajante."] });
+        } else if (tileId === 41) { // Radio / Mapa
+          setDialogue({ name: "OBJETO", text: ["Parece una radio antigua.", "Emite una melodía relajante."] });
         }
       }
     }
@@ -105,28 +96,9 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
 
   const handleExit = () => navigate('city');
 
-  // Determinar NPCs dinámicamente
-  const getNpcs = () => {
-    if (currentMapId === 'house_1') {
-      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }];
-    }
-    
-    const gymConfig = INTERIOR_CONFIGS[currentMapId];
-    if (gymConfig && gymConfig.id) {
-      return [{
-        id: 'leader',
-        nombre: gymConfig.nombre,
-        sprite: gymConfig.sprite,
-        x: gymConfig.leaderPos?.x || 9,
-        y: gymConfig.leaderPos?.y || 5,
-        direccion: 2
-      }];
-    }
-    
-    return [];
-  };
-
-  const npcs = getNpcs();
+  const npcs = currentMapId === 'house_1' ? [
+    { id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 11, y: 6, direccion: 2 }
+  ] : [];
 
   return (
     <div style={{ width: '100vw', height: '100dvh', background: '#000', position: 'relative', overflow: 'hidden' }}>
@@ -156,11 +128,6 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
           onComplete={() => { if (!dialogue.options) setDialogue(null); }}
           onOptionSelect={(val) => {
             if (val === 'profile') navigate('profile');
-            else if (val === 'battle') {
-              setDialogue(null);
-              const gymConfig = INTERIOR_CONFIGS[currentMapId];
-              navigate('battle', { gymId: gymConfig.id });
-            }
             else if (val === 'heal') {
               setDialogue(null);
               setIsFading(true);

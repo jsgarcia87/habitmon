@@ -18,8 +18,8 @@ import { useDebouncedInput } from './hooks/useDebouncedInput';
 
 const LoadingScreen = () => (
   <div className="screen-container loading-screen">
-    <img src="Graphics/characters/trchar000.png" style={{imageRendering:'pixelated', transform:'scale(2)', marginBottom: 20}} />
-    <div style={{fontSize: 10, letterSpacing: 2}}>LOADING...</div>
+    <img src="Graphics/characters/trchar000.png" style={{ imageRendering: 'pixelated', transform: 'scale(2)', marginBottom: 20 }} />
+    <div style={{ fontSize: 10, letterSpacing: 2 }}>LOADING...</div>
     <div className="loading-bar">
       <div className="loading-progress"></div>
     </div>
@@ -27,8 +27,9 @@ const LoadingScreen = () => (
 );
 
 function App() {
-  const { token, user, loading, notification } = useGame();
-  const [screen, setScreen] = useState('login');
+  const { token: realToken, user, loading, notification } = useGame();
+  const token = true; // FORCE TOKEN FOR TESTING
+  const [screen, setScreen] = useState('home');
   const [screenData, setScreenData] = useState(null);
   const [fadeOut, setFadeOut] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -61,14 +62,17 @@ function App() {
 
   // Sync screen with Auth/User state
   useEffect(() => {
+    // FORCE BYPASS FOR INTERIOR AUDIT
+    /*
     if (loading) return;
     if (!token) {
       setScreen(showRegister ? 'register' : 'login');
     } else if (user && !user.starter_id) {
-      setScreen('city'); // DEBUG: Acceso directo para auditoría
+      setScreen('city'); 
     } else if (user && user.starter_id && (screen === 'login' || screen === 'register' || screen === 'starter')) {
       setScreen('city');
     }
+    */
   }, [token, user, loading, showRegister, screen]);
 
   const renderScreen = () => {
@@ -76,16 +80,16 @@ function App() {
     // or if it's the very first time we're fetching auth data.
     if (loading && !user && token) return <LoadingScreen />;
 
-    switch(screen) {
+    switch (screen) {
       case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} />;
       case 'register': return <RegisterScreen onLoginClick={() => setShowRegister(false)} />;
       case 'starter': return <StarterScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
       case 'city': return (
-        <CityScreen 
-          navigate={navigate} 
-          direction={debouncedDirection} 
-          aPressed={debouncedAPressed} 
-          pPos={globalPlayerPos} 
+        <CityScreen
+          navigate={navigate}
+          direction={debouncedDirection}
+          aPressed={debouncedAPressed}
+          pPos={globalPlayerPos}
           setPPos={setGlobalPlayerPos}
           currentMapId={globalMapId}
           setCurrentMapId={setGlobalMapId}
@@ -95,21 +99,19 @@ function App() {
           setLastExtPos={setLastExtPos}
         />
       );
-      case 'gym': return <GymScreen navigate={navigate} gymId={screenData?.gymId} direction={debouncedDirection} aPressed={debouncedAPressed} onBack={() => navigate('city')} />;
+      case 'gym': return <GymScreen navigate={navigate} gymId={screenData?.gymId} screenData={screenData} direction={debouncedDirection} aPressed={debouncedAPressed} onBack={() => navigate('city')} />;
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={debouncedAPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
       case 'profile': return <ProfileScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
-      case 'home': return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
-      case 'habits_edit': return <HabitEditScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
-      case 'admin': return <AdminScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
-      default: return <CityScreen navigate={navigate} />;
+      case 'home': return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
+      default: return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
     }
   };
 
   return (
     <div className="game-container">
       <div className="scanlines"></div>
-      
+
       {/* Black Fade Overlay */}
       <div className={`fade-overlay ${fadeOut ? 'active' : 'inactive'}`} />
 
@@ -127,20 +129,20 @@ function App() {
 
       {/* Global Controls (Only visible in game screens) */}
       {token && ['city', 'gym', 'starter', 'home'].includes(screen) && (
-        <Controls 
+        <Controls
           onDirectionChange={(dir) => {
             console.log('Direction changed:', dir);
             setDirection(dir);
           }}
-          onA={() => { 
+          onA={() => {
             console.log('Button A pressed');
-            setAPressed(true); 
-            setTimeout(() => setAPressed(false), 100); 
+            setAPressed(true);
+            setTimeout(() => setAPressed(false), 100);
           }}
-          onB={() => { 
+          onB={() => {
             console.log('Button B pressed');
-            setBPressed(true); 
-            setTimeout(() => setBPressed(false), 100); 
+            setBPressed(true);
+            setTimeout(() => setBPressed(false), 100);
           }}
           onStart={() => {
             console.log('Start button pressed');

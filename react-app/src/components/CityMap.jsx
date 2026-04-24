@@ -4,7 +4,7 @@ import { getAssetPath } from '../api/assets';
 import { TILE_SIZE, parseRMXPTable, parseRMXPPassages, parseRMXPPriorities, checkPassage } from '../utils/TilesetManager';
 import { safeDrawImage } from '../utils/gfxUtils';
 
-const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs, buildings, children }) => {
+const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [], buildings = [], children }) => {
   const { user, gimnasiosHoy, notify } = useGame();
   const canvasRef = useRef(null);
   const worldOverlayRef = useRef(null);
@@ -28,7 +28,8 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
     progress: 0, 
     facing: 'down',
     walkFrame: 0,
-    hasNudged: false
+    hasNudged: false,
+    lastMapId: null
   });
 
   const lastEncounterRef = useRef(0);
@@ -72,7 +73,13 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
         const mData = await mapRes.json();
         const allTilesets = await tsRes.json();
         
-        const table = parseRMXPTable(mData.data);
+        let table = parseRMXPTable(mData.data);
+        if (table && table.isFlat) {
+          table.width = mData.width;
+          table.height = mData.height;
+          table.layers = Math.floor(table.tileIds.length / (mData.width * mData.height));
+        }
+        
         const meta = allTilesets.find(t => t && t.id === mData.tileset_id);
         
         setMapData({ ...mData, table });
@@ -144,25 +151,21 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
     });
   }, [npcs]);
 
-  // Keep state in sync y detectar proximidad
+  // Sync initial location ONLY on map change or MAJOR manual reset (teleport > 1.1 tiles)
   useEffect(() => {
     const p = playerState.current;
-    if (!p.isMoving && !p.hasNudged) {
+    const dist = Math.sqrt(Math.pow(p.x - playerPos.x, 2) + Math.pow(p.y - playerPos.y, 2));
+    
+    if (mapId !== p.lastMapId || dist > 1.1) {
+      console.log("COORD SYNC: Accepted from Props", playerPos);
       p.x = playerPos.x;
       p.y = playerPos.y;
       p.targetX = playerPos.x;
       p.targetY = playerPos.y;
+      p.lastMapId = mapId;
       p.hasNudged = true;
-      
-      let tx = p.x, ty = p.y;
-      if (p.facing === 'up') ty--;
-      if (p.facing === 'down') ty++;
-      if (p.facing === 'left') tx--;
-      if (p.facing === 'right') tx++;
-      const npc = npcs.find(n => n.posicion.x === tx && n.posicion.y === ty);
-      setNearNpc(npc || null);
     }
-  }, [playerPos, npcs]);
+  }, [mapId, playerPos]);
 
   const checkCollision = (nx, ny) => {
     const p = playerState.current;
@@ -182,18 +185,28 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
     const moveDir = p.facing;
     const opDir = { down: 'up', up: 'down', left: 'right', right: 'left' }[moveDir];
 
-    // Check all layers: restrictive (any layer blocking blocks the move)
-    for (let z = 0; z < layers; z++) {
-      const curIdx = (z * width * height) + (p.y * width) + p.x;
-      const curTid = tileIds[curIdx];
-      const tarIdx = (z * width * height) + (ny * width) + nx;
-      const tarTid = tileIds[tarIdx];
-
-      // 1. Can we EXIT the current tile in moveDir?
-      if (curTid !== 0 && !checkPassage(passages, curTid, moveDir)) return true;
-
-      // 2. Can we ENTER the target tile from opDir?
-      if (tarTid !== 0 && !checkPassage(passages, tarTid, opDir)) return true;
+    // RMXP Collision Logic: Check layers from TOP to BOTTOM.
+    // Layer 2 is top, Layer 1 middle, Layer 0 ground.
+    // If a tile is non-zero (not transparent), its passage flag determines collision.
+    // If it's zero, we check the layer below.
+    for (let z = layers - 1; z >= 0; z--) {
+      const idx = (z * width * height) + (ny * width) + nx;
+      const tid = tileIds[idx];
+      
+      if (tid !== 0) {
+        // Tile found, check if it blocks entering from opDir
+        if (!checkPassage(passages, tid, opDir)) return true;
+        
+        // Also check if we can exit the current tile in moveDir
+        const curIdx = (z * width * height) + (p.y * width) + p.x;
+        const curTid = tileIds[curIdx];
+        if (curTid !== 0 && !checkPassage(passages, curTid, moveDir)) return true;
+        
+        // If we found a base tile (Priority 0) and we can pass it, we stop searching
+        const priorities = tilesetMeta.processedPriorities || [];
+        const pIdx = tid < 384 ? (Math.floor(tid / 48) - 1) : tid;
+        if (priorities[pIdx] === 0) break; 
+      }
     }
     return false;
   };
@@ -276,9 +289,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
       const p = playerState.current;
 
       frameCounter.val++;
-      if (frameCounter.val % 120 === 0) {
-        console.log('Game loop active. FPS approx:', Math.round(1000/dt));
-      }
+      // Performance: Removed console.log here to prevent stutters
 
       if (p.isMoving) {
         p.progress += dt / 160; // Snappier movement (160ms per tile)

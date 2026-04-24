@@ -47,8 +47,12 @@ const CityScreen = ({
       if (isDone) {
         setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId?.toUpperCase() || ''} hoy.`);
       } else {
-        // Redirigir al motor especializado de gimnasios
-        navigate('gym', { gymId: event.gymId });
+        // Redirigir al motor especializado de gimnasios pasando los metadatos del mapa
+        navigate('home', { 
+          gymId: event.gymId,
+          targetMapId: event.targetMapId,
+          spawn: event.spawn
+        });
       }
     } else if (event.type === 'home_entry') {
       const b = event.building || currentMap.buildings.find(b => b.type === 'home');
@@ -56,8 +60,10 @@ const CityScreen = ({
         const safePos = { x: b.x, y: b.y + 1 };
         setLastExtPos(safePos);
         if (setPPos) setPPos(safePos);
+        navigate('home', { targetMapId: b.targetMapId, spawn: b.spawn });
+      } else {
+        navigate('home');
       }
-      navigate('home');
     } else if (event.type === 'npc_talk') {
       if (event.npc.isLeader) {
         navigate('battle', { tipo: 'gym', gymId: event.npc.gymId });

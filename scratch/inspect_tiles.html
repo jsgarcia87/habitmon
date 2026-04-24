@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Habitmon Tileset Inspector</title>
+    <style>
+        body { background: #333; color: #fff; font-family: monospace; }
+        .tileset-container { position: relative; display: inline-block; border: 2px solid red; margin-bottom: 20px; }
+        .tile-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .id-label { 
+            position: absolute; 
+            width: 32px; 
+            height: 32px; 
+            box-sizing: border-box; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            font-size: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: rgba(0,0,0,0.4);
+        }
+        h2 { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h2>GSC House 2 (PB)</h2>
+    <div id="set-1" class="tileset-container">
+        <img src="Graphics/tilesets/gsc house 2.png" id="img-1">
+        <div id="grid-1" class="tile-grid"></div>
+    </div>
+
+    <h2>GSC House 1 (Habitación)</h2>
+    <div id="set-2" class="tileset-container">
+        <img src="Graphics/tilesets/gsc house 1.png" id="img-2">
+        <div id="grid-2" class="tile-grid"></div>
+    </div>
+
+    <script>
+        function createGrid(containerId, imgId, cols = 8) {
+            const grid = document.getElementById(containerId);
+            const img = document.getElementById(imgId);
+            
+            img.onload = () => {
+                const width = img.naturalWidth;
+                const height = img.naturalHeight;
+                const rows = Math.floor(height / 32);
+                
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const id = r * cols + c;
+                        const label = document.createElement('div');
+                        label.className = 'id-label';
+                        label.style.left = (c * 32) + 'px';
+                        label.style.top = (r * 32) + 'px';
+                        label.textContent = id;
+                        grid.appendChild(label);
+                    }
+                }
+            };
+            // Force onload if cached
+            if (img.complete) img.onload();
+        }
+
+        createGrid('grid-1', 'img-1');
+        createGrid('grid-2', 'img-2');
+    </script>
+</body>
+</html>

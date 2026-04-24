@@ -10,7 +10,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   const [isFading, setIsFading] = useState(false);
   const [dialogue, setDialogue] = useState(null);
 
-  const config = INTERIOR_CONFIGS[currentMapId] || INTERIOR_CONFIGS.house_1 || { nombre: 'Interiores' };
+  const config = INTERIOR_CONFIGS[currentMapId] || INTERIOR_CONFIGS.house_1;
   const mapMatrix = INTERIOR_MAPS[currentMapId] || INTERIOR_MAPS.house_1;
   
   // Posición inicial basada en config o screenData
@@ -19,10 +19,14 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   const handleEvent = (event) => {
     console.log("Home HUB Event:", event);
     
-    // TRANSICIÓN DE ESCALERAS
+    // TRANSICIÓN DE ESCALERAS (Sincronizadas con Generador v9.0)
     if (event.type === 'stair') {
       const isBasement = currentMapId === 'house_1';
       const nextMap = isBasement ? 'house_2' : 'house_1';
+      
+      // Coordenadas ajustadas a la matriz GSC 1:1
+      // house_1 (34 at 13,2) -> house_2: Spawn at (10, 4)
+      // house_2 (7/15 at 10,2/3) -> house_1: Spawn at (13, 3)
       const nextSpawn = isBasement ? { x: 10, y: 4 } : { x: 13, y: 3 };
 
       setIsFading(true);
@@ -35,9 +39,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
     
     // HABLAR CON NPCs
     if (event.type === 'npc_talk') {
-       const npc = event.npc;
-       
-       if (npc.id === 'madre') {
+       if (event.npc.id === 'madre') {
          const completedHabits = habitosHoy.filter(h => h.completado).length;
          const totalMedals = gimnasiosHoy.filter(g => g.completado).length;
          
@@ -46,7 +48,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
          if (totalMedals > 0) {
            text = [`¡Increíble! ¡Ya tienes ${totalMedals} medallas!`, "Vaya cambio estás dando... Estoy muy orgullosa.", "¡Sigue esforzándote!"];
          } else if (completedHabits > 0) {
-           text = [`¡Veo que hoy ya has completado ${completedHabits} hábitos!`, "¡Me encanta ver esa energía!", "¿Quieres tomarte un descanso para recuperar fuerzas?"];
+           text = [`¡Veo que hoy ya has completed ${completedHabits} hábitos!`, "¡Me encanta ver esa energía!", "¿Quieres tomarte un descanso para recuperar fuerzas?"];
          }
 
          setDialogue({
@@ -57,46 +59,37 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
              { label: "NO, ESTOY BIEN", value: "cancel" }
            ]
          });
-       } else if (npc.id === 'leader') {
-         // Diálogo del líder del gimnasio
-         const gymConfig = INTERIOR_CONFIGS[currentMapId];
-         setDialogue({
-           name: gymConfig.nombre,
-           text: gymConfig.dialogo || ["¡Hola! Prepárate para el desafío."],
-           options: [
-             { label: "¡DESAFÍO!", value: "battle" },
-             { label: "LUEGO...", value: "cancel" }
-           ]
-         });
        }
     }
 
-    // INTERACCIÓN CON OBJETOS
+    // INTERACCIÓN CON OBJETOS (Data-Driven v9.0)
     if (event.type === 'object_interact') {
       const tileId = event.tileType;
 
+      // --- PLANTA BAJA ---
       if (currentMapId === 'house_1') {
-        if ([3, 22, 26].includes(tileId)) {
+        if ([3, 22, 26].includes(tileId)) { // Cocina / TV
           setDialogue({ name: "HOGAR", text: ["Huele a comida recién hecha.", "¡Mamá siempre cuida de todos!"] });
-        } else if ([32, 33, 13, 14].includes(tileId)) {
+        } else if ([32, 33, 13, 14].includes(tileId)) { // Mesa
           setDialogue({ name: "MESA", text: ["Una mesa robusta de madera.", "Perfecta para estudiar o comer."] });
         }
       }
 
+      // --- PLANTA ALTA ---
       if (currentMapId === 'house_2') {
-        if ([1, 9].includes(tileId)) {
+        if ([1, 9].includes(tileId)) { // PC
           setDialogue({ 
             name: "PC", 
             text: ["Conectando al Sistema de Habitmon...", "¿Quieres revisar tus tareas?"],
             options: [{ label: "REVISAR", value: "profile" }, { label: "SALIR", value: "close" }]
           });
-        } else if ([40, 48].includes(tileId)) {
+        } else if ([40, 48].includes(tileId)) { // Cama
           setDialogue({ 
             name: "CAMA", 
             text: ["Es tu cama. Se ve muy cómoda.", "¿Quieres descansar?"],
             options: [{ label: "DORMIR", value: "heal" }, { label: "CANCELAR", value: "cancel" }]
           });
-        } else if ([41, 10].includes(tileId)) {
+        } else if ([41, 10].includes(tileId)) { // Radio / Mapa / Rug
           setDialogue({ name: "OBJETO", text: ["Es tu radio favorita.", "Emite una melodía relajante."] });
         }
       }
@@ -105,28 +98,9 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
 
   const handleExit = () => navigate('city');
 
-  // Determinar NPCs dinámicamente
-  const getNpcs = () => {
-    if (currentMapId === 'house_1') {
-      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }];
-    }
-    
-    const gymConfig = INTERIOR_CONFIGS[currentMapId];
-    if (gymConfig && gymConfig.id) {
-      return [{
-        id: 'leader',
-        nombre: gymConfig.nombre,
-        sprite: gymConfig.sprite,
-        x: gymConfig.leaderPos?.x || 9,
-        y: gymConfig.leaderPos?.y || 5,
-        direccion: 2
-      }];
-    }
-    
-    return [];
-  };
-
-  const npcs = getNpcs();
+  const npcs = currentMapId === 'house_1' ? [
+    { id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }
+  ] : [];
 
   return (
     <div style={{ width: '100vw', height: '100dvh', background: '#000', position: 'relative', overflow: 'hidden' }}>
@@ -156,11 +130,6 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
           onComplete={() => { if (!dialogue.options) setDialogue(null); }}
           onOptionSelect={(val) => {
             if (val === 'profile') navigate('profile');
-            else if (val === 'battle') {
-              setDialogue(null);
-              const gymConfig = INTERIOR_CONFIGS[currentMapId];
-              navigate('battle', { gymId: gymConfig.id });
-            }
             else if (val === 'heal') {
               setDialogue(null);
               setIsFading(true);
