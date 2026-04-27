@@ -90,14 +90,19 @@ const HabitEditScreen = ({ onNavigate }) => {
     setEditingHabit(null);
   };
 
-  const handleSaveAll = () => {
+  const handleSaveAll = async () => {
     setSaving(true);
-    if (saveCustomTemplate) {
-        saveCustomTemplate(localTemplate);
+    try {
+      if (saveCustomTemplate) {
+          await saveCustomTemplate(localTemplate);
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      console.error("Habit Edit Save Error:", e);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   };
 
   if (!localTemplate || localTemplate.length === 0) {

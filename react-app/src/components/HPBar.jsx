@@ -2,14 +2,30 @@ import React from 'react';
 import { getAssetPath } from '../api/assets';
 
 const HPBar = ({ current, max, name, level, alignment = 'player', exp = 0 }) => {
-  const percentage = Math.max(0, Math.min(100, (current / max) * 100));
-  const expPercentage = Math.min(100, exp % 100); // Simple exp bar for now
+  const [displayHP, setDisplayHP] = React.useState(current);
+
+  React.useEffect(() => {
+    let frame;
+    const target = current;
+    const animate = () => {
+      setDisplayHP(prev => {
+        const diff = target - prev;
+        if (Math.abs(diff) < 0.1) return target;
+        return prev + diff * 0.1; // Smooth lerp
+      });
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [current]);
+
+  const percentage = Math.max(0, Math.min(100, (displayHP / max) * 100));
+  const expPercentage = Math.min(100, (exp / (level || 1))); 
   
   let hpColor = '#32cd32'; // Green
   if (percentage < 50) hpColor = '#fdec31'; // Yellow
   if (percentage < 20) hpColor = '#e74c3c'; // Red
 
-  // Dimensions based on databox_normal.png (192 x 78)
   const containerStyle = {
     position: 'relative',
     width: '192px',
@@ -39,7 +55,6 @@ const HPBar = ({ current, max, name, level, alignment = 'player', exp = 0 }) => 
     color: '#444'
   };
 
-  // HP Bar alignment within the databox
   const hpContainerStyle = {
     position: 'absolute',
     left: '82px',
@@ -56,7 +71,6 @@ const HPBar = ({ current, max, name, level, alignment = 'player', exp = 0 }) => 
     width: `${percentage}%`,
     height: '100%',
     backgroundColor: hpColor,
-    transition: 'width 0.4s ease-out'
   };
 
   // EXP Bar (Only for player)

@@ -136,7 +136,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
       }
     };
     loadMap();
-  }, [mapId]);
+  }, [mapId, user?.avatar]);
 
   // NPC Image Cache y Proximidad
   const [nearNpc, setNearNpc] = useState(null);
@@ -378,8 +378,8 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
       const vX = p.x + (p.targetX - p.x) * p.progress;
       const vY = p.y + (p.targetY - p.y) * p.progress;
       
-      let camX = vX * TILE_SIZE - (cw / 2) + (TILE_SIZE / 2);
-      let camY = vY * TILE_SIZE - (ch / 2) + (TILE_SIZE / 2);
+      let camX = Math.floor(vX * TILE_SIZE - (cw / 2) + (TILE_SIZE / 2));
+      let camY = Math.floor(vY * TILE_SIZE - (ch / 2) + (TILE_SIZE / 2));
       const maxCamX = Math.max(0, width * TILE_SIZE - cw);
       const maxCamY = Math.max(0, height * TILE_SIZE - ch);
       camX = Math.max(0, Math.min(camX, maxCamX));
@@ -535,8 +535,9 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
             ctx.fillText(cleanName, textX, textY);
             
             if (done) { 
+              const bounce = Math.sin(Date.now() / 150) * 3;
               ctx.font = '14px serif'; 
-              ctx.fillText('🏅', Math.floor(labelX + labelW/2), Math.floor(labelY - 8)); 
+              ctx.fillText('🏅', Math.floor(labelX + labelW/2), Math.floor(labelY - 12 + bounce)); 
             }
             ctx.restore();
           }

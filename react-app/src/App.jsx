@@ -27,9 +27,8 @@ const LoadingScreen = () => (
 );
 
 function App() {
-  const { token: realToken, user, loading, notification } = useGame();
-  const token = true; // FORCE TOKEN FOR TESTING
-  const [screen, setScreen] = useState('home');
+  const { token, user, loading, notification, starter } = useGame();
+  const [screen, setScreen] = useState('login');
   const [screenData, setScreenData] = useState(null);
   const [fadeOut, setFadeOut] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -52,9 +51,10 @@ function App() {
 
   // Transition Helper
   const navigate = (newScreen, data = null) => {
+    const normalizedScreen = String(newScreen || '').toLowerCase();
     setFadeOut(true);
     setTimeout(() => {
-      setScreen(newScreen);
+      setScreen(normalizedScreen);
       setScreenData(data);
       setFadeOut(false);
     }, 300);
@@ -62,23 +62,20 @@ function App() {
 
   // Sync screen with Auth/User state
   useEffect(() => {
-    // FORCE BYPASS FOR INTERIOR AUDIT
-    /*
     if (loading) return;
     if (!token) {
       setScreen(showRegister ? 'register' : 'login');
     } else if (user && !user.starter_id) {
-      setScreen('city'); 
+      setScreen('starter'); 
     } else if (user && user.starter_id && (screen === 'login' || screen === 'register' || screen === 'starter')) {
       setScreen('city');
     }
-    */
   }, [token, user, loading, showRegister, screen]);
 
   const renderScreen = () => {
     // Only block with LoadingScreen if we have NO user/token and are supposedly logged in
     // or if it's the very first time we're fetching auth data.
-    if (loading && !user && token) return <LoadingScreen />;
+    if (loading && token && (!user || (user.starter_id && !starter))) return <LoadingScreen />;
 
     switch (screen) {
       case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} />;
@@ -103,6 +100,8 @@ function App() {
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={debouncedAPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
       case 'profile': return <ProfileScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
+      case 'admin': return <AdminScreen onNavigate={navigate} />;
+      case 'habitedit': return <HabitEditScreen onNavigate={navigate} />;
       case 'home': return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
       default: return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
     }
@@ -127,6 +126,12 @@ function App() {
         {renderScreen()}
       </div>
 
+      {user && (
+        <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.8)', color: '#00FF00', border: '2px solid #555', padding: '6px 16px', fontFamily: '"Press Start 2P"', fontSize: 8, zIndex: 10, borderRadius: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{color:'#FFD700'}}>$</span> {user.monedas || 0}
+        </div>
+      )}
+
       {/* Global Controls (Only visible in game screens) */}
       {token && ['city', 'gym', 'starter', 'home'].includes(screen) && (
         <Controls
@@ -146,7 +151,7 @@ function App() {
           }}
           onStart={() => {
             console.log('Start button pressed');
-            if (screen === 'city') navigate('profile');
+            if (screen === 'city' || screen === 'home' || screen === 'gym') navigate('profile');
           }}
         />
       )}

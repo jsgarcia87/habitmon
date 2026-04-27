@@ -41,20 +41,21 @@ const InteriorMap = ({
   const playerImg = useRef(new Image());
   const npcImgs = useRef({});
 
-  // Sync Initial Pos
+  // Sync Initial Pos & Reset on screen change
   useEffect(() => {
     const p = playerState.current;
-    if (currentMapId !== p.lastName) {
-      console.log(`📍 Map change: ${p.lastName} -> ${currentMapId}`);
-      p.x = initialPos?.x ?? 0;
-      p.y = initialPos?.y ?? 0;
-      p.targetX = initialPos?.x ?? 0;
-      p.targetY = initialPos?.y ?? 0;
-      p.progress = 0;
-      p.isMoving = false;
-      p.lastName = currentMapId;
-    }
-  }, [currentMapId, initialPos]);
+    
+    // Always sync if initialPos changes or map changes
+    console.log(`📍 Syncing Interior Pos for ${currentMapId}:`, initialPos);
+    p.x = initialPos?.x ?? 0;
+    p.y = initialPos?.y ?? 0;
+    p.targetX = initialPos?.x ?? 0;
+    p.targetY = initialPos?.y ?? 0;
+    p.progress = 0;
+    p.isMoving = false;
+    p.facing = initialFacing;
+    p.lastName = currentMapId;
+  }, [currentMapId, initialPos, initialFacing]);
 
   // Asset Loader
   useEffect(() => {
@@ -131,6 +132,25 @@ const InteriorMap = ({
       const cols = Math.floor(ts.naturalWidth / TILE_SIZE);
       if (cols === 0) return;
 
+      const p = playerState.current;
+      const cw = canvasRef.current.width, ch = canvasRef.current.height;
+      
+      // Calculate viewport offsets
+      const vX = p.x + (p.targetX - p.x) * p.progress;
+      const vY = p.y + (p.targetY - p.y) * p.progress;
+      
+      // Fixed internal resolution cam (centered if small)
+      const mapW = layerData[0]?.length || 1;
+      const mapH = layerData.length || 1;
+      
+      let camX = Math.floor(vX * TILE_SIZE - (cw / 2) + (TILE_SIZE / 2));
+      let camY = Math.floor(vY * TILE_SIZE - (ch / 2) + (TILE_SIZE / 2));
+      
+      const maxCamX = Math.max(0, mapW * TILE_SIZE - cw);
+      const maxCamY = Math.max(0, mapH * TILE_SIZE - ch);
+      camX = Math.max(0, Math.min(camX, maxCamX));
+      camY = Math.max(0, Math.min(camY, maxCamY));
+
       for (let y = 0; y < layerData.length; y++) {
         if (!layerData[y]) continue;
         for (let x = 0; x < layerData[y].length; x++) {
@@ -139,7 +159,12 @@ const InteriorMap = ({
           
           const sx = (val % cols) * TILE_SIZE;
           const sy = Math.floor(val / cols) * TILE_SIZE;
-          safeDrawImage(ctx, ts, sx, sy, TILE_SIZE, TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+          const dx = Math.floor(x * TILE_SIZE - camX);
+          const dy = Math.floor(y * TILE_SIZE - camY);
+
+          if (dx > -TILE_SIZE && dx < cw && dy > -TILE_SIZE && dy < ch) {
+            safeDrawImage(ctx, ts, sx, sy, TILE_SIZE, TILE_SIZE, dx, dy, TILE_SIZE, TILE_SIZE);
+          }
         }
       }
     };
@@ -202,21 +227,41 @@ const InteriorMap = ({
           }
         }
 
-        // 2. Render Sequence
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        // 2. Camera calculation for all elements
+        const cw = canvasRef.current.width, ch = canvasRef.current.height;
+        const vX = p.x + (p.targetX - p.x) * p.progress;
+        const vY = p.y + (p.targetY - p.y) * p.progress;
+        
+        let camX = Math.floor(vX * TILE_SIZE - (cw / 2) + (TILE_SIZE / 2));
+        let camY = Math.floor(vY * TILE_SIZE - (ch / 2) + (TILE_SIZE / 2));
+        
+        const maxCamX = Math.max(0, mapW * TILE_SIZE - cw);
+        const maxCamY = Math.max(0, mapH * TILE_SIZE - ch);
+        camX = Math.max(0, Math.min(camX, maxCamX));
+        camY = Math.max(0, Math.min(camY, maxCamY));
+
+        // 3. Render Sequence
+        ctx.clearRect(0, 0, cw, ch);
         drawLayer(currentLayers.base);
         drawLayer(currentLayers.deco);
+        
         npcs.forEach(npc => {
           const img = npcImgs.current[npc.id];
-          if (img?.complete) safeDrawImage(ctx, img, 0, 0, 32, 40, npc.x * TILE_SIZE, npc.y * TILE_SIZE - 8, 32, 40);
+          if (img?.complete) {
+            const dx = Math.floor(npc.x * TILE_SIZE - camX);
+            const dy = Math.floor(npc.y * TILE_SIZE - camY);
+            const row = npc.direccion || 0; // 0: down, 1: left, 2: right, 3: up
+            safeDrawImage(ctx, img, 0, row * 40, 32, 40, dx, dy - 8, 32, 40);
+          }
         });
+
         if (playerImg.current?.naturalWidth > 0) {
-          const visualX = p.x + (p.targetX - p.x) * p.progress;
-          const visualY = p.y + (p.targetY - p.y) * p.progress;
+          const dx = Math.floor(vX * TILE_SIZE - camX);
+          const dy = Math.floor(vY * TILE_SIZE - camY);
           const row = p.facing === 'down' ? 0 : p.facing === 'left' ? 1 : p.facing === 'right' ? 2 : 3;
           const frameW = 32, frameH = playerImg.current.naturalHeight / 4;
           const yOffset = frameH - 32;
-          safeDrawImage(ctx, playerImg.current, p.walkFrame * frameW, row * frameH, frameW, frameH, visualX * TILE_SIZE, visualY * TILE_SIZE - yOffset, frameW, frameH);
+          safeDrawImage(ctx, playerImg.current, p.walkFrame * frameW, row * frameH, frameW, frameH, dx, dy - yOffset, frameW, frameH);
         }
         drawLayer(currentLayers.overlay);
         frameId = requestAnimationFrame(loop);
@@ -269,10 +314,28 @@ const InteriorMap = ({
   const baseMap = map?.layers?.base || map;
   const mapW = baseMap?.[0]?.length || 20, mapH = baseMap?.length || 15;
 
+  // Responsive canvas size adjustment (Pixel-perfect scaling)
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+        if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+          canvas.width = displayWidth;
+          canvas.height = displayHeight;
+        }
+      }
+    };
+    window.addEventListener('resize', updateCanvasSize);
+    updateCanvasSize();
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, []);
+
   return (
-    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000', width: '100%', height: '100%' }}>
-      <canvas ref={canvasRef} width={mapW * TILE_SIZE} height={mapH * TILE_SIZE} style={{ imageRendering: 'pixelated', maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-      {isLoading && <div style={{ position: 'absolute', color: '#fff', fontSize: 14, fontFamily: '"Press Start 2P"' }}>CARGANDO...</div>}
+    <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000', overflow: 'hidden' }}>
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block', imageRendering: 'pixelated' }} />
+      {isLoading && <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000', color: '#fff', fontFamily: '"Press Start 2P"', fontSize: 8 }}>Cargando...</div>}
     </div>
   );
 };

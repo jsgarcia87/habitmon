@@ -32,10 +32,14 @@ def php_shim():
         if route.startswith('/starter/info'): return get_starter_info()
         if route.startswith('/starter/elegir'): return elegir_starter()
         if route.startswith('/habitos/hoy'): return get_habitos_hoy()
+        if route.startswith('/stats'): return get_stats()
         if route.startswith('/habitos/completar'): return completar_habito()
         if route.startswith('/gimnasios/hoy'): return get_gimnasios_hoy()
         if route.startswith('/gimnasios/completar'): return completar_gimnasio()
         if route.startswith('/admin/config'): return admin_config()
+        if route.startswith('/coleccion/capturar'): return capturar_pokemon()
+        if route.startswith('/battle/victory'): return ganar_batalla()
+        if route.startswith('/habitos/reset'): return reset_habitos()
         if route.startswith('/coleccion'): return get_coleccion()
         
         return jsonify({"success":False, "msg": f"Route {route} not shimmed"}), 404
@@ -88,6 +92,7 @@ class Usuario(db.Model):
     starter_nombre= db.Column(db.String(50), nullable=True)
     starter_nivel  = db.Column(db.Integer, default=5)
     starter_exp    = db.Column(db.Integer, default=0)
+    monedas        = db.Column(db.Integer, default=0)
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -99,7 +104,8 @@ class Usuario(db.Model):
             "starter_id": self.starter_id,
             "starter_nombre": self.starter_nombre,
             "starter_nivel": self.starter_nivel,
-            "starter_exp": self.starter_exp
+            "starter_exp": self.starter_exp,
+            "monedas": self.monedas
         }
 
 class HabitoConfig(db.Model):
@@ -443,8 +449,27 @@ def completar_habito():
         return jsonify({"success": False, "message": "ya completado"}), 400
     
     prog.completado = True
+    
+    # Rewards
+    user = Usuario.query.get(uid)
+    user.starter_exp += 10
+    user.monedas += 5
+    
+    subio_nivel = False
+    target_exp = user.starter_nivel * 100
+    if user.starter_exp >= target_exp:
+        user.starter_nivel += 1
+        user.starter_exp = 0
+        subio_nivel = True
+        
     db.session.commit()
-    return jsonify({"success": True})
+    return jsonify({
+        "success": True, 
+        "new_xp": user.starter_exp, 
+        "new_level": user.starter_nivel,
+        "subio_nivel": subio_nivel,
+        "monedas": user.monedas
+    })
 
 @app.route('/api/gimnasios/hoy', methods=['GET'])
 @jwt_required()
@@ -528,21 +553,25 @@ def completar_gimnasio():
     
     # EXP Logic
     exp_gained = 50
+    monedas_gained = 100
     user.starter_exp += exp_gained
+    user.monedas += monedas_gained
     subio_nivel = False
     
     target_exp = user.starter_nivel * 100
     if user.starter_exp >= target_exp:
         user.starter_nivel += 1
-        user.starter_exp = 0 # reset or keep remainder? instructions say reset level*100
+        user.starter_exp = 0 
         subio_nivel = True
     
     db.session.commit()
     return jsonify({
         "success": True, 
         "exp_ganada": exp_gained, 
+        "monedas_ganadas": monedas_gained,
         "subio_nivel": subio_nivel,
-        "nuevo_nivel": user.starter_nivel
+        "nuevo_nivel": user.starter_nivel,
+        "total_monedas": user.monedas
     })
 
 @app.route('/api/coleccion', methods=['GET'])
@@ -557,6 +586,95 @@ def get_coleccion():
         "fecha_captura": p.fecha_captura.isoformat()
     } for p in pks]
     return jsonify({"success": True, "pokemon": res})
+
+@app.route('/api/coleccion/capturar', methods=['POST'])
+@jwt_required()
+def capturar_pokemon():
+    uid = get_jwt_identity()
+    data = request.get_json()
+    
+    # Check if user can afford a pokeball (hypothetically 50 coins)
+    user = Usuario.query.get(uid)
+    if user.monedas < 50:
+        return jsonify({"success": False, "message": "No tienes suficientes monedas para una Poké Ball (50)"}), 400
+    
+    user.monedas -= 50
+    
+    pk = Pokemon(
+        usuario_id=uid,
+        pokemon_id=data['pokemon_id'],
+        pokemon_nombre=data['pokemon_nombre'],
+        origen='wild'
+    )
+    db.session.add(pk)
+    db.session.commit()
+    return jsonify({"success": True, "monedas": user.monedas})
+
+@app.route('/api/battle/victory', methods=['POST'])
+@jwt_required()
+def ganar_batalla():
+    uid = get_jwt_identity()
+    user = Usuario.query.get(uid)
+    
+    exp_gained = 20
+    monedas_gained = 10
+    user.starter_exp += exp_gained
+    user.monedas += monedas_gained
+    
+    subio_nivel = False
+    target_exp = user.starter_nivel * 100
+    if user.starter_exp >= target_exp:
+        user.starter_nivel += 1
+        user.starter_exp = 0
+        subio_nivel = True
+        
+    db.session.commit()
+    return jsonify({
+        "success": True, 
+        "new_xp": user.starter_exp, 
+        "new_level": user.starter_nivel,
+        "subio_nivel": subio_nivel,
+        "monedas": user.monedas
+    })
+
+@app.route('/api/habitos/reset', methods=['POST'])
+@jwt_required()
+def reset_habitos():
+    uid = get_jwt_identity()
+    today = date.today()
+    ProgresoDia.query.filter_by(usuario_id=uid, fecha=today).delete()
+    GimnasioCompletado.query.filter_by(usuario_id=uid, fecha=today).delete()
+    db.session.commit()
+    return jsonify({"success": True})
+
+@app.route('/api/stats', methods=['GET'])
+@jwt_required()
+def get_stats():
+    uid = get_jwt_identity()
+    
+    # Total habits completed (all time)
+    total_habitos = ProgresoDia.query.filter_by(usuario_id=uid, completado=True).count()
+    
+    # Total medals (all time)
+    total_medallas = GimnasioCompletado.query.filter_by(usuario_id=uid).count()
+    
+    # Daily history (dates where at least one habit was completed)
+    history_query = db.session.query(
+        ProgresoDia.fecha, 
+        db.func.count(ProgresoDia.id)
+    ).filter_by(
+        usuario_id=uid, 
+        completado=True
+    ).group_by(ProgresoDia.fecha).all()
+    
+    history = {str(h[0]): h[1] for h in history_query}
+    
+    return jsonify({
+        "success": True,
+        "total_habitos": total_habitos,
+        "total_medallas": total_medallas,
+        "historial": history
+    })
 
 @app.route('/api/admin/config', methods=['GET', 'POST'])
 @jwt_required()

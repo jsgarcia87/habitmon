@@ -3,6 +3,7 @@ import DialogBox from '../components/DialogBox';
 import InteriorMap from '../components/InteriorMap';
 import { INTERIOR_CONFIGS, INTERIOR_MAPS } from '../data/interiorData';
 import { useGame } from '../context/GameContext';
+import { getPokemonByGym } from '../data/pokemonData';
 
 const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   const [currentMapId, setCurrentMapId] = useState(screenData?.targetMapId || 'house_1');
@@ -108,7 +109,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   // Determinar NPCs dinámicamente
   const getNpcs = () => {
     if (currentMapId === 'house_1') {
-      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }];
+      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_00_b', x: 9, y: 5, direccion: 2 }];
     }
     
     const gymConfig = INTERIOR_CONFIGS[currentMapId];
@@ -159,7 +160,8 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
             else if (val === 'battle') {
               setDialogue(null);
               const gymConfig = INTERIOR_CONFIGS[currentMapId];
-              navigate('battle', { gymId: gymConfig.id });
+              const pokemon = getPokemonByGym(gymConfig.id);
+              navigate('battle', { gymId: gymConfig.id, pokemon });
             }
             else if (val === 'heal') {
               setDialogue(null);

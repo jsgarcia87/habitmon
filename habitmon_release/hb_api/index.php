@@ -255,6 +255,34 @@ try {
         $stmt->execute([$uid]);
         echo json_encode(["success" => true, "pokemon" => $stmt->fetchAll()]);
     }
+    // ─── ESTADÍSTICAS ─────────────────────────────────────────────────────────
+    elseif (strpos($route, '/stats') === 0) {
+        $uid = get_user_id();
+        
+        // 1. Total habitos completados
+        $hStmt = $pdo->prepare("SELECT COUNT(*) FROM habitos WHERE usuario_id = ? AND completado = 1");
+        $hStmt->execute([$uid]);
+        $total_habitos = (int)$hStmt->fetchColumn();
+        
+        // 2. Medallas (Gyms completados históricamente)
+        $gStmt = $pdo->prepare("SELECT COUNT(DISTINCT gimnasio_id) FROM habitos WHERE usuario_id = ? AND completado = 1");
+        $gStmt->execute([$uid]);
+        $total_medallas = (int)$gStmt->fetchColumn();
+        
+        // 3. Días activo
+        $rStmt = $pdo->prepare("SELECT COUNT(DISTINCT fecha) FROM habitos WHERE usuario_id = ? AND completado = 1");
+        $rStmt->execute([$uid]);
+        $total_dias = (int)$rStmt->fetchColumn();
+
+        echo json_encode([
+            "success" => true,
+            "stats" => [
+                "habitos_completados" => $total_habitos,
+                "medallas" => $total_medallas,
+                "dias_activo" => $total_dias
+            ]
+        ]);
+    }
     // ─── ADMIN ────────────────────────────────────────────────────────────────
     elseif (strpos($route, '/admin/config') === 0) {
         if ($method === 'GET') {

@@ -96,4 +96,7 @@ export const api = {
 
   ganarBatalla: () => fetch(buildUrl('/battle/victory'),
     {method:'POST',headers:h()}).then(handleResponse).catch(e => { console.error("Battle Victory Error:", e); throw e; }),
+  
+  getStats: () => fetch(buildUrl('/stats'),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Get Stats Error:", e); throw e; }),
 };

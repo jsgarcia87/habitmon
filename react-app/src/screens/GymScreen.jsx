@@ -3,6 +3,7 @@ import DialogBox from '../components/DialogBox';
 import InteriorMap from '../components/InteriorMap';
 import { INTERIOR_CONFIGS, INTERIOR_MAPS } from '../data/interiorData';
 import { WORLD_DATA } from '../data/worldData';
+import { getPokemonByGym } from '../data/pokemonData';
 
 const GymScreen = ({ navigate, gymId, direction, aPressed }) => {
   const [dialogue, setDialogue] = useState(null);
@@ -83,7 +84,10 @@ const GymScreen = ({ navigate, gymId, direction, aPressed }) => {
           text={dialogue.text}
           onComplete={() => { if (!dialogue.options) setDialogue(null); }}
           onOptionSelect={(val) => {
-            if (val === 'battle') navigate('battle', { gymId, leader: dialogue.name });
+            if (val === 'battle') {
+              const pokemon = getPokemonByGym(gymId);
+              navigate('battle', { gymId, leader: dialogue.name, pokemon });
+            }
             else setDialogue(null);
           }}
           options={dialogue.options}

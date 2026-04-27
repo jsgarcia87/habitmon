@@ -14,6 +14,9 @@ const AdminScreen = ({ onNavigate }) => {
   const [resetting, setResetting] = useState(false);
   const [saved, setSaved] = useState(false);
   const [resetDone, setResetDone] = useState(false);
+  const [pin, setPin] = useState('');
+  const [pinVerified, setPinVerified] = useState(false);
+  const [pinError, setPinError] = useState(false);
 
   const DEFAULT_CONFIG = [
     {
@@ -117,11 +120,16 @@ const AdminScreen = ({ onNavigate }) => {
 
   const handleSave = async () => {
     setSaving(true);
-    const r = await saveCustomTemplate(config);
-    setSaving(false);
-    if(r.success) {
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+    try {
+      const r = await saveCustomTemplate(config);
+      if(r && r.success) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
+    } catch (e) {
+      console.error("Admin Save Error:", e);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -136,6 +144,46 @@ const AdminScreen = ({ onNavigate }) => {
       setTimeout(() => setResetDone(false), 2000);
     }
   };
+
+  const handleVerifyPin = () => {
+    if (pin === '0000') { // Default PIN for parents
+      setPinVerified(true);
+      setPinError(false);
+    } else {
+      setPinError(true);
+      setTimeout(() => setPinError(false), 2000);
+    }
+  };
+
+  if (!pinVerified) {
+    return (
+      <div style={{...screenStyle, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap: 20}}>
+        <h2 style={{fontSize:10, color:'#FFD700'}}>CONTROL PARENTAL</h2>
+        <p style={{fontSize:7, color:'#aaa', textAlign:'center', lineHeight:'1.5em'}}>Introduce el PIN para editar<br/>los hábitos del gimnasio.</p>
+        <input 
+          type="password" 
+          value={pin}
+          onChange={(e) => setPin(e.target.value)}
+          placeholder="PIN"
+          style={{
+            background:'#222', border:'2px solid #555', color:'#fff', 
+            fontFamily:'"Press Start 2P"', fontSize: 16, padding: 10, textAlign: 'center', width: 120
+          }}
+        />
+        {pinError && <p style={{fontSize:6, color:'#E83030'}}>PIN INCORRECTO</p>}
+        <button 
+          onClick={handleVerifyPin}
+          style={{
+            background:'#4CAF50', border:'3px solid #fff', color:'#fff', 
+            fontFamily:'"Press Start 2P"', fontSize: 8, padding: '12px 24px', cursor: 'pointer'
+          }}
+        >
+          ACCEDER
+        </button>
+        <button onClick={()=>onNavigate('PROFILE')} style={{...backBtnStyle, marginTop: 20}}>CANCELAR</button>
+      </div>
+    );
+  }
 
   if (!config) return (
     <div style={{...screenStyle, justifyContent:'center',alignItems:'center'}}>

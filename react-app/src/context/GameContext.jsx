@@ -16,6 +16,7 @@ export const GameProvider = ({children}) => {
   const [habitosHoy, setHabitosHoy] = useState([]);
   const [gimnasiosHoy, setGimnasiosHoy] = useState([]);
   const [coleccion, setColeccion] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null); 
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('hm_theme') === 'dark');
@@ -87,11 +88,12 @@ export const GameProvider = ({children}) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${tok}`
       };
-      const [s, h, g, c] = await Promise.all([
+      const [s, h, g, c, statsRes] = await Promise.all([
         api.getStarter(),
         api.getHabitosHoy(),
         api.getGimnasiosHoy(),
-        api.getColeccion()
+        api.getColeccion(),
+        api.getStats()
       ]);
       
       // Check for unauthorized access in any response
@@ -116,28 +118,35 @@ export const GameProvider = ({children}) => {
         return;
       }
 
+      console.log('API Results:', { starter: s, habitos: h, stats: statsRes });
+
       if(s?.success) {
         const data = s.starter || s;
+        console.log('Starter Data found:', data);
         setStarter({
           ...data,
-          // Normalización para consistencia interna
-          starter_id: data.pokemon_id,
-          starter_nombre: data.pokemon_nombre,
-          starter_nivel: data.nivel || data.level || 5,
-          xp: data.xp || data.exp || 0
+          // Normalización para consistencia interna (usamos los nombres del backend directamente)
+          starter_id: data.starter_id || data.pokemon_id,
+          starter_nombre: data.starter_nombre || data.pokemon_nombre,
+          starter_nivel: data.starter_nivel || data.nivel || 5,
+          starter_exp: data.starter_exp || data.xp || 0
         });
         
         // Sync user state if starter was found on server but missing locally
-        const serverStarterId = data.pokemon_id;
-        if (serverStarterId && !user?.starter_id) {
-            const updatedUser = { ...user, starter_id: serverStarterId };
+        const serverStarterId = data.starter_id || data.pokemon_id;
+        if (serverStarterId && (!user || !user.starter_id)) {
+            console.log('Syncing user starter_id from server:', serverStarterId);
+            const updatedUser = { ...(user || {}), starter_id: serverStarterId };
             localStorage.setItem('hm_user', JSON.stringify(updatedUser));
             setUser(updatedUser);
         }
+      } else {
+        console.warn('Starter API returned failure:', s);
       }
       if(h?.success) setHabitosHoy(h.habitos || []);
       if(g?.success) setGimnasiosHoy(g.gimnasios || []);
       if(c?.success) setColeccion(c.pokemon || []);
+      if(statsRes?.success) setStats(statsRes);
     } catch (e) {
       console.error("Error loading data:", e);
     } finally {
@@ -188,12 +197,17 @@ export const GameProvider = ({children}) => {
   }, []);
 
   const saveCustomTemplate = async (newTemplate) => {
-    const r = await api.saveAdminConfig(newTemplate);
-    if(r.success) {
-      setTemplate(newTemplate);
-      await cargarDatos(); // Refresh today's habits
+    try {
+      const r = await api.saveAdminConfig(newTemplate);
+      if(r.success) {
+        setTemplate(newTemplate);
+        await cargarDatos(); // Refresh today's habits
+      }
+      return r;
+    } catch (e) {
+      console.error("Save template error:", e);
+      return { success: false, error: e.message };
     }
-    return r;
   };
 
   const capturarPokemon = async (pk_id, pk_nombre) => {
@@ -215,12 +229,13 @@ export const GameProvider = ({children}) => {
 
   const ganarBatalla = async () => {
     const r = await api.ganarBatalla();
-    if (r.success && r.new_xp !== undefined) {
+    if (r.success) {
       setStarter(prev => ({
         ...prev,
-        xp: r.new_xp,
-        nivel: r.new_level,
-        starter_nivel: r.new_level
+        starter_exp: r.new_xp !== undefined ? r.new_xp : prev.starter_exp,
+        starter_nivel: r.new_level !== undefined ? r.new_level : prev.starter_nivel,
+        nivel: r.new_level !== undefined ? r.new_level : prev.nivel,
+        xp: r.new_xp !== undefined ? r.new_xp : prev.xp
       }));
     }
     return r;

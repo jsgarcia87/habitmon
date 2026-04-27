@@ -1,8 +1,9 @@
 import React from 'react';
 import { useGame } from '../context/GameContext';
+import CalendarView from '../components/CalendarView';
 
 const ProfileScreen = ({ onNavigate }) => {
-  const { user, starter, coleccion, gimnasiosHoy, darkMode, toggleDarkMode } = useGame();
+  const { user, starter, coleccion, gimnasiosHoy, stats, darkMode, toggleDarkMode } = useGame();
   
   return (
     <div style={{
@@ -46,7 +47,7 @@ const ProfileScreen = ({ onNavigate }) => {
       }}>
         <div style={{
           width: 32, height: 40,
-          backgroundImage: `url(Graphics/characters/trchar00${user?.avatar||0}.png)`,
+          backgroundImage: `url(Graphics/characters/trchar${String(user?.avatar || 0).padStart(3, '0')}.png)`,
           backgroundRepeat: 'no-repeat',
           backgroundPosition: '0 0',
           imageRendering: 'pixelated',
@@ -133,7 +134,7 @@ const ProfileScreen = ({ onNavigate }) => {
       {/* Colección */}
       <div style={{
         border:'2px solid #40C040',
-        padding:12, width:'100%', maxWidth:300
+        padding:12, marginBottom: 16, width:'100%', maxWidth:300
       }}>
         <p style={{fontSize:7,color:'#40C040',
                    marginBottom:8}}>
@@ -159,6 +160,26 @@ const ProfileScreen = ({ onNavigate }) => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Estadísticas Generales */}
+      <div style={{
+        border:'2px solid #4080F0',
+        padding:12, marginBottom:16,
+        width:'100%', maxWidth:300
+      }}>
+        <p style={{fontSize:7,color:'#4080F0', marginBottom:12}}>ESTADÍSTICAS</p>
+        <div style={{display:'flex', justifyContent:'space-between', marginBottom: 8}}>
+            <span style={{fontSize:6, color:'#888'}}>HÁBITOS TOTALES:</span>
+            <span style={{fontSize:7, color:'#fff'}}>{stats?.total_habitos || 0}</span>
+        </div>
+        <div style={{display:'flex', justifyContent:'space-between', marginBottom: 12}}>
+            <span style={{fontSize:6, color:'#888'}}>MEDALLAS TOTALES:</span>
+            <span style={{fontSize:7, color:'#fff'}}>{stats?.total_medallas || 0}</span>
+        </div>
+        
+        <p style={{fontSize:6, color:'#40C040', marginTop: 10, marginBottom: 6}}>CALENDARIO (ÚLTIMOS 28 DÍAS)</p>
+        <CalendarView history={stats?.historial || {}} />
       </div>
 
       <button 
