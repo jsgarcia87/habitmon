@@ -36,6 +36,7 @@ def php_shim():
         if route.startswith('/habitos/completar'): return completar_habito()
         if route.startswith('/gimnasios/hoy'): return get_gimnasios_hoy()
         if route.startswith('/gimnasios/completar'): return completar_gimnasio()
+        if route.startswith('/admin/presets'): return habitos_presets()
         if route.startswith('/admin/config'): return admin_config()
         if route.startswith('/coleccion/capturar'): return capturar_pokemon()
         if route.startswith('/battle/victory'): return ganar_batalla()
@@ -148,15 +149,22 @@ class Pokemon(db.Model):
     origen          = db.Column(db.String(50))  # gym_id o 'wild'
     fecha_captura   = db.Column(db.Date, default=date.today)
 
+class HabitoPreset(db.Model):
+    """Presets de configuraciones guardadas (Mañana, Noche, etc)"""
+    id          = db.Column(db.Integer, primary_key=True)
+    usuario_id  = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    nombre      = db.Column(db.String(50), nullable=False)
+    config_json = db.Column(db.Text, nullable=False)
+
 # ---------------------------------------------------------
 # DEFAULT HABITOS TEMPLATE
 # ---------------------------------------------------------
 
 DEFAULT_HABITOS = [
-  # GYM: VESTIRSE
-  {"gym_id":"vestirse","gym_nombre":"Gym Vestirse",
-   "pokemon_fase1":{"id":"052","nombre":"Meowth","nivel":5,"maxhp":50},
-   "pokemon_fase2":{"id":"053","nombre":"Persian","nivel":8,"maxhp":80},
+  # GYM: VESTIRSE (Updated as per user request)
+  {"gym_id":"vestirse","gym_nombre":"Gym Vestimenta",
+   "pokemon_fase1":{"id":"052","nombre":"Quitar Ropa","nivel":5,"maxhp":50},
+   "pokemon_fase2":{"id":"053","nombre":"Poner Ropa","nivel":8,"maxhp":80},
    "fase1":[
      {"habito_id":"quitar_pijama","nombre":"Quitar pijama","icono":"🌙","daño":25},
      {"habito_id":"quitar_calcetines","nombre":"Quitar calcetines","icono":"🧦","daño":25}
@@ -166,6 +174,19 @@ DEFAULT_HABITOS = [
      {"habito_id":"ponerse_pantalones","nombre":"Ponerse pantalones","icono":"👖","daño":20},
      {"habito_id":"ponerse_camiseta","nombre":"Ponerse camiseta","icono":"👕","daño":20},
      {"habito_id":"ponerse_calcetines","nombre":"Ponerse calcetines","icono":"🧦","daño":20}
+   ]
+  },
+  # GYM: FITNESS (User asked for "gimnasio" options)
+  {"gym_id":"gimnasio","gym_nombre":"Gym Fitness",
+   "pokemon_fase1":{"id":"066","nombre":"Machop","nivel":10,"maxhp":70},
+   "pokemon_fase2":{"id":"067","nombre":"Machoke","nivel":15,"maxhp":110},
+   "fase1":[
+     {"habito_id":"flexiones","nombre":"10 Flexiones","icono":"💪","daño":30},
+     {"habito_id":"sentadillas","nombre":"15 Sentadillas","icono":"🦵","daño":30}
+   ],
+   "fase2":[
+     {"habito_id":"plancha","nombre":"30s Plancha","icono":"⏱️","daño":40},
+     {"habito_id":"estiramientos","nombre":"Estiramientos","icono":"🧘","daño":20}
    ]
   },
   # GYM: HIGIENE (Incluye Ducha)
@@ -675,6 +696,27 @@ def get_stats():
         "total_medallas": total_medallas,
         "historial": history
     })
+
+@app.route('/api/habitos/presets', methods=['GET', 'POST'])
+@jwt_required()
+def habitos_presets():
+    uid = int(get_jwt_identity())
+    if request.method == 'GET':
+        presets = HabitoPreset.query.filter_by(usuario_id=uid).all()
+        return jsonify({
+            "success": True, 
+            "presets": [{"id": p.id, "nombre": p.nombre, "config": json.loads(p.config_json)} for p in presets]
+        })
+    else:
+        data = request.get_json() # {nombre: "Mañana", config: [...]}
+        new_preset = HabitoPreset(
+            usuario_id=uid,
+            nombre=data['nombre'],
+            config_json=json.dumps(data['config'])
+        )
+        db.session.add(new_preset)
+        db.session.commit()
+        return jsonify({"success": True, "id": new_preset.id})
 
 @app.route('/api/admin/config', methods=['GET', 'POST'])
 @jwt_required()

@@ -14,6 +14,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import HabitEditScreen from './screens/HabitEditScreen';
 import AdminScreen from './screens/AdminScreen';
 import HomeScreen from './screens/HomeScreen';
+import StartMenu from './components/StartMenu';
 import { useDebouncedInput } from './hooks/useDebouncedInput';
 
 const LoadingScreen = () => (
@@ -32,6 +33,7 @@ function App() {
   const [screenData, setScreenData] = useState(null);
   const [fadeOut, setFadeOut] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Global Player & World State (survives CityScreen unmount)
   const [globalPlayerPos, setGlobalPlayerPos] = useState({ x: 12, y: 13 });
@@ -114,6 +116,13 @@ function App() {
       {/* Black Fade Overlay */}
       <div className={`fade-overlay ${fadeOut ? 'active' : 'inactive'}`} />
 
+      <StartMenu 
+        isOpen={isMenuOpen} 
+        onClose={() => setIsMenuOpen(false)} 
+        onNavigate={navigate}
+        user={user}
+      />
+
       {/* Notifications */}
       {notification && (
         <div className={`notification-toast ${notification.type}`}>
@@ -151,7 +160,7 @@ function App() {
           }}
           onStart={() => {
             console.log('Start button pressed');
-            if (screen === 'city' || screen === 'home' || screen === 'gym') navigate('profile');
+            if (screen === 'city' || screen === 'home' || screen === 'gym') setIsMenuOpen(!isMenuOpen);
           }}
         />
       )}

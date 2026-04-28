@@ -45,6 +45,15 @@ export const GYM_CONFIGS = {
     dialogo: ['¡El desayuno es lo más importante!', '¿Has desayunado ya hoy?'],
     tiles: { floor: 28, wall: 17, carpet: 21 },
     leaderPos: { x: 9, y: 5 }
+  },
+  'Map008': { // Gimnasio Fitness
+    id: 'gimnasio',
+    nombre: 'LÍDER DE FITNESS',
+    sprite: 'char_ 29_a',
+    tileset: `${BASE}Graphics/tilesets/gsc cave-gym d.png`,
+    dialogo: ['¡Sin dolor no hay gloria!', '¿Has hecho ya tu ejercicio hoy?'],
+    tiles: { floor: 10, wall: 4, carpet: 26 },
+    leaderPos: { x: 9, y: 5 }
   }
 };
 

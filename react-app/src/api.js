@@ -90,6 +90,13 @@ export const api = {
     {method:'POST',headers:h(),
      body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Save Config Error:", e); throw e; }),
 
+  getPresets: () => fetch(buildUrl('/admin/presets'),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Get Presets Error:", e); throw e; }),
+
+  savePreset: (data) => fetch(buildUrl('/admin/presets'),
+    {method:'POST',headers:h(),
+     body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Save Preset Error:", e); throw e; }),
+
   capturarPokemon: (data) => fetch(buildUrl('/coleccion/capturar'),
     {method:'POST',headers:h(),
      body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Capture Error:", e); throw e; }),

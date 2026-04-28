@@ -4,13 +4,16 @@ import { useGame } from '../context/GameContext';
 // Emojis precargados para el selector
 const EMOJI_OPTIONS = [
   '⚔️', '🛡️', '💊', '📚', '🌙', '👖', '👕', '🧦', '🥛', '🍞', '🍊', 
-  '🪥', '🧼', '💇', '🛏️', '🧸', '🎒', '🍎', '🥦', '🏃', '🧘'
+  '🪥', '🧼', '💇', '🛏️', '🧸', '🎒', '🍎', '🥦', '🏃', '🧘', '💪', '🦵', '⏱️'
 ];
 
 const AdminScreen = ({ onNavigate }) => {
-  const { template, fetchTemplate, saveCustomTemplate } = useGame();
+  const { template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset, resetHabitos, notify } = useGame();
   const [config, setConfig] = useState(null);
+  const [presets, setPresets] = useState([]);
+  const [presetName, setPresetName] = useState('');
   const [saving, setSaving] = useState(false);
+  const [savingPreset, setSavingPreset] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [saved, setSaved] = useState(false);
   const [resetDone, setResetDone] = useState(false);
@@ -20,58 +23,59 @@ const AdminScreen = ({ onNavigate }) => {
 
   const DEFAULT_CONFIG = [
     {
-      gym_id: 'vestirse', gym_nombre: 'Gimnasio Vestirse', activo: true,
+      gym_id: 'vestirse', gym_nombre: 'Gym Vestimenta', activo: true,
       habitos: [
-        {id:'q_pant', nombre:'Quitar pantalones', icono:'👖', daño:20, activo:true},
-        {id:'q_cam',  nombre:'Quitar camiseta', icono:'👕', daño:20, activo:true},
+        {id:'q_pijama', nombre:'Quitar pijama', icono:'🌙', daño:30, activo:true},
+        {id:'q_ropa_s', nombre:'Quitar ropa sucia', icono:'🧺', daño:30, activo:true},
+        {id:'p_ropa_l', nombre:'Poner ropa limpia', icono:'👕', daño:30, activo:true},
+        {id:'p_zapas',  nombre:'Poner zapatillas', icono:'👟', daño:30, activo:true},
       ]
     },
     {
-      gym_id: 'higiene', gym_nombre: 'Gimnasio Higiene', activo: true,
+      gym_id: 'gimnasio', gym_nombre: 'Gym Fitness', activo: true,
       habitos: [
-        {id:'h_dientes', nombre:'Lavar dientes', icono:'🪥', daño:40, activo:true},
-        {id:'h_ducha',   nombre:'Ducha', icono:'🚿', daño:50, activo:true},
+        {id:'f_flex', nombre:'10 Flexiones', icono:'💪', daño:40, activo:true},
+        {id:'f_sent', nombre:'15 Sentadillas', icono:'🦵', daño:40, activo:true},
+        {id:'f_plan', nombre:'30s Plancha', icono:'⏱️', daño:50, activo:true},
       ]
     },
     {
-      gym_id: 'desayuno', gym_nombre: 'Gimnasio Desayuno', activo: true,
+      gym_id: 'higiene', gym_nombre: 'Gym Higiene', activo: true,
       habitos: [
-        {id:'d_leche', nombre:'Tomar leche', icono:'🥛', daño:30, activo:true},
+        {id:'h_dientes', nombre:'Lavar dientes', icono:'🪥', daño:50, activo:true},
+        {id:'h_ducha',   nombre:'Ducha rápida', icono:'🚿', daño:60, activo:true},
+        {id:'h_cara',    nombre:'Lavar cara', icono:'🧼', daño:30, activo:true},
       ]
     },
     {
-      gym_id: 'comida', gym_nombre: 'Gimnasio Comida', activo: true,
+      gym_id: 'desayuno', gym_nombre: 'Gym Desayuno', activo: true,
       habitos: [
-        {id:'c_verdura', nombre:'Comer verdura', icono:'🥦', daño:30, activo:true},
+        {id:'d_leche', nombre:'Vaso de leche', icono:'🥛', daño:30, activo:true},
+        {id:'d_fruta', nombre:'Pieza de fruta', icono:'🍎', daño:40, activo:true},
+        {id:'d_tost',  nombre:'Tostada', icono:'🍞', daño:30, activo:true},
       ]
     },
     {
-      gym_id: 'orden', gym_nombre: 'Gimnasio Orden', activo: true,
+      gym_id: 'orden', gym_nombre: 'Gym Orden', activo: true,
       habitos: [
-        {id:'o_cuarto', nombre:'Recoger cuarto', icono:'🧸', daño:50, activo:true},
-      ]
-    },
-    {
-      gym_id: 'cena', gym_nombre: 'Gimnasio Cena', activo: true,
-      habitos: [
-        {id:'c_cena', nombre:'Cenar todo', icono:'🥘', daño:40, activo:true},
-      ]
-    },
-    {
-      gym_id: 'estudio', gym_nombre: 'Gimnasio Estudio', activo: true,
-      habitos: [
-        {id:'e_deberes', nombre:'Hacer deberes', icono:'📚', daño:50, activo:true},
+        {id:'o_cuarto', nombre:'Recoger cuarto', icono:'🧸', daño:60, activo:true},
+        {id:'o_cama',   nombre:'Hacer la cama', icono:'🛏️', daño:40, activo:true},
       ]
     }
   ];
 
   useEffect(() => {
     fetchTemplate();
+    loadPresets();
   }, [fetchTemplate]);
+
+  const loadPresets = async () => {
+    const p = await fetchPresets();
+    setPresets(p);
+  };
 
   useEffect(() => {
     if (template && template.length > 0) {
-      // Hacer deep copy para poder editar libremente sin mutar el contexto hasta guardar
       setConfig(JSON.parse(JSON.stringify(template)));
     } else {
       setConfig(JSON.parse(JSON.stringify(DEFAULT_CONFIG)));
@@ -133,7 +137,33 @@ const AdminScreen = ({ onNavigate }) => {
     }
   };
 
-  const { resetHabitos } = useGame();
+  const handleSavePreset = async () => {
+    if (!presetName) {
+      notify("Introduce un nombre para la configuración");
+      return;
+    }
+    setSavingPreset(true);
+    try {
+      const r = await createPreset(presetName, config);
+      if (r.success) {
+        setPresetName('');
+        loadPresets();
+        notify("¡Configuración guardada!");
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSavingPreset(false);
+    }
+  };
+
+  const applyPreset = (p) => {
+    if (window.confirm(`¿Cargar configuración '${p.nombre}'?`)) {
+      setConfig(JSON.parse(JSON.stringify(p.config)));
+      notify(`Cargado: ${p.nombre}`);
+    }
+  };
+
   const handleResetDay = async () => {
     if (!window.confirm('⚠️ ¿Estás seguro? Se borrará TODO el progreso de hoy (hábitos y medallas).')) return;
     setResetting(true);
@@ -197,6 +227,42 @@ const AdminScreen = ({ onNavigate }) => {
         <button onClick={()=>onNavigate('PROFILE')} style={backBtnStyle}>← VOLVER</button>
         <h2 style={{fontSize:9,color:'#FFD700', textAlign: 'center'}}>CONFIGURAR HÁBITOS</h2>
         <div style={{width: 70}}></div>
+      </div>
+
+      {/* SECCIÓN PRESETS */}
+      <div style={{ background:'rgba(255,255,255,0.05)', padding: 12, marginBottom: 20, border: '2px dashed #555' }}>
+        <h3 style={{ fontSize: 7, color:'#A1CAFF', marginBottom: 12 }}>GESTIONAR CONFIGURACIONES</h3>
+        
+        <div style={{ display:'flex', gap: 8, marginBottom: 12 }}>
+          <input 
+            type="text" 
+            placeholder="Ej: MAÑANA, NOCHE..."
+            value={presetName}
+            onChange={(e) => setPresetName(e.target.value)}
+            style={{ ...inputNameStyle, fontSize: 7 }}
+          />
+          <button 
+            onClick={handleSavePreset} 
+            disabled={savingPreset}
+            style={{ background:'#3D5AFE', color:'#fff', border:'none', fontSize:6, padding:'8px 12px', fontFamily:'"Press Start 2P"', cursor:'pointer' }}
+          >
+            {savingPreset ? '...' : 'GUARDAR'}
+          </button>
+        </div>
+
+        {presets.length > 0 && (
+          <div style={{ display:'flex', flexWrap:'wrap', gap: 6 }}>
+            {presets.map(p => (
+              <button 
+                key={p.id} 
+                onClick={() => applyPreset(p)}
+                style={{ background:'#444', color:'#fff', border:'1px solid #666', fontSize:6, padding:'6px 10px', fontFamily:'"Press Start 2P"', cursor:'pointer' }}
+              >
+                📁 {p.nombre}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <p style={noticeStyle}>
@@ -284,7 +350,15 @@ const AdminScreen = ({ onNavigate }) => {
 
       {/* Botón guardar */}
       <button onClick={handleSave} disabled={saving} style={saveBtnStyle(saved, saving)}>
-        {saving ? 'GUARDANDO...' : saved ? '✓ GUARDADO' : 'GUARDAR CONFIG.'}
+        {saving ? 'GUARDANDO...' : saved ? '✓ ACTUALIZADO' : 'ACTUALIZAR CONFIG. ACTUAL'}
+      </button>
+
+      {/* Botón Restaurar Defaults */}
+      <button 
+        onClick={() => { if(window.confirm('¿Restablecer a los NUEVOS valores por defecto?')) setConfig(JSON.parse(JSON.stringify(DEFAULT_CONFIG))); }}
+        style={{...saveBtnStyle(false, false), background: '#666', marginTop: 12, fontSize: 7}}
+      >
+        ✨ CARGAR NUEVOS VALORES POR DEFECTO
       </button>
 
       {/* Botón Reset Manual */}

@@ -196,6 +196,16 @@ export const GameProvider = ({children}) => {
     if(r.success) setTemplate(r.config);
   }, []);
 
+  const fetchPresets = useCallback(async () => {
+    const r = await api.getPresets();
+    return r.success ? r.presets : [];
+  }, []);
+
+  const createPreset = async (nombre, config) => {
+    const r = await api.savePreset({ nombre, config });
+    return r;
+  };
+
   const saveCustomTemplate = async (newTemplate) => {
     try {
       const r = await api.saveAdminConfig(newTemplate);
@@ -252,7 +262,7 @@ export const GameProvider = ({children}) => {
   return (
     <Ctx.Provider value={{
       user, token, starter, habitosHoy,
-      template, fetchTemplate, saveCustomTemplate,
+      template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset,
       gimnasiosHoy, coleccion, loading, notification, darkMode,
       login, register, logout, notify, toggleDarkMode,
       elegirStarter, completarHabito, resetHabitos,

@@ -21,7 +21,14 @@ export const POKEMON_SPECIES = {
 };
 
 export const GYM_LEADER_POKEMON = {
-  'vestirse': { id: '052', level: 5 },
+  'vestirse': [
+    { id: '052', level: 5, name: 'Quitar Ropa' },
+    { id: '053', level: 8, name: 'Poner Ropa' }
+  ],
+  'gimnasio': [
+    { id: '066', level: 10, name: 'Machop' },
+    { id: '067', level: 15, name: 'Machoke' }
+  ],
   'higiene': { id: '088', level: 8 },
   'desayuno': { id: '143', level: 12 },
   'comida': { id: '056', level: 15 },
@@ -33,7 +40,7 @@ export const GYM_LEADER_POKEMON = {
 /**
  * Creates a battle-ready Pokémon instance from species data.
  */
-export const createBattlePokemon = (speciesId, level) => {
+export const createBattlePokemon = (speciesId, level, customName = null) => {
   const species = POKEMON_SPECIES[String(speciesId).padStart(3, '0')] || POKEMON_SPECIES['016'];
   const base = species.baseStats;
 
@@ -47,7 +54,7 @@ export const createBattlePokemon = (speciesId, level) => {
 
   return {
     id: speciesId,
-    name: species.name,
+    name: customName || species.name,
     level: level,
     hp: maxHp,
     maxHp: maxHp,
@@ -63,6 +70,10 @@ export const createBattlePokemon = (speciesId, level) => {
 };
 
 export const getPokemonByGym = (gymId) => {
-  const data = GYM_LEADER_POKEMON[gymId] || { id: '016', level: 5 };
-  return createBattlePokemon(data.id, data.level);
+  const data = GYM_LEADER_POKEMON[gymId];
+  if (Array.isArray(data)) {
+    return data.map(d => createBattlePokemon(d.id, d.level, d.name));
+  }
+  const single = data || { id: '016', level: 5 };
+  return createBattlePokemon(single.id, single.level, single.name);
 };

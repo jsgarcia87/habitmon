@@ -10,12 +10,15 @@ PROJECT_ROOT=$(pwd)
 
 echo "🚀 Iniciando compilación de Habitmon..."
 
-# 1. Limpiar carpeta de release anterior
+# 1. Limpiar carpeta de release anterior (macOS safe)
+echo "🧹 Limpiando versión anterior..."
 if [ -d "$DIST_DIR" ]; then
-  echo "🧹 Limpiando versión anterior..."
-  rm -rf "$DIST_DIR"
+  chflags -R nouchg "$DIST_DIR" 2>/dev/null || true
+  find "$DIST_DIR" -type f -delete
+  find "$DIST_DIR" -mindepth 1 -type d | sort -r | xargs rmdir 2>/dev/null || true
+  rm -rf "$DIST_DIR" 2>/dev/null || true
 fi
-mkdir "$DIST_DIR"
+mkdir -p "$DIST_DIR"
 
 # 2. Compilar el Frontend (React)
 echo "📦 Compilando Frontend (React)..."
@@ -27,9 +30,11 @@ if [ $? -ne 0 ]; then
 fi
 cd "$PROJECT_ROOT"
 
-# 3. Copiar archivos de React a la raíz del release
+# 3. Copiar archivos de React (el nombre del JS cambia con cada build por el hash)
 echo "📂 Copiando archivos de distribución..."
 cp -r react-app/dist/* "$DIST_DIR/"
+NEW_JS=$(ls react-app/dist/assets/*.js 2>/dev/null | xargs -I{} basename {} 2>/dev/null)
+echo "   ✓ Bundle activo: ${NEW_JS}"
 
 # 4. Copiar Assets
 echo "🎨 Copiando Assets..."
