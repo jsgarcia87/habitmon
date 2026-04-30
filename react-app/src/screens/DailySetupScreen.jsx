@@ -14,20 +14,15 @@ const DailySetupScreen = ({ onNavigate }) => {
     if (template && Array.isArray(template)) {
       const initial = [];
       template.forEach(gym => {
-        if (gym.pokemon && Array.isArray(gym.pokemon)) {
-          gym.pokemon.forEach((pk, pkIdx) => {
-            if (pk.habitos && Array.isArray(pk.habitos)) {
-              pk.habitos.forEach(task => {
-                initial.push({
-                  gym_id: gym.gym_id,
-                  pokemon_index: pkIdx,
-                  habito_id: task.id,
-                  habito_nombre: task.nombre,
-                  daño: task.daño,
-                  active: true
-                });
-              });
-            }
+        if (gym.habitos && Array.isArray(gym.habitos)) {
+          gym.habitos.forEach(task => {
+            initial.push({
+              gym_id: gym.gym_id,
+              habito_id: task.id,
+              habito_nombre: task.nombre,
+              daño: task.daño,
+              activo: task.activo !== false
+            });
           });
         }
       });
@@ -37,74 +32,70 @@ const DailySetupScreen = ({ onNavigate }) => {
 
   const toggleHabit = (gymId, habitId) => {
     setSelectedHabits(prev => prev.map(h => 
-      (h.gym_id === gymId && h.habito_id === habitId) ? { ...h, active: !h.active } : h
+      (h.gym_id === gymId && h.habito_id === habitId) ? { ...h, activo: !h.activo } : h
     ));
   };
 
   const handleStart = async () => {
     setLoading(true);
-    const activeOnes = selectedHabits.filter(h => h.active);
-    await setupDay(activeOnes);
-    setTimeout(() => {
-      onNavigate('MAP');
-    }, 500);
+    const updatedTemplate = template.map(gym => ({
+      ...gym,
+      habitos: gym.habitos.map(h => {
+        const selected = selectedHabits.find(sh => sh.gym_id === gym.gym_id && sh.habito_id === h.id);
+        return { ...h, activo: selected ? selected.activo : h.activo };
+      })
+    }));
+
+    await setupDay(updatedTemplate);
+    onNavigate('MAP');
   };
 
-  if (!template || !Array.isArray(template)) return <div style={S.screen}>CARGANDO DESAFÍOS...</div>;
+  if (!template || !Array.isArray(template)) return <div style={S.screen}>CARGANDO...</div>;
 
   return (
     <div className="setup-screen" style={S.screen}>
+      {/* Retro Pattern Background */}
+      <div className="setup-pattern" />
+
       <div style={S.header}>
-        <h2 style={S.h2}>TARJETA DE DESAFÍO</h2>
-        <p style={S.sub}>Prepara tus ataques para la aventura de hoy</p>
+        <div style={S.titleBox}>
+          <h2 style={S.h2}>TARJETA DE DESAFÍO</h2>
+        </div>
+        <p style={S.sub}>SELECCIONA TUS HÁBITOS DE HOY</p>
       </div>
       
       <div className="setup-list" style={S.list}>
         {template.map(gym => (
           <div key={gym.gym_id} style={S.gymCard}>
             <div style={S.gymHeader}>
-               <div style={S.gymBadge}>🏆</div>
-               <div style={S.gymInfo}>
-                 <h3 style={S.gymName}>{gym.gym_nombre.toUpperCase()}</h3>
-                 <span style={S.gymTime}>{gym.tiempo === 'morning' ? '☀️ MAÑANA' : gym.tiempo === 'night' ? '🌙 NOCHE' : '☁️ DÍA'}</span>
-               </div>
+               <span style={S.gymBadge}>{gym.tiempo === 'morning' ? '☀️' : gym.tiempo === 'night' ? '🌙' : '☁️'}</span>
+               <h3 style={S.gymName}>{gym.gym_nombre.toUpperCase()}</h3>
             </div>
 
-            <div style={S.pkSection}>
-              {gym.pokemon && Array.isArray(gym.pokemon) && gym.pokemon.map((pk, pkIdx) => (
-                <div key={pkIdx} style={S.pkRow}>
-                  <div style={S.pkAvatar}>
-                    <img src={`Graphics/pokemon/${pk.id}.png`} style={S.pkImg} alt=""/>
+            <div style={S.habitsGrid}>
+              {gym.habitos && Array.isArray(gym.habitos) && gym.habitos.map(task => {
+                const isSelected = selectedHabits.find(h => h.gym_id === gym.gym_id && h.habito_id === task.id)?.activo;
+                return (
+                  <div 
+                    key={task.id} 
+                    onClick={() => toggleHabit(gym.gym_id, task.id)}
+                    style={{
+                      ...S.habitItem,
+                      backgroundColor: isSelected ? '#fff' : 'rgba(255,255,255,0.05)',
+                      color: isSelected ? '#1a237e' : '#fff',
+                      border: isSelected ? '3px solid #ffea00' : '2px solid rgba(255,255,255,0.2)',
+                    }}
+                  >
+                    <span style={S.habitIcon}>{task.icono || '⚔️'}</span>
+                    <div style={S.habitDetails}>
+                      <span style={S.habitName}>{task.nombre.toUpperCase()}</span>
+                    </div>
+                    <div style={{...S.check, color: isSelected ? '#3D5AFE' : 'rgba(255,255,255,0.3)'}}>
+                      {isSelected ? '▶' : ' '}
+                    </div>
                   </div>
-                  <div style={S.habitsGrid}>
-                    {pk.habitos && Array.isArray(pk.habitos) && pk.habitos.map(task => {
-                      const isSelected = selectedHabits.find(h => h.gym_id === gym.gym_id && h.habito_id === task.id)?.active;
-                      return (
-                        <div 
-                          key={task.id} 
-                          onClick={() => toggleHabit(gym.gym_id, task.id)}
-                          style={{
-                            ...S.habitItem,
-                            backgroundColor: isSelected ? '#3D5AFE' : '#f5f5f5',
-                            color: isSelected ? '#fff' : '#444',
-                            transform: isSelected ? 'scale(1.02)' : 'scale(1)',
-                            boxShadow: isSelected ? '0 4px 12px rgba(61,90,254,0.3)' : 'none'
-                          }}
-                        >
-                          <span style={S.habitIcon}>{task.icono || '⚔️'}</span>
-                          <div style={S.habitDetails}>
-                            <span style={S.habitName}>{task.nombre}</span>
-                            <span style={{...S.habitDmg, color: isSelected ? '#A1CAFF' : '#888'}}>PWR: {task.daño}</span>
-                          </div>
-                          <div style={{...S.check, opacity: isSelected ? 1 : 0.2}}>
-                            {isSelected ? '●' : '○'}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}
@@ -114,13 +105,10 @@ const DailySetupScreen = ({ onNavigate }) => {
         <button 
           onClick={handleStart} 
           disabled={loading}
-          style={{
-            ...S.mainBtn,
-            opacity: loading ? 0.7 : 1,
-            transform: loading ? 'scale(0.98)' : 'scale(1)'
-          }}
+          className="gb-button primary"
+          style={S.mainBtn}
         >
-          {loading ? 'SINCRONIZANDO...' : '¡COMENZAR DESAFÍO!'}
+          {loading ? 'SINCRONIZANDO...' : '¡A LA AVENTURA!'}
         </button>
       </div>
 
@@ -132,81 +120,76 @@ const DailySetupScreen = ({ onNavigate }) => {
 const S = {
   screen: {
     width: '100%', height: '100%', 
-    background: 'linear-gradient(135deg, #1a237e 0%, #121858 100%)', 
+    background: '#1a1a2e', 
     display: 'flex', flexDirection: 'column', 
-    padding: '12px', boxSizing: 'border-box',
-    fontFamily: '"Outfit", "Roboto", sans-serif',
+    padding: '16px', boxSizing: 'border-box',
+    fontFamily: '"Press Start 2P", cursive',
     color: '#fff',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    position: 'relative'
   },
   header: {
-    textAlign: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px'
+    textAlign: 'center', marginBottom: '20px', zIndex: 2
+  },
+  titleBox: {
+    background: '#ffea00',
+    padding: '8px',
+    border: '4px solid #fff',
+    marginBottom: '8px',
+    transform: 'skewX(-5deg)'
   },
   h2: { 
-    margin: 0, fontSize: '18px', fontWeight: 800, letterSpacing: '1px', color: '#ffea00' 
+    margin: 0, fontSize: '12px', fontWeight: 900, color: '#1a1a2e' 
   },
   sub: { 
-    margin: '4px 0 0 0', fontSize: '11px', opacity: 0.7, fontWeight: 300 
+    margin: 0, fontSize: '6px', color: '#ffea00', opacity: 0.9
   },
   list: {
-    flex: 1, overflowY: 'auto', paddingRight: '4px'
+    flex: 1, overflowY: 'auto', paddingRight: '4px', zIndex: 2
   },
   gymCard: {
-    background: 'rgba(255,255,255,0.05)',
-    borderRadius: '16px',
-    padding: '16px',
+    background: 'rgba(0,0,0,0.3)',
+    borderRadius: '4px',
+    padding: '12px',
     marginBottom: '16px',
-    border: '1px solid rgba(255,255,255,0.1)',
-    backdropFilter: 'blur(10px)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+    border: '2px solid rgba(255,255,255,0.1)',
   },
   gymHeader: {
-    display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'
+    display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
+    borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px'
   },
-  gymBadge: {
-    width: '40px', height: '40px', background: 'linear-gradient(45deg, #FFD600, #FFA000)',
-    borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '20px', boxShadow: '0 4px 15px rgba(255,160,0,0.4)'
-  },
-  gymInfo: { display: 'flex', flexDirection: 'column' },
-  gymName: { margin: 0, fontSize: '14px', fontWeight: 700, color: '#fff' },
-  gymTime: { fontSize: '10px', opacity: 0.6, fontWeight: 500 },
+  gymBadge: { fontSize: '14px' },
+  gymName: { margin: 0, fontSize: '8px', color: '#ffea00' },
   
-  pkSection: { display: 'flex', flexDirection: 'column', gap: '16px' },
-  pkRow: { display: 'flex', gap: '12px', alignItems: 'flex-start' },
-  pkAvatar: {
-    width: '48px', height: '48px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-  },
-  pkImg: { width: '40px', height: '40px', imageRendering: 'pixelated' },
-  
-  habitsGrid: { flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' },
+  habitsGrid: { display: 'flex', flexDirection: 'column', gap: '8px' },
   habitItem: {
-    display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
-    borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    display: 'flex', alignItems: 'center', gap: '10px', padding: '10px',
+    borderRadius: '2px', cursor: 'pointer', transition: 'all 0.1s',
     userSelect: 'none'
   },
-  habitIcon: { fontSize: '18px' },
-  habitDetails: { flex: 1, display: 'flex', flexDirection: 'column' },
-  habitName: { fontSize: '12px', fontWeight: 600 },
-  habitDmg: { fontSize: '9px', fontWeight: 700, marginTop: '2px' },
-  check: { fontSize: '14px', fontWeight: 900 },
+  habitIcon: { fontSize: '14px' },
+  habitDetails: { flex: 1 },
+  habitName: { fontSize: '7px', fontWeight: 700 },
+  check: { fontSize: '10px' },
   
-  footer: { marginTop: '12px' },
+  footer: { marginTop: '16px', zIndex: 2 },
   mainBtn: {
-    width: '100%', padding: '16px', borderRadius: '14px', border: 'none',
-    background: 'linear-gradient(45deg, #00C853, #64DD17)', color: '#fff',
-    fontSize: '14px', fontWeight: 800, cursor: 'pointer',
-    boxShadow: '0 6px 20px rgba(0,200,83,0.3)', transition: 'all 0.2s',
-    fontFamily: '"Outfit", sans-serif'
+    width: '100%', padding: '18px', fontSize: '10px'
   }
 };
 
 const CSS = `
-  .setup-list::-webkit-scrollbar { width: 6px; }
+  .setup-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: radial-gradient(#fff 1px, transparent 1px);
+    background-size: 16px 16px;
+    z-index: 1;
+  }
+  .setup-list::-webkit-scrollbar { width: 4px; }
   .setup-list::-webkit-scrollbar-track { background: transparent; }
-  .setup-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); borderRadius: 10px; }
-  .setup-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+  .setup-list::-webkit-scrollbar-thumb { background: #ffea00; }
 `;
 
 export default DailySetupScreen;

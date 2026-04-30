@@ -64,7 +64,9 @@ CREATE TABLE `gimnasios_template` (
     `gym_nombre` VARCHAR(100) NOT NULL,
     `tiempo` ENUM('morning', 'day', 'night') DEFAULT 'day',
     `battleback` VARCHAR(255) DEFAULT 'Graphics/battlebacks/outdoor.png',
-    `orden` INT DEFAULT 0
+    `battleback` VARCHAR(255) DEFAULT 'Graphics/battlebacks/outdoor.png',
+    `orden` INT DEFAULT 0,
+    `activo` TINYINT(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `pokemon_template` (
@@ -84,7 +86,18 @@ CREATE TABLE `habitos_template` (
     `daño` INT DEFAULT 20,
     `icono` VARCHAR(10) DEFAULT '⚔️',
     `obligatorio` TINYINT(1) DEFAULT 1,
+    `activo` TINYINT(1) DEFAULT 1,
     FOREIGN KEY (`pokemon_template_id`) REFERENCES `pokemon_template`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 7. Tabla de Presets de Configuración
+CREATE TABLE IF NOT EXISTS `habito_presets` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `usuario_id` INT NOT NULL,
+    `nombre` VARCHAR(100) NOT NULL,
+    `config_json` TEXT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Datos iniciales de ejemplo

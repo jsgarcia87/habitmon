@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import DialogBox from '../components/DialogBox';
 import InteriorMap from '../components/InteriorMap';
 import { INTERIOR_CONFIGS, INTERIOR_MAPS } from '../data/interiorData';
@@ -107,9 +107,9 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   const handleExit = () => navigate('city');
 
   // Determinar NPCs dinámicamente
-  const getNpcs = () => {
+  const npcs = useMemo(() => {
     if (currentMapId === 'house_1') {
-      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_00_b', x: 9, y: 5, direccion: 2 }];
+      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }];
     }
     
     const gymConfig = INTERIOR_CONFIGS[currentMapId];
@@ -125,9 +125,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
     }
     
     return [];
-  };
-
-  const npcs = getNpcs();
+  }, [currentMapId]);
 
   return (
     <div style={{ width: '100vw', height: '100dvh', background: '#000', position: 'relative', overflow: 'hidden' }}>

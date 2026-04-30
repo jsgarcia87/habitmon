@@ -7,6 +7,7 @@ const StartMenu = ({ isOpen, onClose, onNavigate, user }) => {
     { label: 'POKÉDEX', icon: '📖', id: 'pokedex' },
     { label: 'POKÉMON', icon: '🐾', id: 'pokemon' },
     { label: 'BOLSA', icon: '🎒', id: 'bag' },
+    { label: 'AGENDA', icon: '📋', id: 'agenda' },
     { label: user?.username?.toUpperCase() || 'FICHA', icon: '🆔', id: 'profile' },
     { label: 'GUARDAR', icon: '💾', id: 'save' },
     { label: 'OPCIONES', icon: '⚙️', id: 'admin' },

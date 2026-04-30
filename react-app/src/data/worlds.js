@@ -45,7 +45,7 @@ export const WORLDS = [
     mapId: 'Map004',
     tileset: 'gsc checkpoint b',
     posicion_inicial: { x: 6, y: 8 },
-    gym_id: 'higiene_m',
+    gym_id: 'higiene',
     gym_position: { x: 6, y: 3 },
     npcs: [
       {
@@ -116,7 +116,7 @@ export const WORLDS = [
     mapId: 'Map010',
     tileset: 'gsc lab-gym',
     posicion_inicial: { x: 9, y: 12 },
-    gym_id: 'deberes',
+    gym_id: 'orden',
     gym_position: { x: 9, y: 4 },
     npcs: [
       {
@@ -152,7 +152,7 @@ export const WORLDS = [
     mapId: 'Map011',
     tileset: 'gsc national park day',
     posicion_inicial: { x: 10, y: 14 },
-    gym_id: 'merienda',
+    gym_id: 'desayuno',
     gym_position: { x: 10, y: 6 },
     npcs: [
       {
@@ -204,7 +204,7 @@ export const WORLDS = [
     tileset: 'gsc checkpoint b',
     overlay: 'rgba(0,0,30,0.3)',
     posicion_inicial: { x: 6, y: 8 },
-    gym_id: 'ducha',
+    gym_id: 'higiene',
     gym_position: { x: 6, y: 3 },
     npcs: [
       {
@@ -229,7 +229,7 @@ export const WORLDS = [
     tileset: 'gsc house 2',
     overlay: 'rgba(0,0,30,0.2)',
     posicion_inicial: { x: 7, y: 9 },
-    gym_id: 'cena',
+    gym_id: 'desayuno',
     gym_position: { x: 7, y: 4 },
     npcs: [
       {
@@ -254,7 +254,7 @@ export const WORLDS = [
     tileset: 'gsc house 1',
     overlay: 'rgba(0,0,40,0.45)',
     posicion_inicial: { x: 8, y: 10 },
-    gym_id: 'dormir',
+    gym_id: 'orden',
     gym_position: { x: 8, y: 4 },
     npcs: [
       {

@@ -97,6 +97,9 @@ export const api = {
     {method:'POST',headers:h(),
      body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Save Preset Error:", e); throw e; }),
 
+  deletePreset: (id) => fetch(buildUrl(`/admin/presets/${id}`),
+    {method:'DELETE',headers:h()}).then(handleResponse).catch(e => { console.error("Delete Preset Error:", e); throw e; }),
+
   capturarPokemon: (data) => fetch(buildUrl('/coleccion/capturar'),
     {method:'POST',headers:h(),
      body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Capture Error:", e); throw e; }),

@@ -36,46 +36,67 @@ export const getEffectiveness = (attackType, targetTypes) => {
 };
 
 /**
+ * Calculates a stat value considering its stage (-6 to +6).
+ */
+const getStatWithStage = (baseValue, stage) => {
+  if (stage === 0) return baseValue;
+  const num = Math.max(2, 2 + stage);
+  const den = Math.max(2, 2 - stage);
+  return Math.floor(baseValue * (num / den));
+};
+
+/**
  * Main Damage Formula (Essentials/Gen 5 Style)
  */
 export const calculateDamage = (attacker, defender, move) => {
-  if (move.category === 'status' || move.power === 0) return 0;
+  const result = {
+    finalDamage: 0,
+    isCritical: false,
+    effectiveness: 1
+  };
+
+  if (move.category === 'status' || move.power === 0) return result;
 
   const level = attacker.level || 5;
   const power = move.power;
   
-  // Choose Attack and Defense based on move category
-  const A = move.category === 'special' ? (attacker.spAtk || attacker.attack) : attacker.attack;
-  const D = move.category === 'special' ? (defender.spDef || defender.defense) : defender.defense;
+  // Stats with stages
+  const attackStat = move.category === 'special' ? (attacker.spAtk || attacker.attack) : attacker.attack;
+  const attackStage = move.category === 'special' ? (attacker.statStages?.spAtk || 0) : (attacker.statStages?.attack || 0);
+  const A = getStatWithStage(attackStat, attackStage);
+
+  const defenseStat = move.category === 'special' ? (defender.spDef || defender.defense) : defender.defense;
+  const defenseStage = move.category === 'special' ? (defender.statStages?.spDef || 0) : (defender.statStages?.defense || 0);
+  const D = getStatWithStage(defenseStat, defenseStage);
 
   // Base Damage
   let damage = (((2 * level / 5 + 2) * power * A / D) / 50) + 2;
 
-  // Modifiers
-  // 1. Targets (Multi-battle check, here 1)
-  // 2. Weather (Implementation pending)
-  // 3. Critical (Simple 1.5x)
-  const isCritical = Math.random() < 0.0625; // 1/16 chance
-  if (isCritical) damage *= 1.5;
-
-  // 4. Random (0.85 to 1.0)
-  const random = 0.85 + Math.random() * 0.15;
-  damage *= random;
-
-  // 5. STAB (Same Type Attack Bonus)
-  if (attacker.types.includes(move.type)) {
+  // Critical Hit (approx 6.25% in Gen 5+)
+  if (Math.random() < 0.0625) {
+    result.isCritical = true;
     damage *= 1.5;
   }
 
-  // 6. Type Effectiveness
-  const effectiveness = getEffectiveness(move.type, defender.types);
-  damage *= effectiveness;
+  // Random factor (0.85 to 1.0)
+  const random = 0.85 + Math.random() * 0.15;
+  damage *= random;
 
-  // 7. Burn (Implementation pending)
-  
-  return {
-    finalDamage: Math.max(1, Math.floor(damage)),
-    isCritical,
-    effectiveness
-  };
+  // STAB (Same Type Attack Bonus)
+  if (attacker.types && attacker.types.includes(move.type)) {
+    damage *= 1.5;
+  }
+
+  // Type Effectiveness
+  const effectiveness = getEffectiveness(move.type, defender.types || []);
+  damage *= effectiveness;
+  result.effectiveness = effectiveness;
+
+  // Status Modifiers
+  if (attacker.status === 'burn' && move.category === 'physical') {
+    damage *= 0.5;
+  }
+
+  result.finalDamage = Math.max(1, Math.floor(damage));
+  return result;
 };

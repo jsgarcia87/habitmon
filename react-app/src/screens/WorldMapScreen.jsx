@@ -3,7 +3,7 @@ import { useGame } from '../context/GameContext';
 import { WORLDS } from '../data/worlds';
 
 const WorldMapScreen = ({ onNavigate }) => {
-  const { progress, timeOfDay } = useGame();
+  const { gimnasiosHoy, timeOfDay } = useGame();
   const canvasRef = useRef(null);
   const [selectedWorld, setSelectedWorld] = useState(null);
   const [message, setMessage] = useState('Selecciona un destino...');
@@ -76,7 +76,7 @@ const WorldMapScreen = ({ onNavigate }) => {
         const pos = WORLD_POSITIONS[world.world_id];
         if (!pos) return;
 
-        const isCompleted = progress?.gimnasios_completados?.includes(world.gym_id);
+        const isCompleted = gimnasiosHoy?.includes(world.gym_id);
         const isAvailable = world.tiempo === timeOfDay;
         const isSelected = selectedWorld === world.world_id;
 
@@ -122,7 +122,7 @@ const WorldMapScreen = ({ onNavigate }) => {
 
     const animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [selectedWorld, progress, timeOfDay]);
+  }, [selectedWorld, gimnasiosHoy, timeOfDay]);
 
   const handleCanvasClick = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();

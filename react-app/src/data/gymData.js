@@ -47,7 +47,7 @@ export const GYM_CONFIGS = {
     leaderPos: { x: 9, y: 5 }
   },
   'Map008': { // Gimnasio Fitness
-    id: 'gimnasio',
+    id: 'fitness',
     nombre: 'LÍDER DE FITNESS',
     sprite: 'char_ 29_a',
     tileset: `${BASE}Graphics/tilesets/gsc cave-gym d.png`,

@@ -37,13 +37,18 @@ const CityScreen = ({
       const gymConfig = template?.find(g => g.gym_id === event.gymId);
       
       if (gymConfig && gymConfig.activo === false) {
-        setDialog("Hoy no te tienes que hacer este hábito.");
+        setDialog("Hoy no tienes que hacer este hábito.");
         return;
       }
 
       const gymHabits = (habitosHoy || []).filter(h => h.gym_id === event.gymId);
       const isDone = gymHabits.length > 0 && gymHabits.every(h => h.completado);
       
+      if (gymHabits.length === 0) {
+        setDialog("Este gimnasio no tiene retos activos hoy.");
+        return;
+      }
+
       if (isDone) {
         setDialog(`Ya has ganado la medalla del Gimnasio ${event.gymId?.toUpperCase() || ''} hoy.`);
       } else {

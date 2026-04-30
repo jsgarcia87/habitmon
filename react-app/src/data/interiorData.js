@@ -140,13 +140,13 @@ export function generateHouse2() {
 
 export const INTERIOR_CONFIGS = {
   'house_1': { 
-    tileset: `${BASE}Graphics/tilesets/gsc_house_1.png`,
+    tileset: `${BASE}Graphics/tilesets/gsc house 1.png`,
     nombre: 'HOGAR - PB',
     spawn: { x: 9, y: 9 }, 
     tiles: { floor: 19, exit: 20, stair: 34 }
   },
   'house_2': { 
-    tileset: `${BASE}Graphics/tilesets/gsc_house_1.png`,
+    tileset: `${BASE}Graphics/tilesets/gsc house 1.png`,
     nombre: 'HOGAR - HABITACIÓN',
     spawn: { x: 10, y: 4 }, 
     tiles: { floor: 19, stair: 15 }

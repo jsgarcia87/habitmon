@@ -8,7 +8,7 @@ const EMOJI_OPTIONS = [
 ];
 
 const AdminScreen = ({ onNavigate }) => {
-  const { template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset, resetHabitos, notify } = useGame();
+  const { template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset, deletePreset, resetHabitos, notify } = useGame();
   const [config, setConfig] = useState(null);
   const [presets, setPresets] = useState([]);
   const [presetName, setPresetName] = useState('');
@@ -25,41 +25,67 @@ const AdminScreen = ({ onNavigate }) => {
     {
       gym_id: 'vestirse', gym_nombre: 'Gym Vestimenta', activo: true,
       habitos: [
-        {id:'q_pijama', nombre:'Quitar pijama', icono:'🌙', daño:30, activo:true},
-        {id:'q_ropa_s', nombre:'Quitar ropa sucia', icono:'🧺', daño:30, activo:true},
-        {id:'p_ropa_l', nombre:'Poner ropa limpia', icono:'👕', daño:30, activo:true},
-        {id:'p_zapas',  nombre:'Poner zapatillas', icono:'👟', daño:30, activo:true},
-      ]
-    },
-    {
-      gym_id: 'gimnasio', gym_nombre: 'Gym Fitness', activo: true,
-      habitos: [
-        {id:'f_flex', nombre:'10 Flexiones', icono:'💪', daño:40, activo:true},
-        {id:'f_sent', nombre:'15 Sentadillas', icono:'🦵', daño:40, activo:true},
-        {id:'f_plan', nombre:'30s Plancha', icono:'⏱️', daño:50, activo:true},
+        {id:'quitar_pijama', nombre:'Quitar pijama', icono:'🌙', daño:25, activo:true},
+        {id:'quitar_calcetines', nombre:'Quitar calcetines', icono:'🧦', daño:25, activo:true},
+        {id:'ponerse_ropa_interior', nombre:'Ponerse ropa interior', icono:'🩲', daño:20, activo:true},
+        {id:'ponerse_pantalones', nombre:'Ponerse pantalones', icono:'👖', daño:20, activo:true},
+        {id:'ponerse_camiseta', nombre:'Ponerse camiseta', icono:'👕', daño:20, activo:true},
+        {id:'ponerse_calcetines', nombre:'Ponerse calcetines', icono:'🧦', daño:20, activo:true},
       ]
     },
     {
       gym_id: 'higiene', gym_nombre: 'Gym Higiene', activo: true,
       habitos: [
-        {id:'h_dientes', nombre:'Lavar dientes', icono:'🪥', daño:50, activo:true},
-        {id:'h_ducha',   nombre:'Ducha rápida', icono:'🚿', daño:60, activo:true},
-        {id:'h_cara',    nombre:'Lavar cara', icono:'🧼', daño:30, activo:true},
+        {id:'h_cepi', nombre:'Cepillo', icono:'🪥', daño:30, activo:true},
+        {id:'h_past', nombre:'Pasta dientes', icono:'🧴', daño:20, activo:true},
+        {id:'h_cara', nombre:'Lavar cara', icono:'🧼', daño:25, activo:true},
+        {id:'h_pein', nombre:'Peinarse', icono:'💇', daño:25, activo:true},
+        {id:'h_colo', nombre:'Colonia', icono:'✨', daño:20, activo:true},
+        {id:'h_toal', nombre:'Toalla', icono:'🧖', daño:20, activo:true},
+        {id:'h_hilo', nombre:'Hilo dental', icono:'🧵', daño:30, activo:true},
       ]
     },
     {
       gym_id: 'desayuno', gym_nombre: 'Gym Desayuno', activo: true,
       habitos: [
-        {id:'d_leche', nombre:'Vaso de leche', icono:'🥛', daño:30, activo:true},
-        {id:'d_fruta', nombre:'Pieza de fruta', icono:'🍎', daño:40, activo:true},
-        {id:'d_tost',  nombre:'Tostada', icono:'🍞', daño:30, activo:true},
+        {id:'d_lech', nombre:'Leche', icono:'🥛', daño:25, activo:true},
+        {id:'d_tost', nombre:'Tostadas', icono:'🍞', daño:25, activo:true},
+        {id:'d_cere', nombre:'Cereales', icono:'🥣', daño:25, activo:true},
+        {id:'d_frut', nombre:'Fruta', icono:'🍎', daño:30, activo:true},
+        {id:'d_zumo', nombre:'Zumo', icono:'🍊', daño:25, activo:true},
+        {id:'d_gall', nombre:'Galletas', icono:'🍪', daño:20, activo:true},
+        {id:'d_yogu', nombre:'Yogur', icono:'🍶', daño:25, activo:true},
+        {id:'d_huev', nombre:'Huevo', icono:'🥚', daño:30, activo:true},
+        {id:'d_sand', nombre:'Sandwich', icono:'🥪', daño:30, activo:true},
+        {id:'d_cubi', nombre:'Cubiertos', icono:'🍴', daño:15, activo:true},
+        {id:'d_serv', nombre:'Servilleta', icono:'🧻', daño:15, activo:true},
       ]
     },
     {
       gym_id: 'orden', gym_nombre: 'Gym Orden', activo: true,
       habitos: [
-        {id:'o_cuarto', nombre:'Recoger cuarto', icono:'🧸', daño:60, activo:true},
-        {id:'o_cama',   nombre:'Hacer la cama', icono:'🛏️', daño:40, activo:true},
+        {id:'o_cama', nombre:'Hacer cama', icono:'🛏️', daño:40, activo:true},
+        {id:'o_jugu', nombre:'Recoger juguetes', icono:'🧸', daño:40, activo:true},
+        {id:'o_pija', nombre:'Guardar pijama', icono:'💤', daño:25, activo:true},
+        {id:'o_pers', nombre:'Abrir persiana', icono:'☀️', daño:20, activo:true},
+        {id:'o_rsuc', nombre:'Ropa sucia', icono:'🧺', daño:30, activo:true},
+        {id:'o_plan', nombre:'Regar plantas', icono:'🪴', daño:30, activo:true},
+      ]
+    },
+    {
+      gym_id: 'comida', gym_nombre: 'Gym Comida', activo: true,
+      habitos: [
+        {id:'c_salu', nombre:'Comida Saludable', icono:'🥗', daño:30, activo:true},
+        {id:'c_agua', nombre:'Beber Agua', icono:'💧', daño:20, activo:true},
+        {id:'c_frut', nombre:'Comer Fruta', icono:'🍎', daño:25, activo:true},
+      ]
+    },
+    {
+      gym_id: 'fitness', gym_nombre: 'Gym Fitness', activo: true,
+      habitos: [
+        {id:'f_flex', nombre:'10 Flexiones', icono:'💪', daño:40, activo:true},
+        {id:'f_sent', nombre:'15 Sentadillas', icono:'🦵', daño:40, activo:true},
+        {id:'f_plan', nombre:'30s Plancha', icono:'⏱️', daño:50, activo:true},
       ]
     }
   ];
@@ -122,6 +148,13 @@ const AdminScreen = ({ onNavigate }) => {
     }));
   };
 
+  const handleRestoreDefaults = () => {
+    if (window.confirm("¿Restablecer toda la configuración a los valores por defecto? Se perderán tus cambios personalizados.")) {
+      setConfig(JSON.parse(JSON.stringify(DEFAULT_CONFIG)));
+      notify("Valores por defecto cargados. No olvides guardar.", "info");
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -157,10 +190,45 @@ const AdminScreen = ({ onNavigate }) => {
     }
   };
 
-  const applyPreset = (p) => {
-    if (window.confirm(`¿Cargar configuración '${p.nombre}'?`)) {
-      setConfig(JSON.parse(JSON.stringify(p.config)));
-      notify(`Cargado: ${p.nombre}`);
+  const applyPreset = async (p, andSave = false) => {
+    const action = andSave ? 'Cargar y Activar' : 'Cargar';
+    if (window.confirm(`¿${action} configuración '${p.nombre}'?`)) {
+      const newConfig = JSON.parse(JSON.stringify(p.config));
+      setConfig(newConfig);
+      
+      if (andSave) {
+        setSaving(true);
+        try {
+          const r = await saveCustomTemplate(newConfig);
+          if (r.success) {
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+            notify(`¡Configuración '${p.nombre}' activada!`, "success");
+          }
+        } catch (e) {
+          console.error(e);
+          notify("Error al activar", "error");
+        } finally {
+          setSaving(false);
+        }
+      } else {
+        notify(`Cargado: ${p.nombre}. No olvides pulsar 'ACTUALIZAR' para guardarlo.`);
+      }
+    }
+  };
+
+  const handleDeletePreset = async (id, nombre) => {
+    if (window.confirm(`¿Seguro que quieres eliminar la configuración '${nombre}'?`)) {
+      try {
+        const r = await deletePreset(id);
+        if (r.success) {
+          loadPresets();
+          notify(`Configuración '${nombre}' eliminada`);
+        }
+      } catch (e) {
+        console.error(e);
+        notify("Error al eliminar", "error");
+      }
     }
   };
 
@@ -251,15 +319,29 @@ const AdminScreen = ({ onNavigate }) => {
         </div>
 
         {presets.length > 0 && (
-          <div style={{ display:'flex', flexWrap:'wrap', gap: 6 }}>
+          <div style={{ display:'flex', flexDirection:'column', gap: 10 }}>
             {presets.map(p => (
-              <button 
-                key={p.id} 
-                onClick={() => applyPreset(p)}
-                style={{ background:'#444', color:'#fff', border:'1px solid #666', fontSize:6, padding:'6px 10px', fontFamily:'"Press Start 2P"', cursor:'pointer' }}
-              >
-                📁 {p.nombre}
-              </button>
+              <div key={p.id} style={{ display:'flex', gap: 6, alignItems:'center', background:'rgba(255,255,255,0.03)', padding: 6 }}>
+                <span style={{ flex: 1, fontSize: 7, color: '#fff' }}>📁 {p.nombre}</span>
+                <button 
+                  onClick={() => applyPreset(p, false)}
+                  style={{ background:'#444', color:'#fff', border:'1px solid #666', fontSize:6, padding:'6px 8px', fontFamily:'"Press Start 2P"', cursor:'pointer' }}
+                >
+                  VER/EDITAR
+                </button>
+                <button 
+                  onClick={() => applyPreset(p, true)}
+                  style={{ background:'#4CAF50', color:'#fff', border:'1px solid #fff', fontSize:6, padding:'6px 8px', fontFamily:'"Press Start 2P"', cursor:'pointer' }}
+                >
+                  ACTIVAR
+                </button>
+                <button 
+                  onClick={() => handleDeletePreset(p.id, p.nombre)}
+                  style={{ background:'#E83030', color:'#fff', border:'none', fontSize:10, padding:'4px 8px', cursor:'pointer' }}
+                >
+                  🗑️
+                </button>
+              </div>
             ))}
           </div>
         )}

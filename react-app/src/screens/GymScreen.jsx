@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import DialogBox from '../components/DialogBox';
 import InteriorMap from '../components/InteriorMap';
 import { INTERIOR_CONFIGS, INTERIOR_MAPS } from '../data/interiorData';
@@ -9,8 +9,8 @@ const GymScreen = ({ navigate, gymId, direction, aPressed }) => {
   const [dialogue, setDialogue] = useState(null);
   
   // v2.0 Stable Logic: Procedural Retrieval
-  const config = INTERIOR_CONFIGS[gymId] || INTERIOR_CONFIGS.vestirse;
-  const mapMatrix = INTERIOR_MAPS.gym_default;
+  const config = INTERIOR_CONFIGS[gymId] || INTERIOR_CONFIGS.Map015;
+  const mapMatrix = INTERIOR_MAPS[gymId] || INTERIOR_MAPS.Map015;
 
   const handleEvent = (event) => {
     console.log("Gym v2.0 Event:", event);
@@ -32,7 +32,7 @@ const GymScreen = ({ navigate, gymId, direction, aPressed }) => {
   };
 
   // NPCs list for the leader (Shifted by padding)
-  const npcs = [
+  const npcs = useMemo(() => [
     {
       id: 'leader',
       nombre: config.nombre,
@@ -41,7 +41,7 @@ const GymScreen = ({ navigate, gymId, direction, aPressed }) => {
       y: 2,
       isLeader: true
     }
-  ];
+  ], [config]);
 
   const tileConfig = {
     floor: config.tiles.floor,

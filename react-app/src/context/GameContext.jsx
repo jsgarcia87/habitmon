@@ -160,10 +160,11 @@ export const GameProvider = ({children}) => {
       {gym_id, habito_id});
     if(r.success) {
       // Actualizar estado local inmediatamente
-      setHabitosHoy(prev => prev.map(h =>
-        h.gym_id === gym_id && h.habito_id === habito_id
+      setHabitosHoy(prev => prev.map(h => {
+        const hId = h.habito_id || h.id;
+        return (h.gym_id === gym_id && hId === habito_id)
           ? {...h, completado: true} : h
-      ));
+      }));
 
       // Actualizar progreso del starter si viene en la respuesta
       if (r.new_xp !== undefined) {
@@ -206,6 +207,11 @@ export const GameProvider = ({children}) => {
     return r;
   };
 
+  const deletePreset = async (id) => {
+    const r = await api.deletePreset(id);
+    return r;
+  };
+
   const saveCustomTemplate = async (newTemplate) => {
     try {
       const r = await api.saveAdminConfig(newTemplate);
@@ -218,6 +224,13 @@ export const GameProvider = ({children}) => {
       console.error("Save template error:", e);
       return { success: false, error: e.message };
     }
+  };
+
+  const setupDay = async (updatedTemplate) => {
+    setLoading(true);
+    const r = await saveCustomTemplate(updatedTemplate);
+    setLoading(false);
+    return r;
   };
 
   const capturarPokemon = async (pk_id, pk_nombre) => {
@@ -265,7 +278,7 @@ export const GameProvider = ({children}) => {
       template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset,
       gimnasiosHoy, coleccion, loading, notification, darkMode,
       login, register, logout, notify, toggleDarkMode,
-      elegirStarter, completarHabito, resetHabitos,
+      elegirStarter, completarHabito, resetHabitos, setupDay, deletePreset,
       completarGimnasio, cargarDatos, capturarPokemon, ganarBatalla
     }}>
       {children}

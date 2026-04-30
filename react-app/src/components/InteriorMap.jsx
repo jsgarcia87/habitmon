@@ -91,6 +91,7 @@ const InteriorMap = ({
       const playerUrl = `${BASE}Graphics/characters/trchar${String(user?.avatar || 0).padStart(3, '0')}.png`;
       const pPromise = loadImage(playerUrl);
       const npcPromises = npcs.map(npc => {
+        if (!npc.sprite) return Promise.resolve(null);
         const url = npc.sprite.startsWith('http') ? npc.sprite : `${BASE}Graphics/characters/${npc.sprite}.png`.replace(/ /g, '%20');
         return loadImage(url);
       });

@@ -24,6 +24,16 @@ export const determineTurnOrder = (pMove, pPkmn, eMove, ePkmn) => {
 };
 
 /**
+ * Calculates accuracy multiplier based on accuracy/evasion stages.
+ */
+const getAccuracyMultiplier = (accStage, evaStage) => {
+  const stage = Math.max(-6, Math.min(6, accStage - evaStage));
+  const num = Math.max(3, 3 + stage);
+  const den = Math.max(3, 3 - stage);
+  return num / den;
+};
+
+/**
  * Executes a single move and returns the summary of what happened.
  */
 export const processMove = (attacker, defender, move) => {
@@ -35,14 +45,28 @@ export const processMove = (attacker, defender, move) => {
     isCritical: false,
     effectiveness: 1,
     effects: null,
-    missed: false
+    missed: false,
+    unableToMove: null
   };
 
-  // 1. Accuracy Check
-  const accuracy = move.accuracy || 100;
-  if (accuracy < 100 && Math.random() * 100 > accuracy) {
-    summary.missed = true;
+  // 0. Status Check (Paralysis)
+  if (attacker.status === 'paralysis' && Math.random() < 0.25) {
+    summary.unableToMove = '¡Está paralizado! ¡No se puede mover!';
     return summary;
+  }
+
+  // 1. Accuracy Check
+  const baseAccuracy = move.accuracy || 100;
+  if (baseAccuracy < 100) {
+    const accStage = attacker.statStages?.accuracy || 0;
+    const evaStage = defender.statStages?.evasion || 0;
+    const multiplier = getAccuracyMultiplier(accStage, evaStage);
+    const finalAccuracy = baseAccuracy * multiplier;
+
+    if (Math.random() * 100 > finalAccuracy) {
+      summary.missed = true;
+      return summary;
+    }
   }
 
   // 2. Damage Calculation
@@ -64,9 +88,7 @@ export const processEndTurnEffects = (pkmn) => {
   const effects = [];
   if (pkmn.status === 'poison') {
     const dmg = Math.floor(pkmn.maxHp / 8);
-    pkmn.hp = Math.max(0, pkmn.hp - dmg);
     effects.push({ type: 'poison', damage: dmg, message: `¡${pkmn.name} sufre por el veneno!` });
   }
-  // Add more as needed...
   return effects;
 };

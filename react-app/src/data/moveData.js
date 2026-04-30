@@ -102,23 +102,70 @@ export const MOVE_DATA = {
     type: 'NORMAL', 
     category: 'status', 
     priority: 0 
+  },
+  'GUST': { 
+    id: 'GUST', 
+    nombre: 'TORNADO', 
+    power: 40, 
+    accuracy: 100, 
+    type: 'FLYING', 
+    category: 'special', 
+    priority: 0 
+  },
+  'SAND_ATTACK': { 
+    id: 'SAND_ATTACK', 
+    nombre: 'ATAQUE ARENA', 
+    power: 0, 
+    accuracy: 100, 
+    type: 'GROUND', 
+    category: 'status', 
+    priority: 0 
+  },
+  'TAIL_WHIP': { 
+    id: 'TAIL_WHIP', 
+    nombre: 'LÁTIGO', 
+    power: 0, 
+    accuracy: 100, 
+    type: 'NORMAL', 
+    category: 'status', 
+    priority: 0 
+  },
+  'POISON_POWDER': { 
+    id: 'POISON_POWDER', 
+    nombre: 'POLVO VENENO', 
+    power: 0, 
+    accuracy: 75, 
+    type: 'POISON', 
+    category: 'status', 
+    priority: 0 
+  },
+  'PECK': { 
+    id: 'PECK', 
+    nombre: 'PICOTAZO', 
+    power: 35, 
+    accuracy: 100, 
+    type: 'FLYING', 
+    category: 'physical', 
+    priority: 0 
   }
 };
 
 export const POKEMON_MOVES = {
-  1:   ['TACKLE', 'GROWL'],     // Bulbasaur (Placeholder)
-  4:   ['SCRATCH', 'GROWL'],    // Charmander
-  7:   ['TACKLE', 'WATER_GUN'], // Squirtle
+  1:   ['TACKLE', 'GROWL', 'VINE_WHIP'], // Bulbasaur
+  4:   ['SCRATCH', 'GROWL', 'EMBER'],    // Charmander
+  7:   ['TACKLE', 'TAIL_WHIP', 'WATER_GUN'], // Squirtle
+  16:  ['TACKLE', 'SAND_ATTACK', 'GUST'], // Pidgey
+  19:  ['TACKLE', 'TAIL_WHIP', 'QUICK_ATTACK'], // Rattata
+  21:  ['PECK', 'LEER', 'QUICK_ATTACK'], // Spearow
   25:  ['THUNDER_SHOCK', 'QUICK_ATTACK', 'THUNDER_WAVE'], // Pikachu
   152: ['TACKLE', 'GROWL', 'VINE_WHIP'], // Chikorita
   155: ['TACKLE', 'LEER', 'EMBER'],       // Cyndaquil
   158: ['SCRATCH', 'LEER', 'WATER_GUN'],  // Totodile
-  151: ['CONFUSION', 'THUNDER_WAVE'],     // Mew (Gym Leader dummy)
+  151: ['CONFUSION', 'THUNDER_WAVE'],     // Mew
   52:  ['SCRATCH', 'GROWL'],    // Meowth
-  88:  ['TACKLE', 'LEER'],       // Grimer
+  88:  ['TACKLE', 'POISON_POWDER'], // Grimer
   143: ['TACKLE', 'GROWL'],     // Snorlax
   56:  ['SCRATCH', 'LEER'],      // Mankey
-  6:   ['EMBER', 'SCRATCH', 'GROWL'], // Charizard
   100: ['THUNDER_SHOCK', 'LEER'], // Voltorb
   63:  ['CONFUSION']            // Abra
 };

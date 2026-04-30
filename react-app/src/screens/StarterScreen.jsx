@@ -10,19 +10,19 @@ const STARTERS = [
     id: '152', nombre: 'Chikorita', tipo: 'Planta',
     color: '#78C840',
     sprite: 'Graphics/battlers/152.png',
-    tileX: 13, tileY: 4 // Posición en la mesa del lab
+    tileX: 9, tileY: 5 // Posición centrada en la mesa del lab
   },
   { 
     id: '155', nombre: 'Cyndaquil', tipo: 'Fuego',
     color: '#F85888',
     sprite: 'Graphics/battlers/155.png',
-    tileX: 14, tileY: 4
+    tileX: 10, tileY: 5
   },
   { 
     id: '158', nombre: 'Totodile', tipo: 'Agua',
     color: '#6890F0',
     sprite: 'Graphics/battlers/158.png',
-    tileX: 15, tileY: 4
+    tileX: 11, tileY: 5
   }
 ];
 
@@ -32,7 +32,17 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
   const [dialogueStep, setDialogueStep] = useState(0);
   const [mode, setMode] = useState('intro'); // intro, exploration, selection, confirmed
   const [isJumping, setIsJumping] = useState(false);
-  const [playerPos, setPlayerPos] = useState({ x: 7, y: 12 });
+  const [playerPos, setPlayerPos] = useState({ x: 10, y: 10 });
+  
+  // Transformar starters en NPCs virtuales para colisión e interacción por teclado
+  const pokeballsAsNpcs = STARTERS.map(s => ({
+    id: `ball_${s.id}`,
+    nombre: s.nombre,
+    sprite: null, // No se renderiza como NPC (usamos el div de abajo)
+    posicion: { x: s.tileX, y: s.tileY },
+    direccion: 0,
+    starter: s
+  }));
 
   const OAK_DIALOGUE = [
     '¡Bienvenido al mundo POKÉMON!',
@@ -52,6 +62,13 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
     }
   };
 
+  // Escuchar botón A para avanzar diálogo
+  React.useEffect(() => {
+    if (aPressed && mode === 'intro') {
+      handleNextDialogue();
+    }
+  }, [aPressed, mode]);
+
   const handleSelectPokemon = (starter) => {
     setSelected(starter);
     setMode('selection');
@@ -63,6 +80,12 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
     setTimeout(() => {
       navigate('city');
     }, 1500);
+  };
+
+  const handleEvent = (event) => {
+    if (event.type === 'npc_talk' && event.npc.id.startsWith('ball_')) {
+      handleSelectPokemon(event.npc.starter);
+    }
   };
 
   const handleCancelSelection = () => {
@@ -88,36 +111,33 @@ const StarterScreen = ({ navigate, direction, aPressed }) => {
           setPlayerPos={setPlayerPos}
           direction={direction}
           aPressed={aPressed}
-          npcs={[]}
+          npcs={pokeballsAsNpcs}
           buildings={[]}
-          onEvent={() => {}}
+          onEvent={handleEvent}
         >
-          {/* Pokéballs Interactivas (Ahora DENTRO del CityMap para heredar la cámara) */}
+          {/* Pokéballs Interactivas (Alineadas con la rejilla 32px del lab) */}
           {mode === 'exploration' && (
             <>
-              {/* Bola 1 - Chikorita */}
-              <img 
-                src={getAssetPath('Graphics/icons/icon_item.png')} 
-                alt="Pokeball 1"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSelectPokemon(STARTERS[0]); }}
-                style={{ position: 'absolute', top: '160px', left: '288px', zIndex: 1000, cursor: 'pointer', width: '30px' }} 
-              />
-              
-              {/* Bola 2 - Cyndaquil */}
-              <img 
-                src={getAssetPath('Graphics/icons/icon_item.png')} 
-                alt="Pokeball 2"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSelectPokemon(STARTERS[1]); }}
-                style={{ position: 'absolute', top: '160px', left: '320px', zIndex: 1000, cursor: 'pointer', width: '30px' }} 
-              />
-
-              {/* Bola 3 - Totodile */}
-              <img 
-                src={getAssetPath('Graphics/icons/icon_item.png')} 
-                alt="Pokeball 3"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSelectPokemon(STARTERS[2]); }}
-                style={{ position: 'absolute', top: '160px', left: '352px', zIndex: 1000, cursor: 'pointer', width: '30px' }} 
-              />
+              {STARTERS.map((s) => (
+                <div 
+                  key={s.id}
+                  onClick={(e) => { e.stopPropagation(); handleSelectPokemon(s); }}
+                  style={{ 
+                    position: 'absolute', 
+                    top: `${s.tileY * 32}px`, 
+                    left: `${s.tileX * 32}px`, 
+                    zIndex: 1000, 
+                    cursor: 'pointer', 
+                    width: '32px', 
+                    height: '32px', 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}
+                >
+                  <img src={getAssetPath('Graphics/icons/icon_item.png')} style={{ width: '24px', height: '24px' }} alt={s.nombre} />
+                </div>
+              ))}
             </>
           )}
         </CityMap>

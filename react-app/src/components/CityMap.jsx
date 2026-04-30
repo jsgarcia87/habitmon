@@ -143,7 +143,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
   useEffect(() => {
     npcs.forEach(npc => {
-      if (!npcImgCache.current[npc.sprite]) {
+      if (npc.sprite && !npcImgCache.current[npc.sprite]) {
         const img = new Image();
         img.src = getAssetPath(`Graphics/characters/${npc.sprite.toLowerCase()}.png`);
         npcImgCache.current[npc.sprite] = img;

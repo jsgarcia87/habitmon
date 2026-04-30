@@ -120,41 +120,47 @@ try {
         $uid = get_user_id();
         $today = date('Y-m-d');
         
-        $stmt = $pdo->prepare("SELECT h.*, t.icono, t.daño FROM habitos h 
-                               JOIN habitos_template t ON h.habito_id = t.id 
-                               WHERE h.usuario_id = ? AND h.fecha = ?");
+        // 1. Sincronizar SIEMPRE los hábitos activos con la tabla de hoy
+        // Esto asegura que si se añade un hábito a mitad del día en la configuración, 
+        // aparezca inmediatamente en el combate.
+        $sqlTpls = "SELECT g.gym_id, h.id as habito_id, h.nombre, h.daño, h.icono 
+                    FROM habitos_template h
+                    JOIN pokemon_template p ON h.pokemon_template_id = p.id
+                    JOIN gimnasios_template g ON p.gym_id = g.gym_id
+                    WHERE h.activo = 1 AND g.activo = 1";
+        $tpls = $pdo->query($sqlTpls)->fetchAll();
+        
+        foreach ($tpls as $t) {
+            $ins = $pdo->prepare("INSERT IGNORE INTO habitos (usuario_id, gimnasio_id, habito_id, habito_nombre, fecha) VALUES (?,?,?,?,?)");
+            $ins->execute([$uid, $t['gym_id'], $t['habito_id'], $t['nombre'], $today]);
+        }
+
+        // 2. Recuperar la lista final con los datos actualizados de la plantilla
+        $sql = "SELECT h.*, t.icono, t.daño, t.nombre as current_nombre, t.activo as h_activo, g.activo as g_activo 
+                FROM habitos h 
+                JOIN habitos_template t ON h.habito_id = t.id 
+                JOIN gimnasios_template g ON h.gimnasio_id = g.gym_id
+                WHERE h.usuario_id = ? AND h.fecha = ?";
+        
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([$uid, $today]);
         $habitos = $stmt->fetchAll();
         
-        if (empty($habitos)) {
-            // Autocreate from template
-            $sql = "SELECT g.gym_id, h.id as habito_id, h.nombre, h.daño, h.icono 
-                    FROM habitos_template h
-                    JOIN pokemon_template p ON h.pokemon_template_id = p.id
-                    JOIN gimnasios_template g ON p.gym_id = g.gym_id";
-            $tpls = $pdo->query($sql)->fetchAll();
-            
-            foreach ($tpls as $t) {
-                $ins = $pdo->prepare("INSERT IGNORE INTO habitos (usuario_id, gimnasio_id, habito_id, habito_nombre, fecha) VALUES (?,?,?,?,?)");
-                $ins->execute([$uid, $t['gym_id'], $t['habito_id'], $t['nombre'], $today]);
+        // Filter and map fields for frontend consistency
+        $res = [];
+        foreach ($habitos as $h) {
+            // Only include if both habit and gym are active
+            if ($h['h_activo'] && $h['g_activo']) {
+                $res[] = [
+                    "gym_id" => $h['gimnasio_id'],
+                    "habito_id" => $h['habito_id'],
+                    "nombre" => $h['current_nombre'] ?? $h['habito_nombre'],
+                    "icono" => $h['icono'] ?? '⚔️',
+                    "daño" => (int)($h['daño'] ?? 20),
+                    "completado" => (bool)$h['completado']
+                ];
             }
-            
-            // Re-fetch
-            $stmt->execute([$uid, $today]);
-            $habitos = $stmt->fetchAll();
         }
-        
-        // Map fields for frontend consistency
-        $res = array_map(function($h) {
-            return [
-                "gym_id" => $h['gimnasio_id'],
-                "habito_id" => $h['habito_id'],
-                "nombre" => $h['habito_nombre'],
-                "icono" => $h['icono'] ?? '⚔️',
-                "daño" => (int)($h['daño'] ?? 20),
-                "completado" => (bool)$h['completado']
-            ];
-        }, $habitos);
         
         echo json_encode(["success" => true, "habitos" => $res]);
     }
@@ -283,7 +289,34 @@ try {
             ]
         ]);
     }
-    // ─── ADMIN ────────────────────────────────────────────────────────────────
+    // ─── ADMIN PRESETS ────────────────────────────────────────────────────────
+    elseif (strpos($route, '/admin/presets') === 0) {
+        $uid = get_user_id();
+        if ($method === 'GET') {
+            $stmt = $pdo->prepare("SELECT * FROM habito_presets WHERE usuario_id = ? ORDER BY created_at DESC");
+            $stmt->execute([$uid]);
+            $rows = $stmt->fetchAll();
+            $res = array_map(function($r) {
+                return [
+                    "id" => $r['id'],
+                    "nombre" => $r['nombre'],
+                    "config" => json_decode($r['config_json'], true)
+                ];
+            }, $rows);
+            echo json_encode(["success" => true, "presets" => $res]);
+        } elseif ($method === 'POST') {
+            $data = get_json_input();
+            $stmt = $pdo->prepare("INSERT INTO habito_presets (usuario_id, nombre, config_json) VALUES (?, ?, ?)");
+            $stmt->execute([$uid, $data['nombre'], json_encode($data['config'])]);
+            echo json_encode(["success" => true, "id" => $pdo->lastInsertId()]);
+        } elseif ($method === 'DELETE') {
+            $id = (int)str_replace('/admin/presets/', '', $route);
+            $stmt = $pdo->prepare("DELETE FROM habito_presets WHERE id = ? AND usuario_id = ?");
+            $stmt->execute([$id, $uid]);
+            echo json_encode(["success" => true]);
+        }
+    }
+    // ─── ADMIN CONFIG ─────────────────────────────────────────────────────────
     elseif (strpos($route, '/admin/config') === 0) {
         if ($method === 'GET') {
             $gyms = $pdo->query("SELECT * FROM gimnasios_template ORDER BY orden ASC")->fetchAll();
@@ -304,7 +337,7 @@ try {
                 $res[] = [
                     "gym_id" => $g['gym_id'],
                     "gym_nombre" => $g['gym_nombre'],
-                    "activo" => true,
+                    "activo" => (bool)($g['activo'] ?? true),
                     "habitos" => $gym_habitos,
                     "pokemon" => $pokemon
                 ];
@@ -317,17 +350,52 @@ try {
                 $habitos = $gym['habitos'] ?? [];
                 $gym_id = $gym['gym_id'];
                 
+                $pdo->prepare("UPDATE gimnasios_template SET gym_nombre = ?, activo = ? WHERE gym_id = ?")
+                    ->execute([$gym['gym_nombre'], $gym['activo'] ? 1 : 0, $gym_id]);
+
+                // Extract incoming habit IDs
+                $incoming_habit_ids = array_map(function($h) { return $h['id']; }, $habitos);
+
+                // Get all pokemon_template_ids for this gym
+                $pStmt = $pdo->prepare("SELECT id FROM pokemon_template WHERE gym_id = ?");
+                $pStmt->execute([$gym_id]);
+                $pk_ids = $pStmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($pk_ids)) {
+                    $inQueryPk = implode(',', array_fill(0, count($pk_ids), '?'));
+                    
+                    if (empty($incoming_habit_ids)) {
+                        // Si borramos TODOS los hábitos de este gimnasio
+                        $delStmt = $pdo->prepare("DELETE FROM habitos_template WHERE pokemon_template_id IN ($inQueryPk)");
+                        $delStmt->execute($pk_ids);
+                        
+                        // También los borramos de la lista de progreso de "hoy" para que desaparezcan en vivo
+                        $delHoy = $pdo->prepare("DELETE FROM habitos WHERE gimnasio_id = ? AND fecha = ?");
+                        $delHoy->execute([$gym_id, date('Y-m-d')]);
+                    } else {
+                        // Borramos los que pertenecen a este gimnasio pero NO están en la lista nueva
+                        $inQueryHabits = implode(',', array_fill(0, count($incoming_habit_ids), '?'));
+                        $delStmt = $pdo->prepare("DELETE FROM habitos_template WHERE pokemon_template_id IN ($inQueryPk) AND id NOT IN ($inQueryHabits)");
+                        $delStmt->execute(array_merge($pk_ids, $incoming_habit_ids));
+                        
+                        // Y los borramos de "hoy"
+                        $delHoy = $pdo->prepare("DELETE FROM habitos WHERE gimnasio_id = ? AND fecha = ? AND habito_id NOT IN ($inQueryHabits)");
+                        $delHoy->execute(array_merge([$gym_id, date('Y-m-d')], $incoming_habit_ids));
+                    }
+                }
+
                 foreach ($habitos as $h) {
-                    // Obtener primer pokemon del gym como padre por defecto para nuevos hábitos
                     $pStmt = $pdo->prepare("SELECT id FROM pokemon_template WHERE gym_id = ? LIMIT 1");
                     $pStmt->execute([$gym_id]);
                     $pk = $pStmt->fetch();
                     $pk_id = $pk['id'] ?? 1;
 
-                    $sql = "INSERT INTO habitos_template (id, pokemon_template_id, nombre, daño, icono) 
-                            VALUES (?, ?, ?, ?, ?) 
-                            ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), daño = VALUES(daño), icono = VALUES(icono)";
-                    $pdo->prepare($sql)->execute([$h['id'], $pk_id, $h['nombre'], $h['daño'], $h['icono']]);
+                    $h_activo = isset($h['activo']) ? ($h['activo'] ? 1 : 0) : 1;
+
+                    $sql = "INSERT INTO habitos_template (id, pokemon_template_id, nombre, daño, icono, activo) 
+                            VALUES (?, ?, ?, ?, ?, ?) 
+                            ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), daño = VALUES(daño), icono = VALUES(icono), activo = VALUES(activo)";
+                    $pdo->prepare($sql)->execute([$h['id'], $pk_id, $h['nombre'], $h['daño'], $h['icono'], $h_activo]);
                 }
             }
             echo json_encode(["success" => true]);

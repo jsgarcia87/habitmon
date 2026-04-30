@@ -46,6 +46,14 @@ export const executeMoveEffect = (move, attacker, defender) => {
         result.message = "¡No afectó!";
       }
       break;
+    case 'SAND_ATTACK':
+      result.statChanges.push({ target: 'defender', stat: 'accuracy', stage: -1 });
+      result.message = `¡La PRECISIÓN de ${defender.name} bajó!`;
+      break;
+    case 'TAIL_WHIP':
+      result.statChanges.push({ target: 'defender', stat: 'defense', stage: -1 });
+      result.message = `¡La DEFENSA de ${defender.name} bajó!`;
+      break;
     case 'POISON_POWDER':
       if (applyStatus(defender, 'poison')) {
         result.statusApplied = 'poison';

@@ -14,6 +14,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import HabitEditScreen from './screens/HabitEditScreen';
 import AdminScreen from './screens/AdminScreen';
 import HomeScreen from './screens/HomeScreen';
+import AgendaScreen from './screens/AgendaScreen';
 import StartMenu from './components/StartMenu';
 import { useDebouncedInput } from './hooks/useDebouncedInput';
 
@@ -103,6 +104,7 @@ function App() {
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
       case 'profile': return <ProfileScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
       case 'admin': return <AdminScreen onNavigate={navigate} />;
+      case 'agenda': return <AgendaScreen onNavigate={navigate} />;
       case 'habitedit': return <HabitEditScreen onNavigate={navigate} />;
       case 'home': return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
       default: return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
