@@ -13,7 +13,13 @@ const CityScreen = ({
   const { habitosHoy, template } = useGame();
   const [dialog, setDialog] = useState(null);
 
-  const currentMap = WORLD_DATA[currentMapId];
+  const currentMap = WORLD_DATA[currentMapId] || {
+    nombre: 'Zona Desconocida',
+    npcs: [],
+    buildings: [],
+    exits: {},
+    isInterior: true
+  };
 
   // Memoizar edificios para evitar reinicios innecesarios en CityMap
   const activeBuildings = useMemo(() => {
@@ -65,7 +71,15 @@ const CityScreen = ({
         const safePos = { x: b.x, y: b.y + 1 };
         setLastExtPos(safePos);
         if (setPPos) setPPos(safePos);
-        navigate('home', { targetMapId: b.targetMapId, spawn: b.spawn });
+        
+        // CORRECCIÓN: Si el targetMapId es un mapa estándar de RMXP (MapXXX), lo cargamos directamente en CityScreen
+        if (b.targetMapId.startsWith('Map')) {
+          if (!currentMap.isInterior) setLastExtMap(currentMapId);
+          setCurrentMapId(b.targetMapId);
+          if (setPPos) setPPos(b.spawn);
+        } else {
+          navigate('home', { targetMapId: b.targetMapId, spawn: b.spawn });
+        }
       } else {
         navigate('home');
       }

@@ -23,6 +23,10 @@ mkdir -p "$DIST_DIR"
 # 2. Compilar el Frontend (React)
 echo "📦 Compilando Frontend (React)..."
 cd react-app
+if [ ! -d "node_modules" ]; then
+  echo "⚠️ node_modules no encontrado. Instalando dependencias..."
+  npm install
+fi
 npm run build
 if [ $? -ne 0 ]; then
   echo "❌ Error al compilar el Frontend. Abortando."

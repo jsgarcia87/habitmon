@@ -1,1 +1,3368 @@
-{"width": 15, "height": 15, "tileset_id": 17, "data": [385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 447, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "events": {}}
+{
+  "bgm": {
+    "volume": 100,
+    "name": "New Bark Town",
+    "pitch": 100
+  },
+  "events": {
+    "1": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "DAISY: Hi, \\PN!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Would you like me to groom one of your "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "POKÃ©MON?"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Which POKÃ©MON do you want me to groom?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbChooseNonEggPokemon(1,2)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                4
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "DAISY: Oh, okay then."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "poke=pbGetPokemon(1)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "poke.changeHappiness(\"groom\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "poke.beauty+=40"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "DAISY: There! \\v[2] looks a lot happier and prettier "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "now!"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "DAISY: Oh, okay then."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "Daisy",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Daisy",
+      "y": 7,
+      "x": 8,
+      "id": 1
+    },
+    "2": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "If you'd like, I could judge the intriguing potential of "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "your POKÃ©MON."
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Which POKÃ©MON would you like me to judge?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbChooseNonEggPokemon(1,2)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                4
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "...Oh? You don't need me to judge. I get it."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "pkmn = pbGetPokemon(1)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "ivs = pkmn.calcIV"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "sum = 0"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "ivs.each { |i| sum += i }"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(2,sum)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "I see, I see..."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                150,
+                3
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "This POKÃ©MON's potential is outstanding overall."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                120,
+                3
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "This POKÃ©MON's potential is relatively superior "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "overall."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                90,
+                3
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "This POKÃ©MON's potential is above average overall."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "This POKÃ©MON's potential is decent overall."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "That's my determination, and it's final."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pkmn = pbGetPokemon(1)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "ivs  = pkmn.calcIV"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "best = []"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "val  = -1"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "[PBStats::HP, PBStats::ATTACK,"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "PBStats::DEFENSE, PBStats::SPATK,"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "PBStats::SPDEF,"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "PBStats::SPEED].each do |s|"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "  if ivs[s]>val"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "    best = [s]"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "    val  = ivs[s]"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "  elsif ivs[s]==val"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "    best.push(s)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "  end"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "end"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(2,best)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbSet(3,val)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(4,PBStats.getName(best[0]))"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(5,best.length-1)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "Incidentally, I would say the best potential lies in its "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "\\v[4] stat."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 112
+            },
+            {
+              "parameters": [
+                1,
+                5,
+                0,
+                0,
+                3
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "best = pbGet(2)"
+              ],
+              "indent": 3,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "best[0] = nil"
+              ],
+              "indent": 3,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "best.compact!"
+              ],
+              "indent": 3,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(4,best[0])"
+              ],
+              "indent": 3,
+              "code": 655
+            },
+            {
+              "parameters": [
+                1,
+                4,
+                0,
+                1,
+                0
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "And its ATTACK stat is also good."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                4,
+                0,
+                2,
+                0
+              ],
+              "indent": 4,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "I see, its DEFENSE stat is also good."
+              ],
+              "indent": 5,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 5,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                4,
+                0,
+                3,
+                0
+              ],
+              "indent": 5,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Well, its SPEED stat is also good."
+              ],
+              "indent": 6,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 6,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 5,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                4,
+                0,
+                4,
+                0
+              ],
+              "indent": 6,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Its SPCL. ATK stat is equally good."
+              ],
+              "indent": 7,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 7,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 6,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                4,
+                0,
+                5,
+                0
+              ],
+              "indent": 7,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Its SPCL. DEF stat is good as well."
+              ],
+              "indent": 8,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 8,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 7,
+              "code": 411
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 8,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 7,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 7,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 6,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 6,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 5,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 5,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+                5,
+                5,
+                2,
+                0,
+                1
+              ],
+              "indent": 3,
+              "code": 122
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 113
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 413
+            },
+            {
+              "parameters": [
+                1,
+                3,
+                0,
+                30,
+                3
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "It can't be better in that regard. That's how I judged "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "it."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                3,
+                0,
+                25,
+                3
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "It's fantastic in that regard. That's how I judged it."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                3,
+                0,
+                15,
+                3
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "It's very good in that regard. That's how I judged it."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "It's rather decent in that regard. That's how I judged "
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "it."
+              ],
+              "indent": 4,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "...Oh? You don't need me to judge. I get it."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 07_D",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Stats judge",
+      "y": 7,
+      "x": 11,
+      "id": 2
+    },
+    "10": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Door exit",
+                  "pitch": 100
+                }
+              ],
+              "indent": 0,
+              "code": 250
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                2,
+                13,
+                15,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 1
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 0,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 1
+                }
+              ],
+              "indent": 0,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 41,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 1,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Exits, size(2,1)",
+      "y": 12,
+      "x": 8,
+      "id": 10
+    }
+  },
+  "tileset_id": 7,
+  "bgs": {
+    "volume": 80,
+    "name": "",
+    "pitch": 100
+  },
+  "autoplay_bgm": true,
+  "data": {
+    "@data": [
+      3,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      16,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      192,
+      3,
+      0,
+      0,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      129,
+      1,
+      128,
+      1,
+      130,
+      1,
+      128,
+      1,
+      131,
+      1,
+      128,
+      1,
+      135,
+      1,
+      155,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      137,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      139,
+      1,
+      150,
+      1,
+      143,
+      1,
+      163,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      149,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      151,
+      1,
+      152,
+      1,
+      153,
+      1,
+      151,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      151,
+      1,
+      160,
+      1,
+      161,
+      1,
+      151,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      145,
+      1,
+      146,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      148,
+      1,
+      148,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "autoplay_bgs": false,
+  "height": 16,
+  "encounter_step": 30,
+  "width": 20,
+  "encounter_list": [
+
+  ]
+}

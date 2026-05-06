@@ -12,7 +12,8 @@
           "list": [
             {
               "parameters": [
-                {},
+                {
+                },
                 4
               ],
               "indent": 0,
@@ -50,7 +51,8 @@
             },
             {
               "parameters": [
-                {},
+                {
+                },
                 4
               ],
               "indent": 0,
@@ -69,11 +71,15 @@
                 {
                   "list": [
                     {
-                      "parameters": [],
+                      "parameters": [
+
+                      ],
                       "code": 3
                     },
                     {
-                      "parameters": [],
+                      "parameters": [
+
+                      ],
                       "code": 0
                     }
                   ],
@@ -87,7 +93,9 @@
             {
               "parameters": [
                 {
-                  "parameters": [],
+                  "parameters": [
+
+                  ],
                   "code": 3
                 }
               ],
@@ -95,7 +103,9 @@
               "code": 509
             },
             {
-              "parameters": [],
+              "parameters": [
+
+              ],
               "indent": 0,
               "code": 0
             }
@@ -115,7 +125,9 @@
           "move_route": {
             "list": [
               {
-                "parameters": [],
+                "parameters": [
+
+                ],
                 "code": 0
               }
             ],
@@ -152,7 +164,8 @@
           "list": [
             {
               "parameters": [
-                {},
+                {
+                },
                 4
               ],
               "indent": 0,
@@ -190,7 +203,8 @@
             },
             {
               "parameters": [
-                {},
+                {
+                },
                 4
               ],
               "indent": 0,
@@ -209,11 +223,15 @@
                 {
                   "list": [
                     {
-                      "parameters": [],
+                      "parameters": [
+
+                      ],
                       "code": 1
                     },
                     {
-                      "parameters": [],
+                      "parameters": [
+
+                      ],
                       "code": 0
                     }
                   ],
@@ -227,7 +245,9 @@
             {
               "parameters": [
                 {
-                  "parameters": [],
+                  "parameters": [
+
+                  ],
                   "code": 1
                 }
               ],
@@ -235,7 +255,9 @@
               "code": 509
             },
             {
-              "parameters": [],
+              "parameters": [
+
+              ],
               "indent": 0,
               "code": 0
             }
@@ -255,7 +277,9 @@
           "move_route": {
             "list": [
               {
-                "parameters": [],
+                "parameters": [
+
+                ],
                 "code": 0
               }
             ],
@@ -286,7 +310,7 @@
       "id": 2
     }
   },
-  "tileset_id": 16,
+  "tileset_id": 15,
   "bgs": {
     "volume": 80,
     "name": "",
@@ -2697,5 +2721,7 @@
   "height": 18,
   "encounter_step": 30,
   "width": 22,
-  "encounter_list": []
+  "encounter_list": [
+
+  ]
 }

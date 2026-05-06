@@ -1,1 +1,3231 @@
-{"width": 15, "height": 15, "tileset_id": 20, "data": [401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 393, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "events": {}}
+{
+  "bgm": {
+    "volume": 100,
+    "name": "New Bark Town",
+    "pitch": 100
+  },
+  "events": {
+    "5": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 0,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Choose a topic."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "Debug mode",
+                  "Give all badges",
+                  "Taking screenshots",
+                  "CANCEL"
+                ],
+                4
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "Debug mode"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "$DEBUG=true"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "The $DEBUG flag was set.  This flag is set "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "automatically during playtesting within RMXP."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Debug mode allows you to access the Debug menu "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "(F9 or in the pause menu), and to modify PokÃ©mon in "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "your party/the PC."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "You can also use hidden moves anytime, and hold "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "CTRL to skip any battles and decide the outcome of "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Trainer battles."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "Give all badges"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "for i in 0...16"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                " $Trainer.badges[i]=true"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "end"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "Obtained all badges for the first and second regions."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "To add a badge, use $Trainer.badges[X]=true where "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "X is a number from 0 through 7."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "In Debug mode, you can set your badges in the "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Debug menu."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                2,
+                "Taking screenshots"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Press F8 to take a screenshot of the game."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "The screenshot will be put in the folder where the "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "save file is kept."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                3,
+                "CANCEL"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Debug, badges, screenshots",
+      "y": 5,
+      "x": 11,
+      "id": 5
+    },
+    "6": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "pbShowMap"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Town Map",
+      "y": 4,
+      "x": 12,
+      "id": 6
+    },
+    "1": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Door exit",
+                  "pitch": 100
+                }
+              ],
+              "indent": 0,
+              "code": 250
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                3,
+                15,
+                4,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 1
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 0,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 1
+                }
+              ],
+              "indent": 0,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 1,
+          "step_anime": false,
+          "move_frequency": 6,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Stairs down",
+      "y": 4,
+      "x": 13,
+      "id": 1
+    },
+    "2": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                6,
+                -1,
+                8
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbTrainerPC"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "PC",
+      "y": 5,
+      "x": 8,
+      "id": 2
+    },
+    "3": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 0,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Choose a topic."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "Voice Recorder",
+                  "CANCEL"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "Voice Recorder"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Do you want to record your voice for the Trainer "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Card?"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "Yes",
+                  "No"
+                ],
+                2
+              ],
+              "indent": 1,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "Yes"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "pbRecordTrainer"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Thank you. Check your Trainer Card."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "You can record your voice later if you change your "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "mind."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "No"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "You can record your voice later if you change your "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "mind."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 404
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "CANCEL"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Voice Recorder, download files",
+      "y": 5,
+      "x": 6,
+      "id": 3
+    },
+    "4": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 0,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Choose a topic."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "About the trainer",
+                  "Map Connector",
+                  "Terrain Tags",
+                  "CANCEL"
+                ],
+                4
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "About the trainer"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "The $Trainer global variable contains valuable "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "information on the player, including their trainer type, "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "ID, name, party PokÃ©mon, money, and so on."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Refer to PokeBattle_Trainer for details on Trainer "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "objects."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "Map Connector"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "The Map Connector (also known as the Visual Editor) "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "allows you to connect maps together."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "In the Debug menu (F9 or in the pause menu), choose "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "the \"Map Connections\" option."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Once there, choose a map to display by pressing the "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "S key.  Select it and press the E key to edit its "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "encounters, or double-click it to edit its metadata."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Add additional maps to the canvas by pressing the A "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "key, and drag them around to connect them.  Maps "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "only connect if just their edges touch."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                2,
+                "Terrain Tags"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Every tile in a tileset has a terrain tag, which is a "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "number.  This number is used to give certain tiles "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "special effects."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "For example, ledge tiles have terrain tag 1, which "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "means the player jumps over them.  Ledge tiles also "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "have a single passable direction (set separately)."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Grass tiles (in which you can have wild encounters) "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "have terrain tag 2.  Water tiles have terrain tag 6 or 7."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Terrain tag 0 means the tile has no special effect.  "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "See the wiki for more information and a complete list "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "of all terrain tags and their effects."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "To set a tileset's terrain tags, open the Debug menu "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "(F9 or from the pause menu) and choose \"Edit Terrain "
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Tags\"."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                3,
+                "CANCEL"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Trainer, Visual Editor, Terrain Tags",
+      "y": 5,
+      "x": 7,
+      "id": 4
+    }
+  },
+  "tileset_id": 7,
+  "bgs": {
+    "volume": 80,
+    "name": "",
+    "pitch": 100
+  },
+  "autoplay_bgm": true,
+  "data": {
+    "@data": [
+      3,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      16,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      192,
+      3,
+      0,
+      0,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      132,
+      1,
+      132,
+      1,
+      129,
+      1,
+      128,
+      1,
+      131,
+      1,
+      132,
+      1,
+      133,
+      1,
+      134,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      140,
+      1,
+      140,
+      1,
+      137,
+      1,
+      138,
+      1,
+      139,
+      1,
+      140,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      145,
+      1,
+      146,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      136,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      141,
+      1,
+      142,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      144,
+      1,
+      147,
+      1,
+      147,
+      1,
+      147,
+      1,
+      145,
+      1,
+      146,
+      1,
+      147,
+      1,
+      147,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      171,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "autoplay_bgs": false,
+  "height": 16,
+  "encounter_step": 30,
+  "width": 20,
+  "encounter_list": [
+
+  ]
+}

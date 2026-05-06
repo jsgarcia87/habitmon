@@ -1,1 +1,4468 @@
-"#<RPG::Map:0x0000000bfa971fc0>"
+{
+  "bgm": {
+    "volume": 100,
+    "name": "Cherrygrove",
+    "pitch": 100
+  },
+  "events": {
+    "5": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "My SHUCKIE is a great POKÃ©MON, but I can't train"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "it anymore."
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Would you take SHUCKIE and raise it like it "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "deserves?"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbAddForeignPokemon can only add a PokÃ©mon to "
+              ],
+              "indent": 1,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "the player's party, so a space is required."
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                12,
+                "pbAddForeignPokemon(:SHUCKLE,20,_I(\"KIRK\"),_I(\"SHUCKIE\"))"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Take good care of SHUCKIE!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 2,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Oh, you don't have any space for it."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Oh, that's a shame."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 08_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Are you raising my SHUCKIE well?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 08_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Gift PokÃ©mon - Basic",
+      "y": 8,
+      "x": 13,
+      "id": 5
+    },
+    "6": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "I have a rather special BULBASAUR! Its ability is"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "something I could only dream of."
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "I can't look after it, though. Would you like "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "BULBASAUR?"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbAddForeignPokemon can only add a PokÃ©mon to "
+              ],
+              "indent": 1,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "the player's party, so a space is required."
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                12,
+                "pbAddForeignPokemon(:BULBASAUR,10,_I(\"Dorima\"),_I(\"Sauri\"),1)"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Editing a foreign PokÃ©mon added with this method "
+              ],
+              "indent": 2,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "can only be done afterwards. Remember to add "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "\"poke.calcStats\" at the end."
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "The added PokÃ©mon will always be at the end of the "
+              ],
+              "indent": 2,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "player's party, so you can use $Trainer.lastParty to "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "locate it."
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "pkmn = $Trainer.lastParty"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pkmn.setAbility(2)   # Hidden Ability"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pkmn.setNature(:MODEST)"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pkmn.ballused = 15   # Cherish Ball"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pkmn.makeShiny"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pkmn.calcStats"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "Take good care of SAURI!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 2,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Oh, you don't have any space."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Oh, that's a shame."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 59_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "I hope you're taking good care of my SAURI!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 59_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Gift PokÃ©mon - Advanced",
+      "y": 6,
+      "x": 13,
+      "id": 6
+    },
+    "1": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Door exit",
+                  "pitch": 100
+                }
+              ],
+              "indent": 0,
+              "code": 250
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                29,
+                17,
+                11,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 1
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 0,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 1
+                }
+              ],
+              "indent": 0,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 41,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 1,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Exit, size(2,1)",
+      "y": 12,
+      "x": 8,
+      "id": 1
+    },
+    "7": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "This is a straightforward example of giving a "
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "PokÃ©mon. Its OT will be the player."
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                12,
+                "pbAddPokemon(:MEW,20)"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 1,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": true,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "Items-02_A",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": false,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "PokÃ©mon ball - Basic",
+      "y": 10,
+      "x": 10,
+      "id": 7
+    },
+    "8": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "This is an example of giving a PokÃ©mon which has "
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "been modified. The PokÃ©mon is defined separately "
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "before being given to the player."
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                12,
+                "!pbBoxesFull?"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "p = pbNewPkmn(:PICHU,30)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "p.setItem(:ZAPPLATE)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.form = 1              # Spiky-eared"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.makeFemale"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.makeNotShiny"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.pbLearnMove(:VOLTTACKLE)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.pbLearnMove(:HELPINGHAND)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.pbLearnMove(:SWAGGER)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.pbLearnMove(:PAINSPLIT)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.calcStats"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbAddPokemon(p)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 1,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "There's no more room for POKÃ©MON!"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "The POKÃ©MON BOXES are full and can't accept any "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "more!"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": true,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "Items-02_A",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": false,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "PokÃ©mon ball - Advanced",
+      "y": 10,
+      "x": 11,
+      "id": 8
+    },
+    "3": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "I'm looking for a RATTATA."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Want to trade it for my HAUNTER?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "The chosen PokÃ©mon's party index goes in game "
+              ],
+              "indent": 1,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "variable 1. A value of -1 means no PokÃ©mon was "
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "chosen."
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "The chosen PokÃ©mon's name goes in game variable 2."
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "pbChoosePokemonForTrade(1,2,:RATTATA)"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                -1,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "You don't want to trade?  Aww..."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "OK, let's get started."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbStartTrade(pbGet(1),"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "   :HAUNTER,\"HaHa\",\"Andy\")"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN traded RATTATA for HAUNTER!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Thanks!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 2,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "You don't want to trade? Aww..."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 02_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 6,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Thanks for trading with me!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 02_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 6,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Trader - Basic",
+      "y": 8,
+      "x": 8,
+      "id": 3
+    },
+    "9": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Oh, hi!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Would you like this POKÃ©MON EGG?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbGenerateEgg can only add an egg to the player's "
+              ],
+              "indent": 1,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "party, so a space is required."
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                12,
+                "pbGenerateEgg(:TOGEPI,_I(\"FAN CLUB President\"))"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\me[Egg get]\\PN received the EGG from the FAN CLUB"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "President."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Take good care of it!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 2,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Oh, you can't carry it with you."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Make some space in your party and come back."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Oh. Will I ever find someone to take this EGG?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 07_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "I wonder what that EGG will hatch into?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 07_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Gift egg",
+      "y": 5,
+      "x": 10,
+      "id": 9
+    },
+    "4": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "I'm looking for a female DRAGONAIR."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Want to trade it for my DODRIO?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Because there are more requirements than just "
+              ],
+              "indent": 1,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "wanting the correct species, the method "
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "pbChoosePokemonForTrade cannot be used here. "
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "Instead, it is recreated using method "
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "pbChooseTradeablePokemon."
+              ],
+              "indent": 1,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "pbChooseTradablePokemon(1,2,"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "proc {|pkmn|"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                " pkmn.isFemale? &&"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                " isConst?(pkmn.species,PBSpecies,"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "    :DRAGONAIR)"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "})"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                -1,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "You don't want to trade?  Aww..."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "OK, let's get started."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "This trade is providing a special Dodrio with certain "
+              ],
+              "indent": 2,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "custom modifications. You should define this PokÃ©mon "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "first and modify it, and then put it in the trade."
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "Remember to add \"poke.calcStats\" at the end. It "
+              ],
+              "indent": 2,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "makes sure the PokÃ©mon's stats are correct, as some "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "modifications can affect them. It doesn't hurt to have "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "this line there just to be sure, even if you don't affect "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "the stats."
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "p = pbGenPkmn(:DODRIO,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "   pbGetPokemon(1).level)"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.setItem(:SMOKEBALL)"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.makeFemale"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.setAbility(0)         # Run Away"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.setNature(:IMPISH)"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.iv = [20,20,20,15,15,15]"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.ballused = 10         # Luxury Ball"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.pbLearnMove(:SURF)"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "p.calcStats"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbStartTrade(pbGet(1),p,_I(\"DORIS\"),_I(\"AYANA\"),1)"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "The trade itself sets the received PokÃ©mon's "
+              ],
+              "indent": 2,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "nickname, obtain method and OT details. These can "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "only be modified after the trade, although you "
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "shouldn't need to do so."
+              ],
+              "indent": 2,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "\\PN traded DRAGONAIR for DODRIO!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Thanks!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 2,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "You don't want to trade?  Aww..."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 10_A",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 6,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Are you taking good care of DORIS?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": true,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 10_A",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 6,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Trade - Advanced",
+      "y": 6,
+      "x": 8,
+      "id": 4
+    }
+  },
+  "tileset_id": 8,
+  "bgs": {
+    "volume": 80,
+    "name": "",
+    "pitch": 100
+  },
+  "autoplay_bgm": true,
+  "data": {
+    "@data": [
+      3,
+      0,
+      0,
+      0,
+      22,
+      0,
+      0,
+      0,
+      16,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      32,
+      4,
+      0,
+      0,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      128,
+      1,
+      129,
+      1,
+      132,
+      1,
+      132,
+      1,
+      132,
+      1,
+      133,
+      1,
+      132,
+      1,
+      151,
+      1,
+      132,
+      1,
+      151,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      136,
+      1,
+      137,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      139,
+      1,
+      139,
+      1,
+      140,
+      1,
+      144,
+      1,
+      145,
+      1,
+      145,
+      1,
+      146,
+      1,
+      140,
+      1,
+      139,
+      1,
+      139,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      147,
+      1,
+      148,
+      1,
+      149,
+      1,
+      150,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      139,
+      1,
+      139,
+      1,
+      140,
+      1,
+      147,
+      1,
+      156,
+      1,
+      157,
+      1,
+      150,
+      1,
+      140,
+      1,
+      139,
+      1,
+      139,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      152,
+      1,
+      153,
+      1,
+      153,
+      1,
+      154,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      155,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      155,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      155,
+      1,
+      139,
+      1,
+      141,
+      1,
+      141,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      139,
+      1,
+      155,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      160,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "autoplay_bgs": false,
+  "height": 16,
+  "encounter_step": 30,
+  "width": 22,
+  "encounter_list": [
+
+  ]
+}

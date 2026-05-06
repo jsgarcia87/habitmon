@@ -10,13 +10,6 @@ export const WORLD_DATA = {
         mensajes: ['¡Hola! Si buscas el gimnasio de DESAYUNO, está en la Ruta 29.', 'Los de HIGIENE, ORDEN o COMIDA están en Ciudad Fronsaf.', 'Aquí en el pueblo solo tenemos el de VESTIRSE.']
       },
       {
-        nombre: 'Madre',
-        sprite: 'char_ 11_a',
-        posicion: { x: 15, y: 10 },
-        direccion: 0,
-        mensajes: ['¡Pórtate bien, hijo! Cumple tus hábitos para ganar medallas.', 'Recuerda que en el ORDENADOR de casa puedes ver tus LOGROS pulsando A.']
-      },
-      {
         nombre: 'Guardia de la Ruta',
         sprite: 'char_ 35_a',
         posicion: { x: 2, y: 11 },
@@ -51,8 +44,7 @@ export const WORLD_DATA = {
     ],
     exits: {
       right: { targetMap: 'Map002', spawn: { x: 1, y: 11 } },
-      left: { targetMap: 'Map070', spawn: { x: 34, y: 13 } },
-      up: { targetMap: 'Map010', spawn: { x: 22, y: 35 } }
+      left: { targetMap: 'Map029', spawn: { x: 18, y: 12 } }
     },
     isInterior: false
   },
@@ -74,8 +66,7 @@ export const WORLD_DATA = {
       { type: 'gym', gymId: 'cena', nombre: 'Cena', x: 5, y: 20, label: { x: 5, y: 18 }, targetMapId: 'Map064', spawn: { x: 9, y: 12 } } 
     ],
     exits: {
-      right: { targetMap: 'Map008', spawn: { x: 1, y: 13 } },
-      up: { targetMap: 'Map010', spawn: { x: 12, y: 18 } }
+      right: { targetMap: 'Map008', spawn: { x: 1, y: 13 } }
     },
     isInterior: false
   },
@@ -198,6 +189,273 @@ export const WORLD_DATA = {
     ],
     buildings: [],
     exits: { down: { targetMap: 'Map070', spawn: { x: 5, y: 21 } } },
+    isInterior: true
+  },
+  Map038: {
+    nombre: 'RUTA 30',
+    npcs: [
+      {
+        nombre: 'Sr. Pokémon',
+        sprite: 'char_ 02_a',
+        posicion: { x: 15, y: 5 },
+        direccion: 2,
+        mensajes: ['¡Hola! Soy el Sr. Pokémon.', 'Me encanta coleccionar datos sobre hábitos.', '¿Sabías que leer 15 minutos al día mejora tu EXP de entrenador?']
+      },
+      {
+        nombre: 'Joven Chano',
+        sprite: 'char_ 01_a',
+        posicion: { x: 10, y: 15 },
+        direccion: 1,
+        mensajes: ['¡Mira mis shorts! Son cómodos y fáciles de llevar.', '¡Y me ayudan a correr para cumplir mis tareas a tiempo!']
+      }
+    ],
+    buildings: [
+      { type: 'home', nombre: 'Casa Sr. P', x: 15, y: 4, label: { x: 15, y: 2 }, targetMapId: 'house_pokemon', spawn: { x: 9, y: 9 } }
+    ],
+    exits: {
+      down: { targetMap: 'Map029', spawn: { x: 20, y: 1 } },
+      up: { targetMap: 'Map040', spawn: { x: 15, y: 28 } }
+    },
+    isInterior: false
+  },
+  Map040: {
+    nombre: 'RUTA 31',
+    npcs: [
+      {
+        nombre: 'Montañero',
+        sprite: 'char_ 35_a',
+        posicion: { x: 25, y: 10 },
+        direccion: 3,
+        mensajes: ['Esa de ahí es la Cueva Oscura.', 'Necesitas el hábito de "Valentía" para entrar... ¡o una linterna!']
+      }
+    ],
+    buildings: [],
+    exits: {
+      down: { targetMap: 'Map038', spawn: { x: 15, y: 6 } },
+      left: { targetMap: 'Map078', spawn: { x: 26, y: 15 } }
+    },
+    isInterior: false
+  },
+  Map078: {
+    nombre: 'CIUDAD MALVA',
+    npcs: [
+      {
+        nombre: 'Anciano Torre',
+        sprite: 'char_ 35_a',
+        posicion: { x: 20, y: 10 },
+        direccion: 2,
+        mensajes: ['Bienvenido a Ciudad Malva.', 'Nuestra ciudad es famosa por la Torre Bellsprout.', 'Allí los monjes entrenan el hábito de la Concentración.']
+      }
+    ],
+    buildings: [
+      { type: 'gym', gymId: 'orden', nombre: 'Torre Bellsprout', x: 25, y: 5, label: { x: 25, y: 3 }, targetMapId: 'Map007', spawn: { x: 9, y: 12 } },
+      { type: 'home', nombre: 'Centro Pokémon', x: 7, y: 11, label: { x: 7, y: 9 }, targetMapId: 'Map079', spawn: { x: 9, y: 11 } },
+      { type: 'home', nombre: 'Tienda de Malva', x: 23, y: 11, label: { x: 23, y: 9 }, targetMapId: 'Map080', spawn: { x: 9, y: 11 } }
+    ],
+    exits: {
+      right: { targetMap: 'Map040', spawn: { x: 1, y: 35 } },
+      down: { targetMap: 'Map013', spawn: { x: 15, y: 1 } }
+    },
+    isInterior: false
+  },
+  Map029: {
+    nombre: 'PUEBLO GANYMAHO',
+    npcs: [
+      {
+        nombre: 'Guía Abuelo',
+        sprite: 'char_ 35_a',
+        posicion: { x: 18, y: 12 },
+        direccion: 2,
+        mensajes: ['¡Hola! Bienvenido a Ganymaho Town.', 'Un hermoso pueblo de paso para entrenadores de hábitos.', 'Aquí tenemos un Centro Pokémon para descansar y una Tienda.']
+      },
+      {
+        nombre: 'Deportista',
+        sprite: 'char_ 01_a',
+        posicion: { x: 25, y: 15 },
+        direccion: 1,
+        mensajes: ['¡Correr por el pueblo por la mañana es el mejor hábito de cardio!']
+      }
+    ],
+    buildings: [
+      { type: 'home', nombre: 'Centro Pokémon', x: 29, y: 12, label: { x: 29, y: 10 }, targetMapId: 'Map031', spawn: { x: 9, y: 9 } },
+      { type: 'home', nombre: 'Tienda de Ganymaho', x: 23, y: 12, label: { x: 23, y: 10 }, targetMapId: 'Map032', spawn: { x: 9, y: 9 } }
+    ],
+    exits: {
+      right: { targetMap: 'Map008', spawn: { x: 1, y: 11 } },
+      up: { targetMap: 'Map038', spawn: { x: 48, y: 24 } }
+    },
+    isInterior: false
+  },
+  Map031: {
+    nombre: 'Centro Pokémon de Ganymaho',
+    npcs: [
+      {
+        nombre: 'Enfermera Joy',
+        sprite: 'char_ 11_a',
+        posicion: { x: 10, y: 4 },
+        direccion: 2,
+        mensajes: ['¡Hola! Bienvenido al Centro Pokémon de Ganymaho.', '¿Estás cansado de tanto caminar?', '¡Tus hábitos están a salvo aquí con nosotros!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map029', spawn: { x: 29, y: 13 } } },
+    isInterior: true
+  },
+  Map032: {
+    nombre: 'Tienda de Ganymaho',
+    npcs: [
+      {
+        nombre: 'Dependiente',
+        sprite: 'char_ 02_a',
+        posicion: { x: 5, y: 5 },
+        direccion: 2,
+        mensajes: ['¡Hola! Vendemos suministros especiales para deportistas activos.', '¡Mantente firme en tus tareas diarias para brillar en combate!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map029', spawn: { x: 23, y: 13 } } },
+    isInterior: true
+  },
+  house_1: {
+    nombre: 'Hogar - Planta Baja',
+    npcs: [
+      {
+        nombre: 'Madre',
+        sprite: 'char_ 11_a',
+        posicion: { x: 13, y: 6 },
+        direccion: 0,
+        mensajes: ['¡Pórtate bien, hijo! Cumple tus hábitos para ganar medallas.', 'Recuerda que en el ORDENADOR de casa puedes ver tus LOGROS pulsando A.']
+      }
+    ],
+    buildings: [],
+    exits: { 
+      down: { targetMap: 'Map002', spawn: { x: 15, y: 8 } },
+      up: { targetMap: 'house_2', spawn: { x: 10, y: 4 } }
+    },
+    isInterior: true
+  },
+  house_2: {
+    nombre: 'Hogar - Habitación',
+    npcs: [
+      {
+        nombre: 'Ordenador',
+        sprite: null,
+        posicion: { x: 7, y: 4 },
+        mensajes: ['Es tu ordenador personal. ¡Aquí puedes revisar tus hábitos pendientes!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'house_1', spawn: { x: 13, y: 4 } } },
+    isInterior: true
+  },
+  house_pokemon: {
+    nombre: 'Casa del Sr. Pokémon',
+    npcs: [
+      {
+        nombre: 'Sr. Pokémon',
+        sprite: 'char_ 02_a',
+        posicion: { x: 10, y: 5 },
+        direccion: 2,
+        mensajes: ['¡Oh! ¡Un joven entrenador!', 'Tengo algo muy especial para ti... ¡un Huevo de Hábito!', 'Cuídalo cumpliendo tus tareas diarias.']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map038', spawn: { x: 15, y: 5 } } },
+    isInterior: true
+  },
+  Map010: {
+    nombre: 'CIUDAD TRIGAL',
+    npcs: [
+      {
+        nombre: 'Ciudadano',
+        sprite: 'char_ 02_b',
+        posicion: { x: 20, y: 15 },
+        direccion: 2,
+        mensajes: ['¡Hola! Bienvenido a Ciudad Trigal (Goldenrod City).', '¡Es la metrópolis más bulliciosa de todo Johto!']
+      }
+    ],
+    buildings: [
+      { type: 'home', nombre: 'Centro Pokémon', x: 16, y: 27, label: { x: 16, y: 25 }, targetMapId: 'Map011', spawn: { x: 12, y: 20 } },
+      { type: 'gym', gymId: 'orden', nombre: 'Gimnasio Trigal', x: 26, y: 7, label: { x: 26, y: 5 }, targetMapId: 'Map012', spawn: { x: 10, y: 19 } }
+    ],
+    exits: {
+      down: { targetMap: 'Map008', spawn: { x: 8, y: 1 } }
+    },
+    isInterior: false
+  },
+  Map011: {
+    nombre: 'Centro Pokémon de Trigal',
+    npcs: [
+      {
+        nombre: 'Enfermera Joy',
+        sprite: 'char_ 11_a',
+        posicion: { x: 13, y: 11 },
+        direccion: 2,
+        mensajes: ['¡Hola! Bienvenido al Centro Pokémon de Ciudad Trigal.', '¿Quieres que curemos a tus Habitmon cansados?', '¡Cuídate mucho!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map010', spawn: { x: 16, y: 28 } } },
+    isInterior: true
+  },
+  Map012: {
+    nombre: 'Gimnasio Trigal',
+    npcs: [
+      {
+        nombre: 'Líder Blanca',
+        sprite: 'char_ 00_a',
+        posicion: { x: 11, y: 6 },
+        direccion: 2,
+        mensajes: ['¡Hola! Soy Blanca, la líder del Gimnasio Trigal.', 'Aquí ponemos a prueba tu orden y constancia.', '¿Estás preparado para luchar por tu medalla de hoy?']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map010', spawn: { x: 26, y: 8 } } },
+    isInterior: true
+  },
+  Map079: {
+    nombre: 'Centro Pokémon de Malva',
+    npcs: [
+      {
+        nombre: 'Enfermera Joy',
+        sprite: 'char_ 11_a',
+        posicion: { x: 9, y: 5 },
+        direccion: 2,
+        mensajes: ['¡Hola! Bienvenido al Centro Pokémon de Ciudad Malva.', 'Curamos a tus Habitmon cansados para que sigas superando tus hábitos con energía.', '¡Cuídate mucho!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map078', spawn: { x: 7, y: 12 } } },
+    isInterior: true
+  },
+  Map080: {
+    nombre: 'Tienda de Ciudad Malva',
+    npcs: [
+      {
+        nombre: 'Dependiente',
+        sprite: 'char_ 02_a',
+        posicion: { x: 7, y: 7 },
+        direccion: 2,
+        mensajes: ['¡Hola! Bienvenido a la Tienda de Ciudad Malva.', 'Aquí puedes adquirir pociones de enfoque y vitaminas de autodisciplina.', '¡Mantente firme en tus tareas diarias para brillar en combate!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map078', spawn: { x: 23, y: 12 } } },
+    isInterior: true
+  },
+  Map018: {
+    nombre: 'C.C. Trigal - 1F',
+    npcs: [
+      {
+        nombre: 'Recepcionista',
+        sprite: 'char_ 11_a',
+        posicion: { x: 13, y: 7 },
+        direccion: 2,
+        mensajes: ['¡Bienvenido al Centro Comercial de Ciudad Trigal!', 'En cada planta encontrarás diferentes tiendas y entrenadores de hábitos.']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map010', spawn: { x: 16, y: 28 } } },
     isInterior: true
   }
 };

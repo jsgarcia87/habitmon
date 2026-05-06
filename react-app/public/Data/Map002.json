@@ -445,7 +445,7 @@
           "through": false
         }
       ],
-      "name": "gym_vestirse",
+      "name": "Tileset swap explainer",
       "y": 10,
       "x": 8,
       "id": 6
@@ -1101,7 +1101,7 @@
           "through": false
         }
       ],
-      "name": "gym_estudio",
+      "name": "Next door 2",
       "y": 15,
       "x": 13,
       "id": 3
@@ -1297,7 +1297,7 @@
           "through": false
         }
       ],
-      "name": "gym_desayuno",
+      "name": "Turbo guy",
       "y": 13,
       "x": 8,
       "id": 15

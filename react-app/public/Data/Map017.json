@@ -1,24 +1,3128 @@
 {
-  "width": 20,
-  "height": 20,
-  "tileset_id": 1,
-  "autoplay_bgm": false,
   "bgm": {
-    "name": "",
     "volume": 100,
+    "name": "Game Corner",
     "pitch": 100
   },
+  "events": {
+    "5": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                2,
+                "A",
+                1
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "My name is Mr. GAME!"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "My heart pounds with excitement when people "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "enjoy my Coin game!"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "In fact, that's what I live for!\\nGo ahead and play it!"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Make my heart pound with excitement!"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "A",
+                0
+              ],
+              "indent": 1,
+              "code": 123
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Go ahead and play my Coin game!"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Make my heart pound with excitement!"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 22_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 6,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Voltorb Flip man",
+      "y": 7,
+      "x": 14,
+      "id": 5
+    },
+    "39": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                6,
+                -1,
+                4
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                5,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 18
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 1,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 18
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 210
+            },
+            {
+              "parameters": [
+                "Mr. GAME: Show me how you play and make my "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "heart pound with excitement!"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "pbVoltorbFlip"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Voltorb Flip",
+      "y": 7,
+      "x": 16,
+      "id": 39
+    },
+    "6": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "\\CNHere we exchange your coins for prizes."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "\\CNWhich prize would you like?\\ch[1,6,"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "SMOKE BALL (800),MIRACLE SEED (1000),"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "CHARCOAL (1000),MYSTIC WATER (1000),"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "YELLOW FLUTE (1600),NO THANKS]"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "item=[:SMOKEBALL,:MIRACLESEED,"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "      :CHARCOAL,:MYSTICWATER,"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "      :YELLOWFLUTE,0][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "price=[800,1000,1000,1000,1600,0"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "      ][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "if item && item!=0"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "  item=getID(PBItems,item)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "end"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(1,item)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(2,price)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(3,PBItems.getName(item))"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                3
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\CNSo, you want the \\v[3]?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 1,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "pbGet(2)>$PokemonGlobal.coins"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\CNSorry, you'll need more coins than that."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonBag.pbCanStore?(pbGet(1))"
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$PokemonGlobal.coins-=pbGet(2)"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbReceiveItem(pbGet(1))"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "\\CNYou have no room in your BAG."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Please come again!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Prize vendor left",
+      "y": 6,
+      "x": 23,
+      "id": 6
+    },
+    "1": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Door exit",
+                  "pitch": 100
+                }
+              ],
+              "indent": 0,
+              "code": 250
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                10,
+                16,
+                21,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 1
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 0,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 1
+                }
+              ],
+              "indent": 0,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 41,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 1,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Exit, size(2,1)",
+      "y": 18,
+      "x": 8,
+      "id": 1
+    },
+    "7": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "\\CNHere we exchange your coins for prizes."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "\\CNWhich prize would you like?\\ch[1,6,"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "ABRA (100),CLEFAIRY (500),"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "DRATINI (2800),SCYTHER (5500),"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "PORYGON (9999),NO THANKS]"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "item=[:ABRA,:CLEFAIRY,"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "      :DRATINI,:SCYTHER,"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "      :PORYGON,0][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "price=[180,500,2800,5500,9999,"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "       0][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "lv=[9,8,18,25,26,0][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "if item && item!=0"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "  item=getID(PBSpecies,item)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "end"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(1,item); pbSet(2,price)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(3,PBSpecies.getName(item))"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(4,lv)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                3
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\CNSo, you want \\v[3]?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 1,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "pbGet(2)>$PokemonGlobal.coins"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\CNSorry, you'll need more coins than that."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                12,
+                "pbAddPokemon(pbGet(1),pbGet(4))"
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$PokemonGlobal.coins-=pbGet(2)"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Please come again!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Prize vendor middle",
+      "y": 6,
+      "x": 25,
+      "id": 7
+    },
+    "40": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "I'm ready to duel with you."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "The two numbers are the min and max level of the "
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "opponent respectively. Each number can be between "
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "0 and 9 inclusive, and the max level must be higher "
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "than or equal to the min level."
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                "pbTriadDuel(\"Jack\",0,5)"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Triple Triad duel",
+      "y": 5,
+      "x": 17,
+      "id": 40
+    },
+    "2": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                12,
+                "$game_player.direction == 4 || $game_player.direction == 6"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbSlotMachine"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Slot Machines, size(2,7)",
+      "y": 15,
+      "x": 18,
+      "id": 2
+    },
+    "8": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "\\CNHere we exchange your coins for prizes."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "\\CNWhich prize would you like?\\ch[1,6,"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "TM13 - 4000 coins,TM23 - 3500 coins,"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "TM24 - 4000 coins,TM30 - 4500 coins,"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "TM35 - 4000 coins,NO THANKS]"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "item=[:TM13,:TM23,:TM24,"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "      :TM30,:TM35,0][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "price=[4000,3500,4000,4500,4000,"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "       0][pbGet(1)]"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "if item && item!=0"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "  item=getID(PBItems,item)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "end"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(1,item)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(2,price)"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbSet(3,PBItems.getName(item))"
+              ],
+              "indent": 0,
+              "code": 655
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                3
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\CNSo, you want the \\v[3]?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 1,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "pbGet(2)>$PokemonGlobal.coins"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\CNSorry, you'll need more coins than that."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonBag.pbCanStore?(pbGet(1))"
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$PokemonGlobal.coins-=pbGet(2)"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbReceiveItem(pbGet(1))"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "\\CNYou have no room in your BAG."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Please come again!"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Prize vendor right",
+      "y": 6,
+      "x": 27,
+      "id": 8
+    },
+    "41": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Here you have some Triad Cards!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbGiveTriadCard(:PIKACHU,1)"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbGiveTriadCard(:LARVITAR,1)"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbGiveTriadCard(:CHARIZARD,1)"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbGiveTriadCard(:CHESPIN,1)"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbGiveTriadCard(:QUILAVA,1)"
+              ],
+              "indent": 0,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 04_A",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Card giver",
+      "y": 5,
+      "x": 16,
+      "id": 41
+    },
+    "14": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "# 4 = Left"
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                "# 6 = Right"
+              ],
+              "indent": 0,
+              "code": 408
+            },
+            {
+              "parameters": [
+                12,
+                "$game_player.direction == 4 || $game_player.direction == 6"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbSlotMachine"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Slot Machines, size(2,7)",
+      "y": 15,
+      "x": 12,
+      "id": 14
+    },
+    "3": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Welcome!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "!$PokemonBag.pbHasItem?(:COINCASE)"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                0,
+                4
+              ],
+              "indent": 1,
+              "code": 207
+            },
+            {
+              "parameters": [
+                11
+              ],
+              "indent": 1,
+              "code": 106
+            },
+            {
+              "parameters": [
+                "Oh, you don't have a COIN CASE? Here."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "pbReceiveItem(:COINCASE)"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "You can exchange your coins for fabulous prizes "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "next post."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "You don't have any room for it. Come back when "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "you do."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "You can exchange your coins for fabulous prizes "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "next post."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 57_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Coin Case giver",
+      "y": 6,
+      "x": 8,
+      "id": 3
+    },
+    "9": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                12,
+                "$game_player.direction == 4 || $game_player.direction == 6"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbSlotMachine"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Slot Machines, size(2,7)",
+      "y": 15,
+      "x": 24,
+      "id": 9
+    },
+    "42": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Shop Start"
+              ],
+              "indent": 0,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Welcome to the Triad Card Shop."
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Choices"
+              ],
+              "indent": 0,
+              "code": 118
+            },
+            {
+              "parameters": [
+                [
+                  "Buy Cards",
+                  "Sell Cards",
+                  "Information",
+                  "Exit"
+                ],
+                4
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "Buy Cards"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbBuyTriads"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Anything else I can do for you?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Choices"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "Sell Cards"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbSellTriads"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Anything else I can do for you?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Choices"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                2,
+                "Information"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Here is where you can purchase new cards for "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Triple Triad duels."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "The selection grows as you catch and find new "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "POKÃ©MON, so check often."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "And, of course, stronger POKÃ©MON cards cost more "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "than weaker cards."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Shop Start"
+              ],
+              "indent": 1,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                3,
+                "Exit"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Please come again."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Triple Triad card shop",
+      "y": 6,
+      "x": 21,
+      "id": 42
+    },
+    "4": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "\\G\\CNWelcome to the GAME CORNER!"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "!$PokemonBag.pbHasItem?(:COINCASE)"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\G\\CNDo you need some game coins?\\nWould you "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "like to buy some?"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "\\G\\CNOh... But you don't have a COIN CASE."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Start menu"
+              ],
+              "indent": 1,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "\\G\\CNDo you need some game coins?\\nWould you "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "like to buy some?"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "50 coins [$1,000]",
+                  "500 coins [$10,000]",
+                  "EXIT"
+                ],
+                3
+              ],
+              "indent": 1,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "50 coins [$1,000]"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonGlobal.coins+50>=MAX_COINS"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\G\\CNWhoops!\\nYour COIN CASE is full."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                7,
+                999,
+                1
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\G\\CNYou can't afford the coins."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                0,
+                1000
+              ],
+              "indent": 4,
+              "code": 125
+            },
+            {
+              "parameters": [
+                "$PokemonGlobal.coins+=50"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "\\G\\CNThank you\\nHere are your coins!"
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "500 coins [$10,000]"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonGlobal.coins+500>=MAX_COINS"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\G\\CNWhoops!\\nYour COIN CASE is full."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                7,
+                9999,
+                1
+              ],
+              "indent": 3,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "\\G\\CNYou can't afford the coins."
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 411
+            },
+            {
+              "parameters": [
+                1,
+                0,
+                10000
+              ],
+              "indent": 4,
+              "code": 125
+            },
+            {
+              "parameters": [
+                "$PokemonGlobal.coins+=500"
+              ],
+              "indent": 4,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "\\G\\CNThank you\\nHere are your coins!"
+              ],
+              "indent": 4,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 4,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                2,
+                "EXIT"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "\\G\\CNNo? Ok, no problem.\\nPlease come play "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "sometime!"
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Start menu"
+              ],
+              "indent": 0,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Coin seller",
+      "y": 6,
+      "x": 10,
+      "id": 4
+    },
+    "43": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Do you want to check your cards?"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbTriadList"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Please come again."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Please come again."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 49_C",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 4,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Triple Triad card list",
+      "y": 5,
+      "x": 21,
+      "id": 43
+    }
+  },
+  "tileset_id": 27,
+  "bgs": {
+    "volume": 80,
+    "name": "",
+    "pitch": 100
+  },
+  "autoplay_bgm": true,
   "data": {
     "@data": [
       3,
       0,
       0,
       0,
-      20,
+      32,
       0,
       0,
       0,
-      20,
+      22,
       0,
       0,
       0,
@@ -26,8 +3130,3032 @@
       0,
       0,
       0,
-      176,
-      4,
+      64,
+      8,
+      0,
+      0,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      159,
+      1,
+      159,
+      1,
+      133,
+      1,
+      133,
+      1,
+      159,
+      1,
+      159,
+      1,
+      133,
+      1,
+      135,
+      1,
+      133,
+      1,
+      133,
+      1,
+      134,
+      1,
+      133,
+      1,
+      133,
+      1,
+      133,
+      1,
+      132,
+      1,
+      133,
+      1,
+      174,
+      1,
+      175,
+      1,
+      174,
+      1,
+      175,
+      1,
+      174,
+      1,
+      175,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      167,
+      1,
+      167,
+      1,
+      141,
+      1,
+      141,
+      1,
+      167,
+      1,
+      167,
+      1,
+      141,
+      1,
+      143,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      140,
+      1,
+      141,
+      1,
+      182,
+      1,
+      183,
+      1,
+      182,
+      1,
+      183,
+      1,
+      182,
+      1,
+      183,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      143,
+      1,
+      141,
+      1,
+      153,
+      1,
+      154,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      140,
+      1,
+      141,
+      1,
+      142,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      151,
+      1,
+      141,
+      1,
+      161,
+      1,
+      162,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      148,
+      1,
+      149,
+      1,
+      150,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      169,
+      1,
+      170,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      172,
+      1,
+      173,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      172,
+      1,
+      173,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      172,
+      1,
+      173,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      155,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      163,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      155,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      163,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      155,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      180,
+      1,
+      181,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      163,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      188,
+      1,
+      189,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      188,
+      1,
+      189,
+      1,
+      191,
+      1,
+      141,
+      1,
+      141,
+      1,
+      191,
+      1,
+      188,
+      1,
+      189,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      141,
+      1,
+      141,
+      1,
+      171,
+      1,
+      171,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      141,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      184,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
       0,
       0,
       0,
@@ -1232,13 +7360,11 @@
       0
     ]
   },
-  "events": {},
-  "encounter_list": [],
-  "encounter_step": 30,
   "autoplay_bgs": false,
-  "bgs": {
-    "name": "",
-    "volume": 100,
-    "pitch": 100
-  }
+  "height": 22,
+  "encounter_step": 30,
+  "width": 32,
+  "encounter_list": [
+
+  ]
 }

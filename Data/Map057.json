@@ -1,1 +1,9390 @@
-"#<RPG::Map:0x0000000bfabef888>"
+{
+  "bgm": {
+    "volume": 100,
+    "name": "Battle Frontier Reception",
+    "pitch": 100
+  },
+  "events": {
+    "5": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Check results for which challenge?\\ch[1,5,"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Pika Cup,Fancy Cup,PokÃ© Cup,Little Cup,Cancel]"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"pikacupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"pikacupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER PIKA CUP Single Battle results:"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"fancycupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"fancycupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER FANCY CUP Single Battle "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "results:"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"pokecupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"pokecupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER POKÃ© CUP Single Battle "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "results:"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                3,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"littlecupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"littlecupsingle\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER LITTLE CUP Single Battle "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "results:"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "invisible",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Singles results",
+      "y": 10,
+      "x": 8,
+      "id": 5
+    },
+    "6": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Check results for which challenge?\\ch[1,5,"
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Pika Cup,Fancy Cup,PokÃ© Cup,Little Cup,Cancel]"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"pikacupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"pikacupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER PIKA CUP Double Battle results:"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"fancycupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"fancycupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER FANCY CUP Double Battle "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "results:"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"pokecupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"pokecupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER POKÃ© CUP Double Battle "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "results:"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                3,
+                0
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "$game_variables[1]="
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getPreviousWins(\"littlecupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "$game_variables[2]="
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.getMaxWins(\"littlecupdouble\")"
+              ],
+              "indent": 1,
+              "code": 655
+            },
+            {
+              "parameters": [
+                "\\PN's BATTLE TOWER LITTLE CUP Double Battle "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "results:"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Last win streak: \\v[1]\\nRecord win streak: \\v[2]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "invisible",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Doubles results",
+      "y": 10,
+      "x": 18,
+      "id": 6
+    },
+    "1": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Door exit",
+                  "pitch": 100
+                }
+              ],
+              "indent": 0,
+              "code": 250
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                55,
+                13,
+                4,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 1
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 0,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 1
+                }
+              ],
+              "indent": 0,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 41,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 1,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Exit1",
+      "y": 14,
+      "x": 13,
+      "id": 1
+    },
+    "7": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Welcome to the BATTLE TOWER's STADIUM CUP "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "DIVISION."
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Would you like to participate in a single "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "battle?"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Which STADIUM CUP would you like to enter?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "\\ch[1,5,PIKA CUP,FANCY CUP,POKÃ© CUP,LITTLE CUP,"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "CANCEL]"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"pikacupsingle\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbPikaCupRules(false))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different POKÃ©MON Lv. 15 to 20 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Certain exotic species, as well as EGGS, are "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "ineligible."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"fancycupsingle\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbFancyCupRules(false))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different POKÃ©MON Lv. 25 to 30 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They also must be baby POKÃ©MON, and can't be"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "too tall or too heavy."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "EGGS are ineligible."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                2,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"pokecupsingle\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbPokeCupRules(false))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different POKÃ©MON Lv. 50 to 55 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Certain exotic species, as well as EGGS, are "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "ineligible."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                3,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"littlecupsingle\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbLittleCupRules(false))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different baby POKÃ©MON at Lv. 5 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They also must be baby POKÃ©MON that are"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "capable of evolving."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "EGGS are ineligible."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                4,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 2,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Please choose the POKÃ©MON that will enter."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "!pbEntryScreen"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 2,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                12,
+                "pbSaveScreen"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Please come this way."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.start"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                0,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+                        "",
+                        0,
+                        2,
+                        0
+                      ],
+                      "code": 41
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 2,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    "",
+                    0,
+                    2,
+                    0
+                  ],
+                  "code": 41
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 2,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 210
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Entering Door",
+                  "pitch": 100
+                }
+              ],
+              "indent": 2,
+              "code": 250
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 2,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 2,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                56,
+                9,
+                11,
+                8,
+                1
+              ],
+              "indent": 2,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 2,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 2,
+              "code": 106
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 2,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 1,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Come back another time."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbCancel"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 57_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "If Won"
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                12,
+                "pbBattleChallenge.decision==1"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Congratulations for winning."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Please take this prize."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "!Kernel.pbReceiveItem(PBItems::RARECANDY)"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "You have no room for it.  At least you won, "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "though."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonTemp.lastbattle!=nil"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Would you like to record your last battle?"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 2,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbRecordLastBattle"
+              ],
+              "indent": 3,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "\\se[expfull]The battle was recorded."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Your results will be recorded.\\wtnp[15]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbEnd"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Come back another time."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "If Lost or Forfeited"
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                12,
+                "pbBattleChallenge.decision==2"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Thanks for playing."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonTemp.lastbattle!=nil"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Would you like to record your last battle?"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 2,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbRecordLastBattle"
+              ],
+              "indent": 3,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "\\se[expfull]The battle was recorded."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Your results will be recorded.\\wtnp[15]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbEnd"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Come back another time."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                12,
+                "pbBattleChallenge.pbResting?"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "We've been waiting for you.  Please come this "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "way."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbGoOn"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                0,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+                        "",
+                        0,
+                        2,
+                        0
+                      ],
+                      "code": 41
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 1,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    "",
+                    0,
+                    2,
+                    0
+                  ],
+                  "code": 41
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 1,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 210
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Entering Door",
+                  "pitch": 100
+                }
+              ],
+              "indent": 1,
+              "code": 250
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 1,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 1,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                56,
+                9,
+                11,
+                8,
+                1
+              ],
+              "indent": 1,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 1,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 1,
+              "code": 106
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Excuse me, but you didn't save before finishing "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "your challenge last time."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Sorry, but your challenge has been canceled."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbEnd"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 28,
+            "switch1_valid": true,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 3,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 57_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Single battles NPC",
+      "y": 10,
+      "x": 9,
+      "id": 7
+    },
+    "2": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Door exit",
+                  "pitch": 100
+                }
+              ],
+              "indent": 0,
+              "code": 250
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                55,
+                14,
+                4,
+                2,
+                0
+              ],
+              "indent": 0,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 0,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 0,
+              "code": 106
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 1
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 0,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 1
+                }
+              ],
+              "indent": 0,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 41,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 1,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Exit2",
+      "y": 14,
+      "x": 14,
+      "id": 2
+    },
+    "8": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "Welcome to the BATTLE TOWER's STADIUM CUP "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "DIVISION."
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Would you like to participate in a double "
+              ],
+              "indent": 0,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "battle?"
+              ],
+              "indent": 0,
+              "code": 401
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 0,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Which STADIUM CUP would you like to enter?"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "\\ch[1,5,PIKA CUP,FANCY CUP,POKÃ© CUP,LITTLE CUP,"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "CANCEL]"
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"pikacupdouble\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbPikaCupRules(true))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different POKÃ©MON Lv. 15 to 20 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Certain exotic species, as well as EGGS, are "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "ineligible."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"fancycupdouble\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbFancyCupRules(true))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different POKÃ©MON Lv. 25 to 30 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They also must be baby POKÃ©MON, and can't be"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "too tall or too heavy."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "EGGS are ineligible."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                2,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"pokecupdouble\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbPokeCupRules(true))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different POKÃ©MON Lv. 50 to 55 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Certain exotic species, as well as EGGS, are "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "ineligible."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                3,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.set(\"littlecupdouble\",7,"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "pbLittleCupRules(true))"
+              ],
+              "indent": 2,
+              "code": 655
+            },
+            {
+              "parameters": [
+                12,
+                "!pbHasEligible?(3,100)"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Sorry, you can't participate.  You need three "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different baby POKÃ©MON at Lv. 5 to enter."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They must be of a different species and hold "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "different items."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "They also must be baby POKÃ©MON that are"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "capable of evolving."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "EGGS are ineligible."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                4,
+                0
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 2,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Please choose the POKÃ©MON that will enter."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "!pbEntryScreen"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 2,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                12,
+                "pbSaveScreen"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Please come this way."
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.start"
+              ],
+              "indent": 2,
+              "code": 355
+            },
+            {
+              "parameters": [
+                0,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+                        "",
+                        0,
+                        2,
+                        0
+                      ],
+                      "code": 41
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 2,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    "",
+                    0,
+                    2,
+                    0
+                  ],
+                  "code": 41
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 2,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 2,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 210
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Entering Door",
+                  "pitch": 100
+                }
+              ],
+              "indent": 2,
+              "code": 250
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 2,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 2,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                56,
+                9,
+                11,
+                8,
+                1
+              ],
+              "indent": 2,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 2,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 2,
+              "code": 106
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 2,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 0,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "End"
+              ],
+              "indent": 1,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Come back another time."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbCancel"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 57_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        },
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                "If Won"
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                12,
+                "pbBattleChallenge.decision==1"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Congratulations for winning."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Please take this prize."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "!Kernel.pbReceiveItem(PBItems::RARECANDY)"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "You have no room for it.  At least you won, "
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "though."
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonTemp.lastbattle!=nil"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Would you like to record your last battle?"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 2,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbRecordLastBattle"
+              ],
+              "indent": 3,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "\\se[expfull]The battle was recorded."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Your results will be recorded.\\wtnp[15]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbEnd"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Come back another time."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "If Lost or Forfeited"
+              ],
+              "indent": 0,
+              "code": 108
+            },
+            {
+              "parameters": [
+                12,
+                "pbBattleChallenge.decision==2"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Thanks for playing."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonTemp.lastbattle!=nil"
+              ],
+              "indent": 1,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "Would you like to record your last battle?"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                [
+                  "YES",
+                  "NO"
+                ],
+                2
+              ],
+              "indent": 2,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "YES"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "pbRecordLastBattle"
+              ],
+              "indent": 3,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "\\se[expfull]The battle was recorded."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "NO"
+              ],
+              "indent": 2,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 412
+            },
+            {
+              "parameters": [
+                "Your results will be recorded.\\wtnp[15]"
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbEnd"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                "Come back another time."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 115
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+                12,
+                "pbBattleChallenge.pbResting?"
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "We've been waiting for you.  Please come this "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "way."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbGoOn"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+                0,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+                        "",
+                        0,
+                        2,
+                        0
+                      ],
+                      "code": 41
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 1,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    "",
+                    0,
+                    2,
+                    0
+                  ],
+                  "code": 41
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                -1,
+                {
+                  "list": [
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 37
+                    },
+                    {
+                      "parameters": [
+                        4
+                      ],
+                      "code": 15
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 19
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 4
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 38
+                    },
+                    {
+                      "parameters": [
+
+                      ],
+                      "code": 0
+                    }
+                  ],
+                  "skippable": false,
+                  "repeat": false
+                }
+              ],
+              "indent": 1,
+              "code": 209
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 37
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+                    4
+                  ],
+                  "code": 15
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 19
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 4
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+                {
+                  "parameters": [
+
+                  ],
+                  "code": 38
+                }
+              ],
+              "indent": 1,
+              "code": 509
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 210
+            },
+            {
+              "parameters": [
+                {
+                  "volume": 100,
+                  "name": "Entering Door",
+                  "pitch": 100
+                }
+              ],
+              "indent": 1,
+              "code": 250
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 1,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 1,
+              "code": 106
+            },
+            {
+              "parameters": [
+                0,
+                56,
+                9,
+                11,
+                8,
+                1
+              ],
+              "indent": 1,
+              "code": 201
+            },
+            {
+              "parameters": [
+                {
+                },
+                4
+              ],
+              "indent": 1,
+              "code": 223
+            },
+            {
+              "parameters": [
+                4
+              ],
+              "indent": 1,
+              "code": 106
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "Excuse me, but you didn't save before finishing "
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "your challenge last time."
+              ],
+              "indent": 1,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Sorry, but your challenge has been canceled."
+              ],
+              "indent": 1,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "pbBattleChallenge.pbEnd"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 28,
+            "switch1_valid": true,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 3,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "char_ 57_B",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Double battles NPC",
+      "y": 10,
+      "x": 19,
+      "id": 8
+    },
+    "3": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                6,
+                -1,
+                8
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbPokeCenterPC"
+              ],
+              "indent": 1,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "PC",
+      "y": 10,
+      "x": 11,
+      "id": 3
+    },
+    "4": {
+      "pages": [
+        {
+          "move_type": 0,
+          "list": [
+            {
+              "parameters": [
+                6,
+                -1,
+                8
+              ],
+              "indent": 0,
+              "code": 111
+            },
+            {
+              "parameters": [
+                [
+                  "Stadium Cup rules",
+                  "Play recorded battle",
+                  "Cancel"
+                ],
+                3
+              ],
+              "indent": 1,
+              "code": 102
+            },
+            {
+              "parameters": [
+                0,
+                "Stadium Cup rules"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 2,
+              "code": 118
+            },
+            {
+              "parameters": [
+                "Which heading would you like to read?\\ch[1,-1,"
+              ],
+              "indent": 2,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Stadium Cups,Pika Cup,Fancy Cup, "
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "PokÃ© Cup,Little Cup,Battle Rules,Exit]"
+              ],
+              "indent": 2,
+              "code": 401
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                0,
+                0
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "This facility lets you conduct battles similar to Stadium "
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "championships."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "This facility holds battles for Pika Cup, Fancy Cup,"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "PokÃ© Cup, and Little Cup. Each cup has its own rules "
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "and restrictions."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "The Pika Cup is open to PokÃ©mon level 15 to 20."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Choose three PokÃ©mon to enter.\\n"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "However, the total level of all three can't be higher "
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "than 50."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Also, certain exotic kinds of PokÃ©mon may not enter."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                2,
+                0
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "The Fancy Cup is open to baby PokÃ©mon level 25 to 30."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Choose three PokÃ©mon to enter.\\n"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "However, the total level of all three can't be higher "
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "than 80."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Also, very huge or very tall PokÃ©mon may not enter"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "the Fancy Cup."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "The height limit is 2 meters, and the weight limit is 20"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "kilograms for the Fancy Cup."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                3,
+                0
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "The PokÃ© Cup is open to PokÃ©mon level 50 to 55."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Choose three PokÃ©mon to enter.\\n"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "However, the total level of all three can't be higher"
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "than 155."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Also, certain exotic kinds of PokÃ©mon may not enter."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                4,
+                0
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "The Little Cup is open to baby PokÃ©mon at level 5"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "that are capable of evolving."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Choose three PokÃ©mon to enter a single battle,"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "or four for a double battle."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Also, in the Little Cup, moves that deal a set"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "amount of damage, like Dragon Rage and SonicBoom,"
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "will always miss."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+                1,
+                1,
+                0,
+                5,
+                0
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "In Stadium Cups, there are several rules to keep in mind."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "First, two PokÃ©mon in the same team can't be both"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "asleep or both frozen at the same time."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Also, you can't choose two of the same kind of"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "PokÃ©mon, or two PokÃ©mon holding the same item."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Finally, if a PokÃ©mon uses Selfdestruct or Explosion to"
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+                "make all remaining PokÃ©mon faint at the same time, that"
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "PokÃ©mon's trainer loses."
+              ],
+              "indent": 3,
+              "code": 401
+            },
+            {
+              "parameters": [
+                "Top"
+              ],
+              "indent": 3,
+              "code": 119
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                1,
+                "Play recorded battle"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+                12,
+                "$PokemonGlobal.lastbattle!=nil"
+              ],
+              "indent": 2,
+              "code": 111
+            },
+            {
+              "parameters": [
+                "pbPlayLastBattle"
+              ],
+              "indent": 3,
+              "code": 355
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 411
+            },
+            {
+              "parameters": [
+                "There is no battle recorded."
+              ],
+              "indent": 3,
+              "code": 101
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 3,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+                2,
+                "Cancel"
+              ],
+              "indent": 1,
+              "code": 402
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 2,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 404
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 1,
+              "code": 0
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 412
+            },
+            {
+              "parameters": [
+
+              ],
+              "indent": 0,
+              "code": 0
+            }
+          ],
+          "condition": {
+            "switch2_valid": false,
+            "self_switch_ch": "A",
+            "switch1_id": 1,
+            "switch1_valid": false,
+            "variable_value": 0,
+            "self_switch_valid": false,
+            "variable_id": 1,
+            "variable_valid": false,
+            "switch2_id": 1
+          },
+          "direction_fix": false,
+          "move_route": {
+            "list": [
+              {
+                "parameters": [
+
+                ],
+                "code": 0
+              }
+            ],
+            "skippable": false,
+            "repeat": true
+          },
+          "trigger": 0,
+          "step_anime": false,
+          "move_frequency": 3,
+          "graphic": {
+            "opacity": 255,
+            "character_name": "invisible",
+            "pattern": 0,
+            "tile_id": 0,
+            "direction": 2,
+            "blend_type": 0,
+            "character_hue": 0
+          },
+          "always_on_top": false,
+          "walk_anime": true,
+          "move_speed": 3,
+          "through": false
+        }
+      ],
+      "name": "Battle recorder",
+      "y": 10,
+      "x": 21,
+      "id": 4
+    }
+  },
+  "tileset_id": 51,
+  "bgs": {
+    "volume": 80,
+    "name": "",
+    "pitch": 100
+  },
+  "autoplay_bgm": true,
+  "data": {
+    "@data": [
+      3,
+      0,
+      0,
+      0,
+      28,
+      0,
+      0,
+      0,
+      18,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      232,
+      5,
+      0,
+      0,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      130,
+      1,
+      131,
+      1,
+      131,
+      1,
+      132,
+      1,
+      131,
+      1,
+      130,
+      1,
+      131,
+      1,
+      131,
+      1,
+      131,
+      1,
+      131,
+      1,
+      130,
+      1,
+      131,
+      1,
+      131,
+      1,
+      132,
+      1,
+      131,
+      1,
+      130,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      138,
+      1,
+      139,
+      1,
+      140,
+      1,
+      140,
+      1,
+      140,
+      1,
+      138,
+      1,
+      140,
+      1,
+      140,
+      1,
+      140,
+      1,
+      140,
+      1,
+      138,
+      1,
+      139,
+      1,
+      140,
+      1,
+      140,
+      1,
+      140,
+      1,
+      138,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      146,
+      1,
+      147,
+      1,
+      144,
+      1,
+      145,
+      1,
+      149,
+      1,
+      146,
+      1,
+      149,
+      1,
+      144,
+      1,
+      145,
+      1,
+      149,
+      1,
+      146,
+      1,
+      147,
+      1,
+      144,
+      1,
+      145,
+      1,
+      149,
+      1,
+      146,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      146,
+      1,
+      147,
+      1,
+      152,
+      1,
+      153,
+      1,
+      149,
+      1,
+      138,
+      1,
+      149,
+      1,
+      152,
+      1,
+      153,
+      1,
+      149,
+      1,
+      146,
+      1,
+      147,
+      1,
+      152,
+      1,
+      153,
+      1,
+      149,
+      1,
+      138,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      146,
+      1,
+      147,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      138,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      146,
+      1,
+      147,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      138,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      146,
+      1,
+      147,
+      1,
+      148,
+      1,
+      149,
+      1,
+      149,
+      1,
+      151,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      146,
+      1,
+      147,
+      1,
+      148,
+      1,
+      149,
+      1,
+      149,
+      1,
+      148,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      154,
+      1,
+      155,
+      1,
+      156,
+      1,
+      149,
+      1,
+      158,
+      1,
+      159,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      154,
+      1,
+      155,
+      1,
+      156,
+      1,
+      149,
+      1,
+      158,
+      1,
+      156,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      140,
+      1,
+      140,
+      1,
+      140,
+      1,
+      149,
+      1,
+      140,
+      1,
+      140,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      140,
+      1,
+      140,
+      1,
+      140,
+      1,
+      149,
+      1,
+      140,
+      1,
+      140,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      135,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      134,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      143,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      157,
+      1,
+      157,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      149,
+      1,
+      142,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      198,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "autoplay_bgs": false,
+  "height": 18,
+  "encounter_step": 30,
+  "width": 28,
+  "encounter_list": [
+
+  ]
+}

@@ -65,6 +65,12 @@ export const TILE_PROPERTIES = {
     [8]: { walkable: false }, [16]: { walkable: false }, // Estantería
     [17]: { walkable: false }, [18]: { walkable: false }  // Patas/Mesa
   },
+  house_pokemon: { // Casa del Sr. Pokémon
+    [19]: { walkable: true },
+    [20]: { walkable: true, type: 'exit' },
+    [0]: { walkable: false }, [8]: { walkable: false }, [13]: { walkable: false }, [14]: { walkable: false },
+    [22]: { walkable: false }, [26]: { walkable: false }, [32]: { walkable: false }, [33]: { walkable: false }
+  },
   ...GYM_TILE_PROPERTIES
 };
 
@@ -151,11 +157,18 @@ export const INTERIOR_CONFIGS = {
     spawn: { x: 10, y: 4 }, 
     tiles: { floor: 19, stair: 15 }
   },
+  'house_pokemon': {
+    tileset: `${BASE}Graphics/tilesets/gsc house 1.png`,
+    nombre: 'CASA SR. POKÉMON',
+    spawn: { x: 9, y: 9 },
+    tiles: { floor: 19, exit: 20 }
+  },
   ...GYM_CONFIGS
 };
 
 export const INTERIOR_MAPS = {
   house_1: generateHouse1(),
   house_2: generateHouse2(),
+  house_pokemon: generateHouse1(),
   ...GYM_MAPS
 };
