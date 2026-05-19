@@ -4,10 +4,19 @@ import { useGame } from '../context/GameContext';
 const AgendaScreen = ({ onNavigate }) => {
   const { habitosHoy, darkMode } = useGame();
 
-  // Group habits by Gym
-  const habitsByGym = habitosHoy.reduce((acc, h) => {
-    if (!acc[h.gym_id]) acc[h.gym_id] = [];
-    acc[h.gym_id].push(h);
+  const TIMES_ORDER = ['morning', 'midday', 'day', 'night'];
+  const TIME_NAMES = {
+    morning: { label: '☀️ MAÑANA', color: 'var(--retro-blue)' },
+    midday: { label: '🕛 MEDIODÍA', color: 'var(--retro-gold)' },
+    day: { label: '⛅ TARDE/DÍA', color: 'var(--retro-green)' },
+    night: { label: '🌙 NOCHE', color: 'var(--retro-purple)' }
+  };
+
+  // Group habits by time of day (tiempo)
+  const habitsByTime = habitosHoy.reduce((acc, h) => {
+    const t = h.tiempo || 'day';
+    if (!acc[t]) acc[t] = [];
+    acc[t].push(h);
     return acc;
   }, {});
 
@@ -61,42 +70,55 @@ const AgendaScreen = ({ onNavigate }) => {
         flexDirection: 'column',
         gap: '16px'
       }}>
-        {Object.keys(habitsByGym).length === 0 ? (
+        {totalHabits === 0 ? (
           <div style={{ textAlign: 'center', color: '#888', fontSize: 8, marginTop: '20px' }}>
             No hay hábitos configurados para hoy.
           </div>
         ) : (
-          Object.keys(habitsByGym).map(gymId => (
-            <div key={gymId} className="premium-card" style={{ padding: '12px', background: darkMode ? '#222' : '#fff' }}>
-              <h3 style={{ fontSize: 8, color: 'var(--retro-blue)', margin: '0 0 10px 0', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>
-                {gymNames[gymId] || gymId.toUpperCase()}
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {habitsByGym[gymId].map(h => (
-                  <div key={h.habito_id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ 
-                      width: '16px', height: '16px', 
-                      borderRadius: '50%', 
-                      border: '2px solid',
-                      borderColor: h.completado ? 'var(--retro-green)' : '#ccc',
-                      background: h.completado ? 'var(--retro-green)' : 'transparent',
-                      display: 'flex', justifyContent: 'center', alignItems: 'center'
-                    }}>
-                      {h.completado && <span style={{ color: '#fff', fontSize: '10px' }}>✓</span>}
+          TIMES_ORDER.map(timeKey => {
+            const habits = habitsByTime[timeKey] || [];
+            if (habits.length === 0) return null;
+            const timeInfo = TIME_NAMES[timeKey];
+
+            return (
+              <div key={timeKey} className="premium-card" style={{ padding: '12px', background: darkMode ? '#222' : '#fff' }}>
+                <h3 style={{ fontSize: 8, color: timeInfo.color, margin: '0 0 10px 0', borderBottom: '1px solid #eee', paddingBottom: '4px', fontFamily: '"Press Start 2P"' }}>
+                  {timeInfo.label}
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {habits.map(h => (
+                    <div key={h.habito_id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ 
+                        width: '14px', height: '14px', 
+                        borderRadius: '50%', 
+                        border: '2px solid',
+                        borderColor: h.completado ? 'var(--retro-green)' : '#ccc',
+                        background: h.completado ? 'var(--retro-green)' : 'transparent',
+                        display: 'flex', justifyContent: 'center', alignItems: 'center',
+                        flexShrink: 0
+                      }}>
+                        {h.completado && <span style={{ color: '#fff', fontSize: '8px', fontWeight: 'bold' }}>✓</span>}
+                      </div>
+                      <span style={{ fontSize: '10px', flexShrink: 0 }}>{h.icono || '⚔️'}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                        <span style={{ 
+                          fontSize: '8px', 
+                          color: h.completado ? '#888' : 'var(--text-color)',
+                          textDecoration: h.completado ? 'line-through' : 'none',
+                          lineHeight: '1.4'
+                        }}>
+                          {h.nombre}
+                        </span>
+                        <span style={{ fontSize: '5px', color: '#999' }}>
+                          {gymNames[h.gym_id] || h.gym_id.toUpperCase()}
+                        </span>
+                      </div>
                     </div>
-                    <span style={{ fontSize: '12px' }}>{h.icono || '⚔️'}</span>
-                    <span style={{ 
-                      fontSize: '8px', 
-                      color: h.completado ? '#888' : 'var(--text-color)',
-                      textDecoration: h.completado ? 'line-through' : 'none'
-                    }}>
-                      {h.nombre}
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

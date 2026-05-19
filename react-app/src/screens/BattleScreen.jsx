@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useGame } from '../context/GameContext';
 import HPBar from '../components/HPBar';
 import { getAssetPath } from '../api/assets';
-import { safeDrawImage } from '../utils/gfxUtils';
+import { safeDrawImage, drawTintedImage } from '../utils/gfxUtils';
 import { MOVE_DATA, POKEMON_MOVES } from '../data/moveData';
 import { createBattlePokemon, getPokemonByGym } from '../data/pokemonData';
 import { determineTurnOrder, processMove, processEndTurnEffects } from '../utils/battleEngine';
@@ -37,7 +37,7 @@ const BATTLE_PHASES = {
 };
 
 const BattleScreen = ({ navigate, battleData, aPressed }) => {
-  const { user, habitosHoy, completarHabito, starter, ganarBatalla, completarGimnasio } = useGame();
+  const { user, usarObjeto, capturarPokemon, habitosHoy, completarHabito, starter, ganarBatalla, completarGimnasio } = useGame();
   
   const isWild = battleData?.tipo === 'wild' || battleData?.isWild || battleData?.type === 'encounter';
   const gymId = battleData?.gymId;
@@ -70,18 +70,30 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const activeAnimsRef = useRef([]);
   const playerOffsetRef = useRef({ x: 0, y: 0 });
   const enemyOffsetRef = useRef({ x: 0, y: 0 });
+  const screenOffsetRef = useRef({ x: 0, y: 0 });
   const isFlashingRef = useRef(false);
 
   const [displayXp, setDisplayXp] = useState(0);
   const [displayMonedas, setDisplayMonedas] = useState(0);
   const [showContinueHint, setShowContinueHint] = useState(false);
-  
+
+  // Typewriter system
+  const [displayedMsg, setDisplayedMsg] = useState('');
+  const [isMsgTyping, setIsMsgTyping] = useState(false);
+  const [waitingForA, setWaitingForA] = useState(false);
+  const advanceResolveRef = useRef(null);
+  const typewriterTimerRef = useRef(null);
+  const isMsgTypingRef = useRef(false);
+  const waitingForARef = useRef(false);
+  const currentMsgRef = useRef('');
+  const enemyPkmnRef = useRef(null);
+
   const battleCanvasRef = useRef(null);
   const trainerImgRef = useRef(null);
   const enemyImgRef = useRef(null);
   const bgImgRef = useRef(null);
   const playerPkImgRef = useRef(null);
-  
+
   const introRef = useRef({
     state: INTRO_STATES.FADE_IN,
     timer: 0, fadeAlpha: 1, trainerX: -80, ballVisible: false, ballX: 0, ballY: 0,
@@ -90,6 +102,87 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   });
 
   const initializedRef = useRef(false);
+
+  // Sync enemyPkmnRef so async callbacks always read the latest hp
+  useEffect(() => { enemyPkmnRef.current = enemyPkmn; }, [enemyPkmn]);
+
+  // Typewriter: whenever `message` changes, start the animation
+  useEffect(() => {
+    if (typewriterTimerRef.current) { clearTimeout(typewriterTimerRef.current); typewriterTimerRef.current = null; }
+    if (!message) {
+      setDisplayedMsg('');
+      isMsgTypingRef.current = false;
+      waitingForARef.current = false;
+      setIsMsgTyping(false);
+      setWaitingForA(false);
+      return;
+    }
+    currentMsgRef.current = message;
+    isMsgTypingRef.current = true;
+    waitingForARef.current = false;
+    setDisplayedMsg('');
+    setIsMsgTyping(true);
+    setWaitingForA(false);
+    let i = 0;
+    const tick = () => {
+      i++;
+      setDisplayedMsg(message.slice(0, i));
+      if (i < message.length) {
+        typewriterTimerRef.current = setTimeout(tick, 28);
+      } else {
+        typewriterTimerRef.current = null;
+        isMsgTypingRef.current = false;
+        waitingForARef.current = true;
+        setIsMsgTyping(false);
+        setWaitingForA(true);
+      }
+    };
+    typewriterTimerRef.current = setTimeout(tick, 28);
+    return () => { if (typewriterTimerRef.current) clearTimeout(typewriterTimerRef.current); };
+  }, [message]);
+
+  // aPressed advances the message (skip typing or resolve)
+  useEffect(() => {
+    if (!aPressed) return;
+    if (isMsgTypingRef.current) {
+      if (typewriterTimerRef.current) { clearTimeout(typewriterTimerRef.current); typewriterTimerRef.current = null; }
+      setDisplayedMsg(currentMsgRef.current);
+      isMsgTypingRef.current = false;
+      waitingForARef.current = true;
+      setIsMsgTyping(false);
+      setWaitingForA(true);
+    } else if (waitingForARef.current && advanceResolveRef.current) {
+      const resolve = advanceResolveRef.current;
+      advanceResolveRef.current = null;
+      waitingForARef.current = false;
+      setWaitingForA(false);
+      resolve();
+    }
+  }, [aPressed]);
+
+  // showMessage: typewriter + wait for A press before resolving
+  const showMessage = (text) => new Promise((resolve) => {
+    advanceResolveRef.current = resolve;
+    setMessage(text);
+  });
+
+  // handleAdvance: called on tap of the message box
+  const handleAdvance = () => {
+    if (isMsgTypingRef.current) {
+      if (typewriterTimerRef.current) { clearTimeout(typewriterTimerRef.current); typewriterTimerRef.current = null; }
+      setDisplayedMsg(currentMsgRef.current);
+      isMsgTypingRef.current = false;
+      waitingForARef.current = true;
+      setIsMsgTyping(false);
+      setWaitingForA(true);
+    } else if (waitingForARef.current && advanceResolveRef.current) {
+      const resolve = advanceResolveRef.current;
+      advanceResolveRef.current = null;
+      waitingForARef.current = false;
+      setWaitingForA(false);
+      resolve();
+    }
+  };
 
   useEffect(() => {
     if (initializedRef.current) return;
@@ -152,8 +245,13 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         activeAnimsRef.current = nextAnims;
         playerOffsetRef.current = offsets.player;
         enemyOffsetRef.current = offsets.enemy;
+        screenOffsetRef.current = offsets.screen || { x: 0, y: 0 };
+        
+        ctx.save();
+        ctx.translate(screenOffsetRef.current.x, screenOffsetRef.current.y);
         drawIntro(ctx, 300, 200);
         drawBattleAnimations(ctx, activeAnimsRef.current, 300, 200);
+        ctx.restore();
       }
       frameId = requestAnimationFrame(loop);
     };
@@ -170,12 +268,17 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         intro.fadeAlpha = Math.max(0, 1 - intro.timer / 400);
         if(intro.timer > 400) { intro.state = INTRO_STATES.TRAINER_ENTER; intro.timer = 0; }
         break;
-      case INTRO_STATES.TRAINER_ENTER:
-        intro.trainerX = Math.min(300 * 0.22, -100 + (intro.timer / 800) * (300 * 0.22 + 100));
-        intro.enemyOpacity = Math.min(1, intro.timer / 800);
-        intro.enemyOffsetX = Math.max(0, 150 - (intro.timer / 800) * 150);
+      case INTRO_STATES.TRAINER_ENTER: {
+        const t = Math.min(1, intro.timer / 800);
+        const easeCubic = 1 - Math.pow(1 - t, 3); // decelerating cubic ease-out
+        const easeBack = 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2); // elastic overshoot
+        
+        intro.trainerX = -100 + easeCubic * (300 * 0.22 + 100);
+        intro.enemyOpacity = Math.min(1, t);
+        intro.enemyOffsetX = 150 - easeBack * 150;
         if(intro.timer > 800) { intro.state = INTRO_STATES.TRAINER_THROW; intro.timer = 0; }
         break;
+      }
       case INTRO_STATES.TRAINER_THROW:
         intro.trainerFrame = Math.min(4, Math.floor(intro.timer / 100));
         if(intro.timer > 500) { intro.ballVisible = true; intro.ballX = intro.trainerX + 40; intro.ballY = 200 * 0.65; intro.state = INTRO_STATES.BALL_FLY; intro.timer = 0; }
@@ -187,11 +290,26 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         intro.ballY = bStartY + (200 * 0.70 - bStartY) * t - Math.sin(t * Math.PI) * 55;
         intro.ballAngle += 0.28;
         intro.trainerX -= 4.5;
-        if(intro.timer > 600) { intro.ballVisible = false; intro.state = INTRO_STATES.BALL_FLASH; intro.timer = 0; intro.sparkles = Array.from({length: 8}, (_, i) => ({ angle: (i / 8) * Math.PI * 2, dist: 0, speed: 2 + Math.random() * 2 })); }
+        if(intro.timer > 600) { 
+          intro.ballVisible = false; 
+          intro.state = INTRO_STATES.BALL_FLASH; 
+          intro.timer = 0; 
+          // Decelerating sparkle particle spread
+          intro.sparkles = Array.from({length: 10}, (_, i) => ({ 
+            angle: (i / 10) * Math.PI * 2, 
+            dist: 0, 
+            speed: 5 + Math.random() * 4 
+          })); 
+        }
         break;
       case INTRO_STATES.BALL_FLASH:
         intro.flashAlpha = Math.max(0, 1 - intro.timer / 300);
-        if (intro.sparkles) intro.sparkles.forEach(s => s.dist += s.speed);
+        if (intro.sparkles) {
+          intro.sparkles.forEach(s => {
+            s.speed *= 0.94; // apply friction drag to particles
+            s.dist += s.speed;
+          });
+        }
         if (intro.timer > 50) {
           const tPop = intro.timer - 50;
           if (tPop < 200) { intro.playerScale = 0.1 + (tPop / 200) * 1.05; intro.playerShake = Math.sin(intro.timer * 0.1) * 2; }
@@ -206,11 +324,14 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           intro.state = INTRO_STATES.HUD_SLIDE; intro.timer = 0; 
         }
         break;
-      case INTRO_STATES.HUD_SLIDE:
-        intro.enemyHudX = Math.min(8, -200 + (intro.timer/400) * 208); 
-        intro.playerHudX = Math.max(300-192-8, 430 - (intro.timer / 400) * 330);
+      case INTRO_STATES.HUD_SLIDE: {
+        const t = Math.min(1, intro.timer / 400);
+        const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        intro.enemyHudX = -200 + ease * 208;
+        intro.playerHudX = 430 - ease * 330;
         if(intro.timer > 400) { intro.state = INTRO_STATES.READY; setMessage(''); setIntroReady(true); }
         break;
+      }
       default: break;
     }
   };
@@ -222,22 +343,60 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     ctx.fillStyle = 'rgba(0,0,0,0.20)';
     ctx.beginPath(); ctx.ellipse(W * 0.22 + playerOffsetRef.current.x, H * 0.83, 32, 7, 0, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(W * 0.73 + enemyOffsetRef.current.x + (intro.enemyOffsetX || 0), H * 0.57, 28, 6, 0, 0, Math.PI * 2); ctx.fill();
+    
     if (intro.state !== INTRO_STATES.READY && trainerImgRef.current) {
       const img = trainerImgRef.current, frameW = img.width / 5, frame = intro.trainerFrame || 0;
       safeDrawImage(ctx, img, frame * frameW, 0, frameW, img.height, intro.trainerX, H * 0.38, 80, 108);
     }
+    
+    // Enemy pokemon drawing with full color-tint support
     if (intro.enemyOpacity > 0 && enemyImgRef.current && enemyOffsetRef.current.visible) {
       ctx.save(); ctx.globalAlpha = intro.enemyOpacity * (enemyOffsetRef.current.opacity ?? 1);
       const eScale = (enemyOffsetRef.current.scale ?? 1) * (intro.enemyScale || 1);
       ctx.translate(W * 0.73 + enemyOffsetRef.current.x + (intro.enemyOffsetX || 0), H * 0.38 + enemyOffsetRef.current.y);
-      ctx.scale(eScale, eScale); safeDrawImage(ctx, enemyImgRef.current, -48, -48, 96, 96); ctx.restore();
+      ctx.scale(eScale, eScale);
+      
+      const tintColor = enemyOffsetRef.current.tintColor;
+      const tintAlpha = enemyOffsetRef.current.tintAlpha;
+      if (tintColor && tintAlpha > 0) {
+        drawTintedImage(ctx, enemyImgRef.current, 0, 0, enemyImgRef.current.width, enemyImgRef.current.height, -48, -48, 96, 96, tintColor, tintAlpha);
+        if (tintAlpha < 1) {
+          ctx.save();
+          ctx.globalAlpha = 1 - tintAlpha;
+          safeDrawImage(ctx, enemyImgRef.current, -48, -48, 96, 96);
+          ctx.restore();
+        }
+      } else {
+        safeDrawImage(ctx, enemyImgRef.current, -48, -48, 96, 96);
+      }
+      ctx.restore();
     }
+    
+    // Player pokemon drawing with energy discharge popping and damage flashes
     if ([INTRO_STATES.BALL_FLASH, INTRO_STATES.POKEMON_APPEAR, INTRO_STATES.HUD_SLIDE, INTRO_STATES.READY].includes(intro.state) && playerPkImgRef.current && playerOffsetRef.current.visible) {
       ctx.save(); ctx.globalAlpha = playerOffsetRef.current.opacity ?? 1;
       const pScale = (playerOffsetRef.current.scale ?? 1) * (intro.playerScale || 1);
       ctx.translate(W * 0.22 + playerOffsetRef.current.x + (intro.playerShake || 0), H * 0.70 + playerOffsetRef.current.y);
-      ctx.scale(pScale, pScale); safeDrawImage(ctx, playerPkImgRef.current, -48, -48, 96, 96); ctx.restore();
+      ctx.scale(pScale, pScale);
+      
+      const isBallOpeningFlash = intro.state === INTRO_STATES.BALL_FLASH;
+      const tintColor = playerOffsetRef.current.tintColor || (isBallOpeningFlash ? '#00f3ff' : null);
+      const tintAlpha = playerOffsetRef.current.tintAlpha || (isBallOpeningFlash ? Math.max(0, 1 - intro.timer / 400) : 0);
+      
+      if (tintColor && tintAlpha > 0) {
+        drawTintedImage(ctx, playerPkImgRef.current, 0, 0, playerPkImgRef.current.width, playerPkImgRef.current.height, -48, -48, 96, 96, tintColor, tintAlpha);
+        if (tintAlpha < 1) {
+          ctx.save();
+          ctx.globalAlpha = 1 - tintAlpha;
+          safeDrawImage(ctx, playerPkImgRef.current, -48, -48, 96, 96);
+          ctx.restore();
+        }
+      } else {
+        safeDrawImage(ctx, playerPkImgRef.current, -48, -48, 96, 96);
+      }
+      ctx.restore();
     }
+    
     if (intro.ballVisible) {
       ctx.save(); ctx.translate(intro.ballX, intro.ballY); ctx.rotate(intro.ballAngle);
       ctx.fillStyle = '#E8190C'; ctx.beginPath(); ctx.arc(0, 0, 8, Math.PI, 0); ctx.fill();
@@ -246,7 +405,14 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       ctx.restore();
     }
     if (intro.flashAlpha > 0) {
-      if (intro.sparkles) { ctx.fillStyle = '#fff'; intro.sparkles.forEach(s => { ctx.beginPath(); ctx.arc(W*0.22+Math.cos(s.angle)*s.dist, H*0.7+Math.sin(s.angle)*s.dist, 3*intro.flashAlpha, 0, Math.PI*2); ctx.fill(); }); }
+      if (intro.sparkles) { 
+        ctx.fillStyle = '#00f3ff'; // matching electrical discharge color
+        intro.sparkles.forEach(s => { 
+          ctx.beginPath(); 
+          ctx.arc(W*0.22+Math.cos(s.angle)*s.dist, H*0.7+Math.sin(s.angle)*s.dist, 3*intro.flashAlpha, 0, Math.PI*2); 
+          ctx.fill(); 
+        }); 
+      }
       ctx.fillStyle = `rgba(255,255,255,${intro.flashAlpha})`; ctx.fillRect(0, 0, W, H);
     }
     if (intro.fadeAlpha > 0) { ctx.fillStyle = `rgba(0,0,0,${intro.fadeAlpha})`; ctx.fillRect(0, 0, W, H); }
@@ -255,124 +421,91 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const resolveTurn = async (pMoveKey) => {
     if (phase !== BATTLE_PHASES.SELECT) return;
     setPhase(BATTLE_PHASES.RESOLVING);
-    
+
     const pMove = MOVE_DATA[pMoveKey];
     const eMoves = POKEMON_MOVES[Number(enemyPkmn.id)] || ['TACKLE'];
     const eMove = MOVE_DATA[eMoves[Math.floor(Math.random() * eMoves.length)]];
-    
     const order = determineTurnOrder(pMove, playerPkmn, eMove, enemyPkmn);
-    
+
     for (const side of order) {
       if (playerPkmn.hp <= 0 || enemyPkmn.hp <= 0) break;
-      
       const attacker = side === 'player' ? playerPkmn : enemyPkmn;
       const defender = side === 'player' ? enemyPkmn : playerPkmn;
       const move = side === 'player' ? pMove : eMove;
-      
-      // 1. Attack Animation & Message
-      setMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
+
+      // 1. Attack message → player presses A → then animation plays
+      await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
       activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200);
-      await new Promise(r => setTimeout(r, 800));
-      
+      await new Promise(r => setTimeout(r, 600));
+
       const result = processMove(attacker, defender, move);
-      
-      // 2. Handle Miss / Inability to move
+
+      // 2. Miss / unable to move
       if (result.unableToMove || result.missed) {
-        setMessage(result.unableToMove || `¡El ataque de ${attacker.name.toUpperCase()} falló!`);
-        await new Promise(r => setTimeout(r, 1200));
+        await showMessage(result.unableToMove || `¡El ataque de ${attacker.name.toUpperCase()} falló!`);
         continue;
       }
-      
-      // 3. Apply Damage
+
+      // 3. Damage
       if (result.damageDealt > 0) {
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
-        
         if (side === 'player') {
           setEnemyPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
         } else {
           setPlayerPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
         }
-        
-        activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, { 
-          text: `-${result.damageDealt}`, 
-          x: side === 'enemy' ? 300 * 0.25 : 300 * 0.75, 
-          y: side === 'enemy' ? 200 * 0.7 - 20 : 200 * 0.35 - 20, 
-          color: '#f00', 
-          duration: 800 
+        activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, {
+          text: `-${result.damageDealt}`,
+          x: side === 'enemy' ? 300 * 0.25 : 300 * 0.75,
+          y: side === 'enemy' ? 200 * 0.7 - 20 : 200 * 0.35 - 20,
+          color: '#f00', duration: 800
         }));
-        
-        await new Promise(r => setTimeout(r, 600));
-        
-        if (result.isCritical) {
-          setMessage("¡Un golpe crítico!");
-          await new Promise(r => setTimeout(r, 1000));
-        }
-        
-        if (result.effectiveness > 1) {
-          setMessage("¡Es muy eficaz!");
-          await new Promise(r => setTimeout(r, 1000));
-        } else if (result.effectiveness < 1 && result.effectiveness > 0) {
-          setMessage("No es muy eficaz...");
-          await new Promise(r => setTimeout(r, 1000));
-        } else if (result.effectiveness === 0) {
-          setMessage("¡No afecta!");
-          await new Promise(r => setTimeout(r, 1000));
-        }
+        await new Promise(r => setTimeout(r, 400));
+
+        if (result.isCritical) await showMessage('¡Un golpe crítico!');
+        if (result.effectiveness > 1) await showMessage('¡Es muy eficaz!');
+        else if (result.effectiveness < 1 && result.effectiveness > 0) await showMessage('No es muy eficaz...');
+        else if (result.effectiveness === 0) await showMessage('¡No afecta!');
       }
-      
-      // 4. Apply Secondary Effects (Status / Stats)
+
+      // 4. Secondary effects
       if (result.effects) {
         const { message: effectMsg, statChanges, statusApplied } = result.effects;
-        
         if (statusApplied || (statChanges && statChanges.length > 0)) {
           if (statusApplied) {
             if (side === 'player') setEnemyPkmn(prev => ({ ...prev, status: statusApplied }));
             else setPlayerPkmn(prev => ({ ...prev, status: statusApplied }));
           }
-          
           if (statChanges && statChanges.length > 0) {
             statChanges.forEach(sc => {
-              const targetSetter = (side === 'player' ? (sc.target === 'defender' ? setEnemyPkmn : setPlayerPkmn) : (sc.target === 'defender' ? setPlayerPkmn : setEnemyPkmn));
-              targetSetter(prev => ({
-                ...prev,
-                statStages: {
-                  ...prev.statStages,
-                  [sc.stat]: Math.max(-6, Math.min(6, (prev.statStages?.[sc.stat] || 0) + sc.stage))
-                }
-              }));
+              const ts = side === 'player'
+                ? (sc.target === 'defender' ? setEnemyPkmn : setPlayerPkmn)
+                : (sc.target === 'defender' ? setPlayerPkmn : setEnemyPkmn);
+              ts(prev => ({ ...prev, statStages: { ...prev.statStages, [sc.stat]: Math.max(-6, Math.min(6, (prev.statStages?.[sc.stat] || 0) + sc.stage)) } }));
             });
           }
-          
-          if (effectMsg) {
-            setMessage(effectMsg);
-            await new Promise(r => setTimeout(r, 1200));
-          }
+          if (effectMsg) await showMessage(effectMsg);
         }
       }
-      
-      await new Promise(r => setTimeout(r, 500));
     }
-    
-    // 5. End Turn Effects (Poison, etc.)
-    const sides = ['player', 'enemy'];
-    for (const s of sides) {
+
+    // 5. End-turn effects (poison, etc.)
+    for (const s of ['player', 'enemy']) {
       const pkmn = s === 'player' ? playerPkmn : enemyPkmn;
       const setter = s === 'player' ? setPlayerPkmn : setEnemyPkmn;
       if (pkmn.hp > 0) {
-        const endEffects = processEndTurnEffects(pkmn);
-        for (const eff of endEffects) {
-          setMessage(eff.message);
+        for (const eff of processEndTurnEffects(pkmn)) {
           if (eff.damage) {
             setter(prev => ({ ...prev, hp: Math.max(0, prev.hp - eff.damage) }));
             isFlashingRef.current = true;
             setTimeout(() => isFlashingRef.current = false, 100);
           }
-          await new Promise(r => setTimeout(r, 1200));
+          await showMessage(eff.message);
         }
       }
     }
-    
+
     if (playerPkmn.hp > 0 && enemyPkmn.hp > 0) {
       setPhase(BATTLE_PHASES.SELECT);
       setMessage('');
@@ -386,61 +519,159 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     setPhase(BATTLE_PHASES.RESOLVING);
     const hId = h.habito_id || h.id;
     setLocalCompleted(prev => ({...prev, [hId]: true}));
-    
+
     const totalInBattle = habitsForStage.length || 1;
     const totalTeamMaxHp = enemyTeam.reduce((sum, p) => sum + (Number(p.maxHp) || 50), 0);
     let damageDealt = Math.ceil(totalTeamMaxHp / totalInBattle);
-    
     if (Object.keys(localCompleted).length + 1 === habitsForStage.length) {
-      damageDealt = Number(enemyPkmn.hp) + 10;
+      damageDealt = Number(enemyPkmnRef.current?.hp ?? enemyPkmn.hp) + 10;
     }
 
-    setMessage(`¡${playerPkmn.name.toUpperCase()} usó ${h.nombre.toUpperCase()}!`);
-    activeAnimsRef.current = [
-      createAnimation(ANIM_TYPES.BOUNCE, { target: 'player', duration: 300, amount: 20 }),
-      createAnimation(ANIM_TYPES.STRIKE, { x: 300 * 0.75, y: 200 * 0.35, duration: 600, color: '#00ff00' }),
-      createAnimation(ANIM_TYPES.SHAKE, { target: 'enemy', duration: 400, amount: 15 }),
-      createAnimation(ANIM_TYPES.FLASH_SPRITE, { target: 'enemy', duration: 400 }),
-      createAnimation(ANIM_TYPES.TEXT, { text: `-${damageDealt}`, x: 300 * 0.75, y: 200 * 0.35 - 20, color: '#f00', duration: 800 })
+    const startX = 300 * 0.22, startY = 200 * 0.68;
+    const endX = 300 * 0.75, endY = 200 * 0.38;
+    const habitAnims = [
+      createAnimation(ANIM_TYPES.LUNGE, { attacker: 'player', target: 'enemy', duration: 350, amount: 28 }),
+      createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 600, amount: 12 }),
+      createAnimation(ANIM_TYPES.FLASH_SPRITE, { target: 'enemy', duration: 600 }),
+      createAnimation(ANIM_TYPES.SHAKE, { target: 'enemy', duration: 500, amount: 18 }),
+      createAnimation(ANIM_TYPES.TEXT, { text: `-${damageDealt}`, x: endX, y: endY - 20, color: '#10b981', duration: 1000 })
     ];
+    for (let i = 0; i < 18; i++) {
+      habitAnims.push(createAnimation(ANIM_TYPES.PARTICLE, {
+        x: startX + (Math.random() - 0.5) * 15, y: startY + (Math.random() - 0.5) * 15,
+        vx: (endX - startX) * (0.8 + Math.random() * 0.3) + (Math.random() - 0.5) * 35,
+        vy: (endY - startY) * (0.8 + Math.random() * 0.3) + (Math.random() - 0.5) * 35,
+        duration: 400 + i * 25, color: i % 2 === 0 ? '#10b981' : '#f59e0b',
+        shape: 'star', size: 5 + Math.random() * 4, gravity: 0
+      }));
+    }
+    habitAnims.push(createAnimation(ANIM_TYPES.STRIKE, { x: endX, y: endY, duration: 400, color: '#10b981' }));
+    habitAnims.push(createAnimation(ANIM_TYPES.STRIKE, { x: endX + 10, y: endY - 8, duration: 450, delay: 100, color: '#f59e0b' }));
 
+    await showMessage(`¡${playerPkmn.name.toUpperCase()} USÓ ${h.nombre.toUpperCase()}!`);
+    activeAnimsRef.current = habitAnims;
     completarHabito(h.gym_id, hId).catch(console.error);
 
-    setTimeout(() => {
-      isFlashingRef.current = true; setTimeout(() => isFlashingRef.current = false, 150);
-      setEnemyPkmn(prev => {
-        if (prev.hp > damageDealt) {
-          setTimeout(() => { setPhase(BATTLE_PHASES.SELECT); setMessage(''); }, 800);
-          return { ...prev, hp: prev.hp - damageDealt };
-        } else {
-          const carry = damageDealt - prev.hp;
-          if (teamIndex < enemyTeam.length - 1) {
-            const nextIdx = teamIndex + 1, nextPkmn = enemyTeam[nextIdx];
-            setTimeout(() => {
-              setMessage(`¡${prev.name.toUpperCase()} se debilitó!`);
-              setTimeout(() => {
-                setTeamIndex(nextIdx); setEnemyPkmn({ ...nextPkmn, hp: Math.max(0, nextPkmn.maxHp - carry) });
-                const img = new Image(); img.src = getAssetPath(`Graphics/battlers/${String(nextPkmn.id).padStart(3,'0')}.png`); img.onload = () => { enemyImgRef.current = img; };
-                setMessage(`¡El líder envía a ${nextPkmn.name.toUpperCase()}!`); setPhase(BATTLE_PHASES.SELECT);
-              }, 1200);
-            }, 600);
-          } else {
-            setTimeout(() => { setMessage(`¡${prev.name.toUpperCase()} se debilitó!`); setTimeout(() => endBattle(true), 1000); }, 600);
-          }
-          return { ...prev, hp: 0 };
-        }
-      });
-    }, 600);
+    await new Promise(r => setTimeout(r, 700));
+    isFlashingRef.current = true;
+    setTimeout(() => isFlashingRef.current = false, 150);
+
+    const currentHp = enemyPkmnRef.current?.hp ?? 0;
+    const newHp = Math.max(0, currentHp - damageDealt);
+    setEnemyPkmn(prev => ({ ...prev, hp: newHp }));
+    await new Promise(r => setTimeout(r, 350));
+
+    if (newHp > 0) {
+      setPhase(BATTLE_PHASES.SELECT);
+      setMessage('');
+    } else if (teamIndex < enemyTeam.length - 1) {
+      const nextIdx = teamIndex + 1;
+      const nextPkmn = enemyTeam[nextIdx];
+      const carry = damageDealt - currentHp;
+      await showMessage(`¡${(enemyPkmnRef.current?.name ?? '').toUpperCase()} se debilitó!`);
+      setTeamIndex(nextIdx);
+      setEnemyPkmn({ ...nextPkmn, hp: Math.max(0, nextPkmn.maxHp - carry) });
+      const img = new Image();
+      img.src = getAssetPath(`Graphics/battlers/${String(nextPkmn.id).padStart(3, '0')}.png`);
+      img.onload = () => { enemyImgRef.current = img; };
+      await showMessage(`¡El líder envía a ${nextPkmn.name.toUpperCase()}!`);
+      setPhase(BATTLE_PHASES.SELECT);
+      setMessage('');
+    } else {
+      await showMessage(`¡${(enemyPkmnRef.current?.name ?? '').toUpperCase()} se debilitó!`);
+      endBattle(true);
+    }
+  };
+
+  const handleUseItemInBattle = async (itemId) => {
+    if (phase !== BATTLE_PHASES.SELECT) return;
+    
+    const count = user?.inventario?.[itemId] ?? 0;
+    if (count <= 0) {
+      setMessage(`¡No tienes ${itemId.toUpperCase()}!`);
+      return;
+    }
+
+    if (itemId === 'pokeball' || itemId === 'superball') {
+      if (!isWild) {
+        await showMessage('¡No puedes robar los Pokémon de un líder!');
+        setMenuView('main');
+        setMessage('');
+        return;
+      }
+
+      setPhase(BATTLE_PHASES.RESOLVING);
+      setMenuView('main');
+      await showMessage(`¡Lanzaste una ${itemId.toUpperCase()}!`);
+
+      const startX = 300 * 0.22, startY = 200 * 0.68;
+      const endX = 300 * 0.75, endY = 200 * 0.38;
+
+      activeAnimsRef.current = [createAnimation(ANIM_TYPES.THROW_POKEBALL, { startX, startY, endX, endY, duration: 600, ballType: itemId })];
+      await new Promise(r => setTimeout(r, 600));
+      activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_SUCK, { endX, endY, duration: 800, ballType: itemId })];
+      await new Promise(r => setTimeout(r, 800));
+      activeAnimsRef.current = [createAnimation(ANIM_TYPES.HIDE_SPRITE, { endX, endY, duration: 10000, ballType: itemId, showBall: true })];
+
+      const r = await capturarPokemon(enemyPkmn.id, enemyPkmn.name, itemId);
+      const shakes = r.success ? 3 : Math.max(1, Math.floor(Math.random() * 3));
+
+      for (let i = 0; i < shakes; i++) {
+        activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_SHAKE, { endX, endY, duration: 400, ballType: itemId })];
+        await new Promise(r => setTimeout(r, 400));
+        activeAnimsRef.current = [createAnimation(ANIM_TYPES.HIDE_SPRITE, { endX, endY, duration: 800, ballType: itemId, showBall: true })];
+        await new Promise(r => setTimeout(r, 800));
+      }
+
+      if (r.success) {
+        activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_SUCCESS, { endX, endY, duration: 1000, ballType: itemId })];
+        await showMessage(`¡Atrapaste a ${enemyPkmn.name.toUpperCase()} exitosamente!`);
+        navigate('capture', { gymId: enemyPkmn.id });
+      } else {
+        activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_BREAKOUT, { endX, endY, duration: 800, ballType: itemId })];
+        await new Promise(r => setTimeout(r, 800));
+        await showMessage('¡Oh no! El Pokémon salvaje se ha escapado de la bola.');
+        setPhase(BATTLE_PHASES.SELECT);
+        setMessage('');
+      }
+    } else if (itemId === 'potion' || itemId === 'superpotion') {
+      setPhase(BATTLE_PHASES.RESOLVING);
+      setMenuView('main');
+      const healAmount = itemId === 'potion' ? 20 : 50;
+
+      await showMessage(`¡Usaste ${itemId.toUpperCase()} en ${playerPkmn.name.toUpperCase()}!`);
+      await usarObjeto(itemId);
+
+      activeAnimsRef.current = [createAnimation(ANIM_TYPES.STRIKE, { x: 300 * 0.22, y: 200 * 0.68, duration: 500, color: '#10b981' })];
+      await new Promise(r => setTimeout(r, 600));
+      setPlayerPkmn(prev => ({ ...prev, hp: Math.min(prev.maxHp, prev.hp + healAmount) }));
+
+      await showMessage(`¡Se restauraron los PS de ${playerPkmn.name.toUpperCase()}!`);
+
+      if (isWild) {
+        await showMessage(`¡${enemyPkmn.name.toUpperCase()} salvaje ataca!`);
+        const enemyDmg = 8 + Math.floor(Math.random() * 8);
+        setPlayerPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - enemyDmg) }));
+        isFlashingRef.current = true;
+        setTimeout(() => isFlashingRef.current = false, 150);
+        await new Promise(r => setTimeout(r, 600));
+        if (playerPkmn.hp - enemyDmg <= 0) { endBattle(false); return; }
+      }
+
+      setPhase(BATTLE_PHASES.SELECT);
+      setMessage('');
+    }
   };
 
   const endBattle = async (win) => {
     setPhase(BATTLE_PHASES.FINISHED);
     if (!win) {
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'player', duration: 1000 }));
-      await new Promise(r => setTimeout(r, 1200)); setMessage(`¡${playerPkmn.name.toUpperCase()} se debilitó!`);
-      await new Promise(r => setTimeout(r, 1500)); navigate('city');
+      await new Promise(r => setTimeout(r, 1200));
+      await showMessage(`¡${playerPkmn.name.toUpperCase()} se debilitó!`);
+      navigate('city');
     } else {
-      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300*0.73, targetY: 200*0.38, duration: 2500 }));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 2500 }));
       await new Promise(r => setTimeout(r, 2700));
       const gymReward = !isWild ? await completarGimnasio(gymId, starter.starter_id, starter.starter_nombre).catch(() => ({})) : {};
       const reward = await ganarBatalla().catch(() => ({}));
@@ -466,10 +697,16 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           <BattleHUD enemyPkmn={enemyPkmn} playerPkmn={playerPkmn} starterExp={starter.starter_exp} introReady={introReady} />
         </div>
         <div style={{ flex: '0 0 42%', background: '#f0f0f0', borderTop: '4px solid #333', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ background: '#f8f8f0', borderBottom: '3px solid #444', padding: '10px 16px', minHeight: '52px', display: 'flex', alignItems: 'center', fontSize: 9, color: '#222', lineHeight: '1.5em' }}>
-            {message || (isWild ? '¿QUÉ DEBE HACER?' : '¡COMPLETA TUS HÁBITOS!')}
+          <div
+            onClick={handleAdvance}
+            style={{ background: '#f8f8f0', borderBottom: '3px solid #444', padding: '10px 16px', minHeight: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 9, color: '#222', lineHeight: '1.5em', cursor: (isMsgTyping || waitingForA) ? 'pointer' : 'default', userSelect: 'none' }}
+          >
+            <span>{message ? displayedMsg : (isWild ? '¿QUÉ DEBE HACER?' : '¡COMPLETA TUS HÁBITOS!')}</span>
+            {waitingForA && advanceResolveRef.current && (
+              <span className="battle-cursor">▼</span>
+            )}
           </div>
-          <BattleActionMenu isWild={isWild} menuView={menuView} setMenuView={setMenuView} phase={phase} habitsForStage={habitsForStage} localCompleted={localCompleted} handleHabitAttack={handleHabitAttack} moves={playerPkmn?.moves || []} onMoveSelect={resolveTurn} setMessage={setMessage} navigate={navigate} />
+          <BattleActionMenu isWild={isWild} menuView={menuView} setMenuView={setMenuView} phase={phase} habitsForStage={habitsForStage} localCompleted={localCompleted} handleHabitAttack={handleHabitAttack} moves={playerPkmn?.moves || []} onMoveSelect={resolveTurn} setMessage={setMessage} navigate={navigate} user={user} handleUseItemInBattle={handleUseItemInBattle} />
         </div>
         <VictoryOverlay victoryData={victoryData} displayXp={displayXp} displayMonedas={displayMonedas} showContinueHint={showContinueHint} onClose={() => navigate('city')} />
         <style>{`
@@ -477,6 +714,10 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           .battle-btn:hover:not(:disabled) { background: #d0d0c0; }
           .battle-btn-gym { background: #fff; border: 2px solid #555; border-radius: 6px; font-family: "Press Start 2P", monospace; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 4px; }
           .battle-btn-gym:disabled { opacity: 0.4; cursor: default; background: #ddd; }
+          .battle-btn-gym-compact { background: #fff; border: 2px solid #555; border-radius: 4px; font-family: "Press Start 2P", monospace; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 2px; }
+          .battle-btn-gym-compact:disabled { opacity: 0.4; cursor: default; background: #ddd; }
+          @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+          .battle-cursor { animation: blink 0.6s step-end infinite; font-size: 8px; color: #333; flex-shrink: 0; margin-left: 6px; }
         `}</style>
       </div>
     </div>

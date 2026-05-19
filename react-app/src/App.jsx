@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGame } from './context/GameContext';
 import Controls from './components/Controls';
+import { SpriteAvatar } from './components/GBSprite';
+import { getAssetPath } from './api';
 
 // Screens
 import LoginScreen from './screens/LoginScreen';
@@ -15,12 +17,29 @@ import HabitEditScreen from './screens/HabitEditScreen';
 import AdminScreen from './screens/AdminScreen';
 import HomeScreen from './screens/HomeScreen';
 import AgendaScreen from './screens/AgendaScreen';
+import ShopScreen from './screens/ShopScreen';
+import BagScreen from './screens/BagScreen';
+import FriendsScreen from './screens/FriendsScreen';
+import PokedexScreen from './screens/PokedexScreen';
 import StartMenu from './components/StartMenu';
 import { useDebouncedInput } from './hooks/useDebouncedInput';
+import LandingPage from './screens/LandingPage';
+import WorldMapScreen from './screens/WorldMapScreen';
+
 
 const LoadingScreen = () => (
   <div className="screen-container loading-screen">
-    <img src="Graphics/characters/trchar000.png" style={{ imageRendering: 'pixelated', transform: 'scale(2)', marginBottom: 20 }} />
+    <SpriteAvatar 
+      path={getAssetPath('/Graphics/characters/trchar000.png')} 
+      width={32}
+      height={40}
+      col={0}
+      row={0}
+      style={{
+        transform: 'scale(2)',
+        marginBottom: '20px'
+      }}
+    />
     <div style={{ fontSize: 10, letterSpacing: 2 }}>LOADING...</div>
     <div className="loading-bar">
       <div className="loading-progress"></div>
@@ -34,6 +53,7 @@ function App() {
   const [screenData, setScreenData] = useState(null);
   const [fadeOut, setFadeOut] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Global Player & World State (survives CityScreen unmount)
@@ -106,10 +126,134 @@ function App() {
       case 'admin': return <AdminScreen onNavigate={navigate} />;
       case 'agenda': return <AgendaScreen onNavigate={navigate} />;
       case 'habitedit': return <HabitEditScreen onNavigate={navigate} />;
+      case 'shop': return <ShopScreen navigate={navigate} />;
+      case 'bag': return <BagScreen navigate={navigate} />;
+      case 'friends': return <FriendsScreen onNavigate={navigate} />;
+      case 'pokedex': return <PokedexScreen navigate={navigate} />;
+      case 'pokemon': return <PokedexScreen navigate={navigate} />;
+      case 'worldmap': return (
+        <WorldMapScreen
+          navigate={navigate}
+          currentMapId={globalMapId}
+          onFastTravel={(mapId, spawn) => {
+            setGlobalMapId(mapId);
+            setGlobalPlayerPos(spawn);
+            navigate('city');
+          }}
+        />
+      );
       case 'home': return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
       default: return <HomeScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} screenData={screenData} />;
     }
   };
+
+  if (!token) {
+    if (showLanding) {
+      return (
+        <LandingPage 
+          screen={screen}
+          setScreen={setScreen}
+          showRegister={showRegister}
+          setShowRegister={setShowRegister}
+          onExitLanding={(target) => {
+            setShowLanding(false);
+            setScreen(target);
+            if (target === 'register') {
+              setShowRegister(true);
+            } else {
+              setShowRegister(false);
+            }
+          }}
+          renderGameBoy={() => (
+            <div className="game-container" style={{ width: '100%', height: '100%', maxWidth: '100%', margin: '0 auto', border: 'none', boxShadow: 'none' }}>
+              <div className="scanlines"></div>
+              <div className={`fade-overlay ${fadeOut ? 'active' : 'inactive'}`} />
+              
+              {/* Notifications */}
+              {notification && (
+                <div className={`notification-toast ${notification.type}`}>
+                  {notification.message}
+                </div>
+              )}
+
+              <div className="screen-layout" style={{ height: '100%' }}>
+                {renderScreen()}
+              </div>
+            </div>
+          )}
+        />
+      );
+    } else {
+      return (
+        <div className="standalone-login-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#030712', position: 'relative', overflow: 'hidden' }}>
+          {/* Animated Background Mesh matching landing page */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%), radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 40%)',
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+
+          {/* Floating Back Button */}
+          <button 
+            onClick={() => setShowLanding(true)}
+            style={{
+              position: 'absolute',
+              top: 24,
+              left: 24,
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '9999px',
+              color: '#9ca3af',
+              padding: '10px 20px',
+              fontFamily: '"Outfit", sans-serif',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              zIndex: 1000,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}
+            onMouseEnter={(e) => { 
+              e.currentTarget.style.color = '#fff'; 
+              e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => { 
+              e.currentTarget.style.color = '#9ca3af'; 
+              e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            ← Volver a la Web
+          </button>
+
+          {/* Center Original Game Screen Viewport */}
+          <div className="game-container" style={{ margin: '0 auto', zIndex: 1, position: 'relative' }}>
+            <div className="scanlines"></div>
+            <div className={`fade-overlay ${fadeOut ? 'active' : 'inactive'}`} />
+            
+            {/* Notifications */}
+            {notification && (
+              <div className={`notification-toast ${notification.type}`}>
+                {notification.message}
+              </div>
+            )}
+
+            <div className="screen-layout">
+              {renderScreen()}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
 
   return (
     <div className="game-container">

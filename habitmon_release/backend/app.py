@@ -47,6 +47,9 @@ def php_shim():
         if route.startswith('/gimnasios/completar'): return completar_gimnasio()
         if route.startswith('/admin/presets'): return habitos_presets()
         if route.startswith('/admin/config'): return admin_config()
+        if route.startswith('/tienda/comprar'): return comprar_objeto()
+        if route.startswith('/usuario/usar_item'): return usar_objeto()
+        if route.startswith('/usuario/configurar_encuentros'): return configurar_encuentros()
         if route.startswith('/coleccion/capturar'): return capturar_pokemon()
         if route.startswith('/battle/victory'): return ganar_batalla()
         if route.startswith('/habitos/reset'): return reset_habitos()
@@ -101,10 +104,17 @@ class Usuario(db.Model):
     starter_nombre= db.Column(db.String(50), nullable=True)
     starter_nivel  = db.Column(db.Integer, default=5)
     starter_exp    = db.Column(db.Integer, default=0)
-    monedas        = db.Column(db.Integer, default=0)
+    monedas        = db.Column(db.Integer, default=300)
+    inventario     = db.Column(db.Text, default='{"pokeball":5,"superball":0,"potion":2,"superpotion":0}')
+    permitir_encuentros = db.Column(db.Integer, default=1)
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
+        import json
+        try:
+            inv = json.loads(self.inventario) if self.inventario else {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+        except Exception:
+            inv = {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
         return {
             "id": self.id,
             "username": self.username,
@@ -114,8 +124,11 @@ class Usuario(db.Model):
             "starter_nombre": self.starter_nombre,
             "starter_nivel": self.starter_nivel,
             "starter_exp": self.starter_exp,
-            "monedas": self.monedas
+            "monedas": self.monedas,
+            "inventario": inv,
+            "permitir_encuentros": self.permitir_encuentros
         }
+
 
 class HabitoConfig(db.Model):
     """Config de hábitos por usuario (el padre edita esto)"""
@@ -642,13 +655,20 @@ def get_coleccion():
 def capturar_pokemon():
     uid = get_jwt_identity()
     data = request.get_json()
+    ball_type = data.get('ball_type', 'pokeball')
     
-    # Check if user can afford a pokeball (hypothetically 50 coins)
     user = Usuario.query.get(uid)
-    if user.monedas < 50:
-        return jsonify({"success": False, "message": "No tienes suficientes monedas para una Poké Ball (50)"}), 400
-    
-    user.monedas -= 50
+    import json
+    try:
+        inv = json.loads(user.inventario) if user.inventario else {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+    except Exception:
+        inv = {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+        
+    if inv.get(ball_type, 0) <= 0:
+        return jsonify({"success": False, "message": f"¡No tienes {ball_type.toUpperCase()}!"}), 400
+        
+    inv[ball_type] -= 1
+    user.inventario = json.dumps(inv)
     
     pk = Pokemon(
         usuario_id=uid,
@@ -658,7 +678,84 @@ def capturar_pokemon():
     )
     db.session.add(pk)
     db.session.commit()
-    return jsonify({"success": True, "monedas": user.monedas})
+    return jsonify({"success": True, "monedas": user.monedas, "inventario": inv, "usuario": user.to_dict()})
+
+@app.route('/api/tienda/comprar', methods=['POST'])
+@jwt_required()
+def comprar_objeto():
+    uid = get_jwt_identity()
+    user = Usuario.query.get(uid)
+    data = request.get_json()
+    item_id = data.get('item_id')
+    cantidad = data.get('cantidad', 1)
+    
+    precios = {
+        'pokeball': 50,
+        'superball': 100,
+        'potion': 30,
+        'superpotion': 60
+    }
+    
+    if item_id not in precios:
+        return jsonify({"success": False, "message": "Objeto no válido"}), 400
+        
+    costo_total = precios[item_id] * cantidad
+    if user.monedas < costo_total:
+        return jsonify({"success": False, "message": "No tienes suficientes monedas"}), 400
+        
+    user.monedas -= costo_total
+    
+    import json
+    try:
+        inv = json.loads(user.inventario) if user.inventario else {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+    except Exception:
+        inv = {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+        
+    inv[item_id] = inv.get(item_id, 0) + cantidad
+    user.inventario = json.dumps(inv)
+    
+    db.session.commit()
+    return jsonify({"success": True, "monedas": user.monedas, "inventario": inv, "usuario": user.to_dict()})
+
+@app.route('/api/usuario/usar_item', methods=['POST'])
+@jwt_required()
+def usar_objeto():
+    uid = get_jwt_identity()
+    user = Usuario.query.get(uid)
+    data = request.get_json()
+    item_id = data.get('item_id')
+    
+    import json
+    try:
+        inv = json.loads(user.inventario) if user.inventario else {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+    except Exception:
+        inv = {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+        
+    if inv.get(item_id, 0) <= 0:
+        return jsonify({"success": False, "message": "No tienes este objeto"}), 400
+        
+    if item_id in ['potion', 'superpotion']:
+        inv[item_id] -= 1
+        user.inventario = json.dumps(inv)
+        db.session.commit()
+        return jsonify({"success": True, "inventario": inv, "usuario": user.to_dict(), "message": f"¡Se usó {item_id.upper()}!"})
+    else:
+        return jsonify({"success": False, "message": "Este objeto no se puede usar fuera de batalla o no es consumible"}), 400
+
+@app.route('/api/usuario/configurar_encuentros', methods=['POST'])
+@jwt_required()
+def configurar_encuentros():
+    uid = get_jwt_identity()
+    user = Usuario.query.get(uid)
+    data = request.get_json() or {}
+    
+    permitir = data.get('permitir_encuentros')
+    if permitir is None:
+        return jsonify({"success": False, "message": "Parámetro 'permitir_encuentros' requerido"}), 400
+        
+    user.permitir_encuentros = 1 if permitir else 0
+    db.session.commit()
+    return jsonify({"success": True, "permitir_encuentros": user.permitir_encuentros, "usuario": user.to_dict()})
 
 @app.route('/api/battle/victory', methods=['POST'])
 @jwt_required()
@@ -666,12 +763,16 @@ def ganar_batalla():
     uid = get_jwt_identity()
     user = Usuario.query.get(uid)
     
-    # Differentiate between Gym and Wild if possible, 
-    # but for now we use a fixed but better balanced reward
     exp_gained = 25
     monedas_gained = 15
     subio_nivel = add_exp(user, exp_gained)
     user.monedas += monedas_gained
+    
+    import json
+    try:
+        inv = json.loads(user.inventario) if user.inventario else {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
+    except Exception:
+        inv = {"pokeball": 5, "superball": 0, "potion": 2, "superpotion": 0}
     
     db.session.commit()
     return jsonify({
@@ -681,8 +782,10 @@ def ganar_batalla():
         "new_xp": user.starter_exp, 
         "new_level": user.starter_nivel,
         "subio_nivel": subio_nivel,
-        "monedas": user.monedas
+        "monedas": user.monedas,
+        "inventario": inv
     })
+
 
 @app.route('/api/habitos/reset', methods=['POST'])
 @jwt_required()
@@ -765,7 +868,39 @@ def admin_config():
 # START
 # ---------------------------------------------------------
 
+def check_and_migrate_db():
+    try:
+        import sqlite3
+        db_path = os.path.join(basedir, 'habitmon.db')
+        if os.path.exists(db_path):
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            
+            cursor.execute("PRAGMA table_info(usuario)")
+            columns = [c[1] for c in cursor.fetchall()]
+            
+            if 'monedas' not in columns:
+                cursor.execute('ALTER TABLE usuario ADD COLUMN monedas INTEGER DEFAULT 300')
+                cursor.execute('UPDATE usuario SET monedas = 300 WHERE monedas IS NULL')
+                print("Migration: Added monedas column to usuario")
+                
+            if 'inventario' not in columns:
+                cursor.execute('ALTER TABLE usuario ADD COLUMN inventario TEXT DEFAULT \'{"pokeball":5,"superball":0,"potion":2,"superpotion":0}\'')
+                cursor.execute('UPDATE usuario SET inventario = \'{"pokeball":5,"superball":0,"potion":2,"superpotion":0}\' WHERE inventario IS NULL')
+                print("Migration: Added inventario column to usuario")
+                
+            if 'permitir_encuentros' not in columns:
+                cursor.execute('ALTER TABLE usuario ADD COLUMN permitir_encuentros INTEGER DEFAULT 1')
+                cursor.execute('UPDATE usuario SET permitir_encuentros = 1 WHERE permitir_encuentros IS NULL')
+                print("Migration: Added permitir_encuentros column to usuario")
+                
+            conn.commit()
+            conn.close()
+    except Exception as e:
+        print(f"Migration error: {e}")
+
 if __name__ == '__main__':
+    check_and_migrate_db()
     with app.app_context():
         db.create_all()
     

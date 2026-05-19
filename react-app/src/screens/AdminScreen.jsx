@@ -8,7 +8,7 @@ const EMOJI_OPTIONS = [
 ];
 
 const AdminScreen = ({ onNavigate }) => {
-  const { template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset, deletePreset, resetHabitos, notify } = useGame();
+  const { user, configurarEncuentros, template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset, deletePreset, resetHabitos, notify } = useGame();
   const [config, setConfig] = useState(null);
   const [presets, setPresets] = useState([]);
   const [presetName, setPresetName] = useState('');
@@ -297,6 +297,35 @@ const AdminScreen = ({ onNavigate }) => {
         <div style={{width: 70}}></div>
       </div>
 
+      {/* SECCIÓN AJUSTES GENERALES PARENTAL */}
+      <div style={{ background:'rgba(255,255,255,0.05)', padding: 12, marginBottom: 20, border: '2px solid #FFD700', boxShadow: '4px 4px 0 #E83030' }}>
+        <h3 style={{ fontSize: 7, color:'#FFD700', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>⚙️ REGLAS DE CONTROL PARENTAL</h3>
+        
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', background:'rgba(255,255,255,0.03)', padding: 10, border: '1px solid #444' }}>
+          <div style={{ flex: 1, paddingRight: 8 }}>
+            <span style={{ fontSize: 7, color: '#fff', display: 'block', marginBottom: 4 }}>ENCUENTROS SALVAJES POST-HÁBITOS</span>
+            <span style={{ fontSize: 6, color: '#aaa', lineHeight: '1.4em' }}>
+              Permite batallas contra Pokémon salvajes una vez que todos los hábitos de hoy se hayan completado.
+            </span>
+          </div>
+          <div
+            onClick={async () => {
+              const currentVal = user?.permitir_encuentros !== 0;
+              const newVal = !currentVal;
+              const r = await configurarEncuentros(newVal);
+              if (r.success) {
+                notify(newVal ? "¡Encuentros salvajes activados tras completar hábitos!" : "¡Encuentros salvajes desactivados tras completar hábitos!", "success");
+              } else {
+                notify("Error al guardar ajuste", "error");
+              }
+            }}
+            style={toggleStyle(user?.permitir_encuentros !== 0)}
+          >
+            <div style={toggleKnobStyle(user?.permitir_encuentros !== 0)}/>
+          </div>
+        </div>
+      </div>
+
       {/* SECCIÓN PRESETS */}
       <div style={{ background:'rgba(255,255,255,0.05)', padding: 12, marginBottom: 20, border: '2px dashed #555' }}>
         <h3 style={{ fontSize: 7, color:'#A1CAFF', marginBottom: 12 }}>GESTIONAR CONFIGURACIONES</h3>
@@ -369,6 +398,34 @@ const AdminScreen = ({ onNavigate }) => {
               style={toggleStyle(gym.activo)}
             ><div style={toggleKnobStyle(gym.activo)}/></div>
           </div>
+          
+          {/* Selector de momento del día */}
+          {gym.activo && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', background: 'rgba(255,255,255,0.03)', padding: '6px', border: '1px solid #333' }}>
+              <span style={{ fontSize: '6px', color: '#aaa', fontFamily: '"Press Start 2P"' }}>MOMENTO DEL DÍA:</span>
+              <select
+                value={gym.tiempo || 'day'}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setConfig(prev => prev.map((g, gi2) => gi2 !== gi ? g : { ...g, tiempo: val }));
+                }}
+                style={{
+                  fontFamily: '"Press Start 2P"',
+                  fontSize: '7px',
+                  padding: '4px',
+                  background: '#222',
+                  border: '1px solid #555',
+                  color: '#fff',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="morning">☀️ MAÑANA</option>
+                <option value="midday">🕛 MEDIODÍA</option>
+                <option value="day">⛅ TARDE/DÍA</option>
+                <option value="night">🌙 NOCHE</option>
+              </select>
+            </div>
+          )}
 
           {/* Lista de hábitos (Editables) */}
           {gym.activo && gym.habitos.map((h, hi) => (

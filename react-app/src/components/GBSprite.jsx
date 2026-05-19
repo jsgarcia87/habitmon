@@ -8,14 +8,16 @@ import React from 'react';
  * @param {number} row - Fila del frame (0-3)
  * @param {object} style - Estilos adicionales
  */
-export const SpriteAvatar = ({ path, size = 64, col = 0, row = 0, style = {} }) => {
+export const SpriteAvatar = ({ path, size = 64, col = 0, row = 0, style = {}, width, height }) => {
+  const w = width || size;
+  const h = height || size;
   return (
     <div style={{
-      width: `${size}px`,
-      height: `${size}px`,
+      width: `${w}px`,
+      height: `${h}px`,
       backgroundImage: `url('${path}')`,
       backgroundSize: '400% 400%', // Spritesheet 4x4
-      backgroundPosition: `${(col * 33.33).toFixed(2)}% ${(row * 33.33).toFixed(2)}%`,
+      backgroundPosition: `${(col * 33.3333).toFixed(4)}% ${(row * 33.3333).toFixed(4)}%`,
       imageRendering: 'pixelated',
       backgroundRepeat: 'no-repeat',
       ...style

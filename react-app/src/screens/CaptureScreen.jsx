@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import PokemonSprite from '../components/PokemonSprite';
+import { POKEMON_SPECIES } from '../data/pokemonData';
 
 const CaptureScreen = ({ navigate, gymId }) => {
   const { user, capturarPokemon } = useGame();
@@ -10,9 +11,19 @@ const CaptureScreen = ({ navigate, gymId }) => {
 
   if (!user) return <div className="screen-container">Cargando...</div>;
 
-  // Pokemon details (mock for victory)
-  const pkName = gymId === 'vestirse' ? 'Chikorita' : gymId === 'desayuno' ? 'Cyndaquil' : 'Totodile';
-  const pkId = gymId === 'vestirse' ? 152 : gymId === 'desayuno' ? 155 : 158;
+  // Pokemon details
+  let pkName = 'Totodile';
+  let pkId = 158;
+
+  if (typeof gymId === 'string' && isNaN(Number(gymId))) {
+    // Fallback for string gym IDs if still used
+    pkName = gymId === 'vestirse' ? 'Chikorita' : gymId === 'desayuno' ? 'Cyndaquil' : 'Totodile';
+    pkId = gymId === 'vestirse' ? 152 : gymId === 'desayuno' ? 155 : 158;
+  } else if (gymId) {
+    const pkIdStr = String(gymId).padStart(3, '0');
+    pkName = POKEMON_SPECIES[pkIdStr]?.name || 'Totodile';
+    pkId = Number(gymId);
+  }
 
   useEffect(() => {
     // Capture sequence timing

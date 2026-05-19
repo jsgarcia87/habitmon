@@ -1,282 +1,223 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useGame } from '../context/GameContext';
-import { WORLDS } from '../data/worlds';
+import React, { useState, useEffect, useCallback } from 'react';
 
-const WorldMapScreen = ({ onNavigate }) => {
-  const { gimnasiosHoy, timeOfDay } = useGame();
-  const canvasRef = useRef(null);
-  const [selectedWorld, setSelectedWorld] = useState(null);
-  const [message, setMessage] = useState('Selecciona un destino...');
+const LOCATIONS = [
+  { id: 'Map002', name: 'Pueblo Primavera', shortName: 'PRIMAVERA', type: 'town',  x: 82, y: 40, mapId: 'Map002', spawn: { x: 12, y: 12 } },
+  { id: 'Map010', name: 'Ciudad Trigal',    shortName: 'TRIGAL',    type: 'city',  x: 62, y: 20, mapId: 'Map010', spawn: { x: 21, y: 18 } },
+  { id: 'Map008', name: 'Ruta 29',          shortName: 'RUTA 29',   type: 'route', x: 62, y: 40, mapId: 'Map008', spawn: { x: 21, y: 12 } },
+  { id: 'Map070', name: 'Ciudad Fronsaf',   shortName: 'FRONSAF',   type: 'city',  x: 42, y: 40, mapId: 'Map070', spawn: { x: 18, y: 13 } },
+  { id: 'Map029', name: 'Pueblo Ganymaho',  shortName: 'GANYMAHO',  type: 'town',  x: 62, y: 57, mapId: 'Map029', spawn: { x: 10, y: 16 } },
+  { id: 'Map038', name: 'Ruta 30',          shortName: 'RUTA 30',   type: 'route', x: 62, y: 68, mapId: 'Map038', spawn: { x: 32, y: 13 } },
+  { id: 'Map040', name: 'Ruta 31',          shortName: 'RUTA 31',   type: 'route', x: 62, y: 78, mapId: 'Map040', spawn: { x: 14, y: 21 } },
+  { id: 'Map078', name: 'Ciudad Malva',     shortName: 'MALVA',     type: 'city',  x: 50, y: 87, mapId: 'Map078', spawn: { x: 14, y: 14 } },
+  { id: 'Map013', name: 'Ruta 32',          shortName: 'RUTA 32',   type: 'route', x: 30, y: 87, mapId: 'Map013', spawn: { x: 10, y: 8  } },
+];
 
-  const WORLD_POSITIONS = {
-    habitacion:    { x: 80,  y: 100 },
-    bano:          { x: 160, y: 100 },
-    cocina:        { x: 240, y: 140 },
-    colegio:       { x: 160, y: 200 },
-    parque:        { x: 80,  y: 240 },
-    salon:         { x: 240, y: 240 },
-    bano_noche:    { x: 120, y: 320 },
-    comedor_noche: { x: 200, y: 320 },
-    dormitorio:    { x: 160, y: 380 },
-  };
+const CONNECTIONS = [
+  ['Map002', 'Map008'],
+  ['Map008', 'Map010'],
+  ['Map008', 'Map070'],
+  ['Map008', 'Map029'],
+  ['Map029', 'Map038'],
+  ['Map038', 'Map040'],
+  ['Map040', 'Map078'],
+  ['Map078', 'Map013'],
+];
+
+const TYPE_COLOR = { city: '#FFD700', town: '#5af', route: '#888' };
+const TYPE_SIZE  = { city: 12, town: 10, route: 7 };
+
+export default function WorldMapScreen({ navigate, onFastTravel, currentMapId }) {
+  const [sel, setSel] = useState(() => {
+    const i = LOCATIONS.findIndex(l => l.id === currentMapId);
+    return i >= 0 ? i : 0;
+  });
+  const [confirm, setConfirm] = useState(false);
+
+  const travel = useCallback((loc) => {
+    if (onFastTravel) onFastTravel(loc.mapId, loc.spawn);
+    else navigate('city');
+  }, [onFastTravel, navigate]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width;
-    const H = canvas.height;
-
-    let frame = 0;
-    const render = () => {
-      frame++;
-      // Background: Pokémon GBC Town Map Green
-      ctx.fillStyle = '#8CC84B';
-      ctx.fillRect(0, 0, W, H);
-
-      // Draw Grid / Border Decorative
-      ctx.strokeStyle = '#7AA83B';
-      ctx.lineWidth = 1;
-      for (let i = 0; i < W; i += 20) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+    const onKey = (e) => {
+      if (e.key === 'Escape') { navigate('city'); return; }
+      if (e.key === 'ArrowUp')    setSel(s => Math.max(s - 1, 0));
+      if (e.key === 'ArrowDown')  setSel(s => Math.min(s + 1, LOCATIONS.length - 1));
+      if (e.key === 'ArrowLeft')  setSel(s => Math.max(s - 1, 0));
+      if (e.key === 'ArrowRight') setSel(s => Math.min(s + 1, LOCATIONS.length - 1));
+      if (e.key === 'z' || e.key === 'Z' || e.key === 'Enter') {
+        setConfirm(c => {
+          if (c) { travel(LOCATIONS[sel]); return false; }
+          return true;
+        });
       }
-      for (let i = 0; i < H; i += 20) {
-        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
-      }
-
-      // Draw connections (Paths)
-      ctx.strokeStyle = '#4A7A2B';
-      ctx.lineWidth = 4;
-      ctx.setLineDash([5, 5]);
-      
-      // Draw Connections between same time periods
-      const drawPath = (from, to) => {
-        const p1 = WORLD_POSITIONS[from];
-        const p2 = WORLD_POSITIONS[to];
-        if(!p1 || !p2) return;
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      };
-      
-      drawPath('habitacion', 'bano');
-      drawPath('bano', 'cocina');
-      drawPath('cocina', 'colegio');
-      drawPath('colegio', 'parque');
-      drawPath('parque', 'salon');
-      drawPath('salon', 'bano_noche');
-      drawPath('bano_noche', 'comedor_noche');
-      drawPath('comedor_noche', 'dormitorio');
-
-      ctx.setLineDash([]);
-
-      // Draw Worlds
-      WORLDS.forEach(world => {
-        const pos = WORLD_POSITIONS[world.world_id];
-        if (!pos) return;
-
-        const isCompleted = gimnasiosHoy?.includes(world.gym_id);
-        const isAvailable = world.tiempo === timeOfDay;
-        const isSelected = selectedWorld === world.world_id;
-
-        // Building Icon
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
-        ctx.fillStyle = isCompleted ? '#FFD700' : (isAvailable ? '#FFFFFF' : '#666666');
-        ctx.fill();
-        ctx.strokeStyle = isSelected ? '#FF0000' : '#000000';
-        ctx.lineWidth = isSelected ? 3 : 2;
-        ctx.stroke();
-
-        // Inner marker
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2);
-        ctx.fillStyle = isCompleted ? '#E6B800' : (isAvailable ? '#44AA44' : '#444444');
-        ctx.fill();
-
-        // Icon/Emoji
-        ctx.font = '14px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(isCompleted ? '🏅' : (isAvailable ? '!' : '🔒'), pos.x, pos.y + 5);
-
-        // Label
-        ctx.font = '7px "Press Start 2P"';
-        ctx.fillStyle = '#000';
-        ctx.shadowColor = 'rgba(255,255,255,0.5)';
-        ctx.shadowBlur = 2;
-        ctx.fillText(world.nombre, pos.x, pos.y + 32);
-        ctx.shadowBlur = 0;
-        
-        // Pulse selection
-        if(isSelected) {
-          ctx.strokeStyle = '#FF0000';
-          ctx.lineWidth = 2;
-          const s = 18 + Math.sin(frame * 0.1) * 3;
-          ctx.strokeRect(pos.x - s/2, pos.y - s/2, s, s);
-        }
-      });
-
-      requestAnimationFrame(render);
     };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [sel, travel, navigate]);
 
-    const animId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animId);
-  }, [selectedWorld, gimnasiosHoy, timeOfDay]);
-
-  const handleCanvasClick = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    let found = null;
-    Object.keys(WORLD_POSITIONS).forEach(id => {
-      const pos = WORLD_POSITIONS[id];
-      const dist = Math.sqrt((x - pos.x) ** 2 + (y - pos.y) ** 2);
-      if (dist < 25) found = id;
-    });
-
-    if (found) {
-      if (found === selectedWorld) {
-        handleSelectWorld(found);
-      } else {
-        setSelectedWorld(found);
-        const world = WORLDS.find(w => w.world_id === found);
-        setMessage(world.nombre.toUpperCase());
-      }
-    }
-  };
-
-  const handleSelectWorld = (worldId) => {
-    const world = WORLDS.find(w => w.world_id === worldId);
-    if (!world) return;
-
-    if (world.tiempo !== timeOfDay) {
-      const period = world.tiempo === 'morning' ? 'Mañana' : (world.tiempo === 'day' ? 'Tarde' : 'Noche');
-      setMessage(`SOLO POR LA ${period.toUpperCase()}`);
-      return;
-    }
-
-    onNavigate('MAP', worldId);
-  };
-
-  const currentPeriodName = timeOfDay === 'morning' ? 'Mañana' : (timeOfDay === 'day' ? 'Tarde' : 'Noche');
+  const selectedLoc = LOCATIONS[sel];
 
   return (
-    <div className="world-map-container" style={styles.container}>
-      <div style={styles.header}>
-        <h2 style={styles.title}>MAPA DE RUTINAS</h2>
-        <div style={styles.periodBadge}>
-          {currentPeriodName}
+    <div style={{
+      width: '100%', height: '100%',
+      background: '#2d5a1b',
+      display: 'flex', flexDirection: 'column',
+      fontFamily: '"Press Start 2P"',
+      position: 'relative',
+      overflow: 'hidden',
+      userSelect: 'none',
+    }}>
+      {/* Pixel grid overlay */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)',
+        backgroundSize: '16px 16px',
+      }} />
+
+      {/* Header */}
+      <div style={{
+        padding: '6px 10px', borderBottom: '3px solid #1a3a0a',
+        background: '#1f4012', zIndex: 2,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span style={{ fontSize: 7, color: '#a8d878', letterSpacing: 1 }}>MAPA MUNDIAL</span>
+        <span style={{ fontSize: 6, color: '#5a8a3a' }}>JOHTO</span>
+      </div>
+
+      {/* Map area */}
+      <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+        {/* SVG route connections */}
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="blur" />
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          {CONNECTIONS.map(([aId, bId]) => {
+            const a = LOCATIONS.find(l => l.id === aId);
+            const b = LOCATIONS.find(l => l.id === bId);
+            if (!a || !b) return null;
+            const selA = LOCATIONS[sel]?.id === aId;
+            const selB = LOCATIONS[sel]?.id === bId;
+            const active = selA || selB;
+            return (
+              <line key={`${aId}-${bId}`}
+                x1={`${a.x}%`} y1={`${a.y}%`}
+                x2={`${b.x}%`} y2={`${b.y}%`}
+                stroke={active ? '#d4f89a' : '#4a7a2b'}
+                strokeWidth={active ? 2.5 : 1.5}
+                strokeDasharray={active ? '' : '4,3'}
+                filter={active ? 'url(#glow)' : ''}
+              />
+            );
+          })}
+        </svg>
+
+        {/* Location markers */}
+        {LOCATIONS.map((loc, i) => {
+          const isSel = sel === i;
+          const isCurrent = loc.id === currentMapId;
+          const size = TYPE_SIZE[loc.type];
+          return (
+            <div
+              key={loc.id}
+              onClick={() => {
+                if (isSel) { setConfirm(true); setTimeout(() => { travel(loc); setConfirm(false); }, 200); }
+                else { setSel(i); setConfirm(false); }
+              }}
+              style={{
+                position: 'absolute',
+                left: `${loc.x}%`, top: `${loc.y}%`,
+                transform: 'translate(-50%, -50%)',
+                cursor: 'pointer', zIndex: 3,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+              }}
+            >
+              {/* Dot */}
+              <div style={{
+                width: isSel ? size + 6 : size,
+                height: isSel ? size + 6 : size,
+                borderRadius: '50%',
+                background: isSel ? '#fff' : TYPE_COLOR[loc.type],
+                border: `2px solid ${isSel ? TYPE_COLOR[loc.type] : isCurrent ? '#0f0' : 'rgba(0,0,0,0.5)'}`,
+                boxShadow: isSel
+                  ? `0 0 8px ${TYPE_COLOR[loc.type]}, 0 0 16px ${TYPE_COLOR[loc.type]}66`
+                  : isCurrent ? '0 0 5px #0f0' : 'none',
+                transition: 'all 0.12s ease',
+                position: 'relative',
+              }}>
+                {isCurrent && !isSel && (
+                  <div style={{
+                    position: 'absolute', top: -6, left: '50%', transform: 'translateX(-50%)',
+                    fontSize: 6, lineHeight: 1, color: '#0f0',
+                  }}>▼</div>
+                )}
+              </div>
+              {/* Label (only towns and cities) */}
+              {loc.type !== 'route' && (
+                <span style={{
+                  fontSize: 5, color: isSel ? '#fff' : isCurrent ? '#7ef' : '#a8d878',
+                  whiteSpace: 'nowrap', letterSpacing: 0,
+                  textShadow: isSel ? `0 0 6px ${TYPE_COLOR[loc.type]}` : '1px 1px 0 #0a2005',
+                }}>
+                  {loc.shortName}
+                </span>
+              )}
+              {/* Route label only when selected */}
+              {loc.type === 'route' && isSel && (
+                <span style={{ fontSize: 5, color: '#fff', whiteSpace: 'nowrap', textShadow: '1px 1px 0 #0a2005' }}>
+                  {loc.shortName}
+                </span>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Compass */}
+        <div style={{
+          position: 'absolute', top: 8, right: 10, zIndex: 3,
+          fontSize: 7, color: '#4a7a2b',
+          display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr',
+          gap: 1, width: 30, height: 30, textAlign: 'center',
+        }}>
+          <span/><span style={{ color: '#7aaa4a' }}>N</span><span/>
+          <span style={{ color: '#7aaa4a' }}>O</span><span style={{ fontSize: 5, color: '#5a8a3a' }}>✦</span><span style={{ color: '#7aaa4a' }}>E</span>
+          <span/><span style={{ color: '#7aaa4a' }}>S</span><span/>
         </div>
       </div>
 
-      <canvas
-        ref={canvasRef}
-        width={320}
-        height={450}
-        onClick={handleCanvasClick}
-        style={styles.canvas}
-      />
-
-      <div style={styles.footer}>
-        <div style={styles.messageBox}>
-          {message}
+      {/* Footer info panel */}
+      <div style={{
+        borderTop: '3px solid #1a3a0a',
+        background: '#111',
+        padding: '6px 10px',
+        zIndex: 2,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        minHeight: 48,
+      }}>
+        <div>
+          <div style={{ fontSize: 7, color: TYPE_COLOR[selectedLoc?.type] || '#fff', marginBottom: 4 }}>
+            {selectedLoc?.name}
+          </div>
+          <div style={{ fontSize: 5, color: '#556' }}>
+            {selectedLoc?.id === currentMapId
+              ? '★ UBICACIÓN ACTUAL'
+              : confirm ? 'CONFIRMAR... [A] VIAJAR' : '[A] SELECCIONAR · [B] CERRAR'}
+          </div>
         </div>
-        <div style={styles.btnRow}>
-          <button 
-            className="gb-button" 
-            onClick={() => onNavigate('SETUP')}
-            style={{...styles.actionBtn, backgroundColor: '#34495e'}}
-          >
-            ⚙️ SETUP
-          </button>
-          <button 
-            className="gb-button" 
-            onClick={() => selectedWorld && handleSelectWorld(selectedWorld)}
-            style={styles.actionBtn}
-          >
-            VIAJAR (A)
-          </button>
-        </div>
+        <button
+          onClick={() => navigate('city')}
+          style={{
+            background: 'none', border: '1px solid #334',
+            color: '#556', fontSize: 6, fontFamily: '"Press Start 2P"',
+            padding: '4px 8px', cursor: 'pointer',
+          }}
+        >
+          [B]
+        </button>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    width: '100%',
-    height: '100%',
-    background: '#8CC84B',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '10px 0',
-  },
-  header: {
-    padding: '10px',
-    textAlign: 'center',
-    width: '100%',
-  },
-  title: {
-    margin: 0,
-    fontFamily: '"Press Start 2P"',
-    fontSize: '12px',
-    color: '#111',
-    textShadow: '2px 2px #fff',
-  },
-  periodBadge: {
-    marginTop: '5px',
-    display: 'inline-block',
-    padding: '4px 10px',
-    background: '#111',
-    color: '#fff',
-    fontSize: '8px',
-    fontFamily: '"Press Start 2P"',
-    borderRadius: '4px',
-  },
-  canvas: {
-    background: '#fff',
-    border: '6px double #333',
-    maxWidth: '90%',
-    height: 'auto',
-    cursor: 'pointer',
-    imageRendering: 'pixelated',
-  },
-  footer: {
-    marginTop: 'auto',
-    padding: '10px',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    background: 'rgba(0,0,0,0.1)',
-  },
-  btnRow: { 
-    display: 'flex', 
-    gap: '10px', 
-    width: '90%', 
-    justifyContent: 'center' 
-  },
-  messageBox: {
-    background: '#fff',
-    border: '3px solid #111',
-    padding: '8px',
-    width: '80%',
-    textAlign: 'center',
-    fontFamily: '"Press Start 2P"',
-    fontSize: '8px',
-    minHeight: '24px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '10px',
-  },
-  actionBtn: {
-    padding: '10px 20px',
-    fontSize: '10px',
-  }
-};
-
-export default WorldMapScreen;
+}

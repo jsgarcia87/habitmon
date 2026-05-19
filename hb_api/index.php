@@ -61,10 +61,18 @@ try {
     // ─── AUTH ──────────────────────────────────────────────────────────────────
     if (strpos($route, '/auth/register') === 0 && $method === 'POST') {
         $data = get_json_input();
-        $stmt = $pdo->prepare("INSERT INTO usuarios (username, email, password_hash, avatar) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$data['username'], $data['email'], $data['password'], $data['avatar'] ?? 0]);
+        $stmt = $pdo->prepare("INSERT INTO usuarios (username, email, password_hash, avatar, monedas, inventario) VALUES (?, ?, ?, ?, 300, ?)");
+        $default_inv = '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}';
+        $stmt->execute([$data['username'], $data['email'], $data['password'], $data['avatar'] ?? 0, $default_inv]);
         $id = $pdo->lastInsertId();
-        echo json_encode(["success" => true, "token" => (string)$id, "usuario" => ["id" => $id, "username" => $data['username'], "avatar" => $data['avatar'] ?? 0]]);
+        echo json_encode(["success" => true, "token" => (string)$id, "usuario" => [
+            "id" => $id,
+            "username" => $data['username'],
+            "avatar" => $data['avatar'] ?? 0,
+            "monedas" => 300,
+            "inventario" => json_decode($default_inv, true),
+            "permitir_encuentros" => 1
+        ]]);
     }
     elseif (strpos($route, '/auth/login') === 0 && $method === 'POST') {
         $data = get_json_input();
@@ -72,7 +80,20 @@ try {
         $stmt->execute([$data['email'], $data['password']]);
         $u = $stmt->fetch();
         if ($u) {
-            echo json_encode(["success" => true, "token" => (string)$u['id'], "usuario" => ["id" => $u['id'], "username" => $u['username'], "avatar" => $u['avatar'], "starter_id" => $u['pokemon_inicial_id']]]);
+            $inv = json_decode($u['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+            if (!$inv) {
+                $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+            }
+            echo json_encode(["success" => true, "token" => (string)$u['id'], "usuario" => [
+                "id" => $u['id'],
+                "username" => $u['username'],
+                "avatar" => $u['avatar'],
+                "starter_id" => $u['pokemon_inicial_id'],
+                "starter_nombre" => $u['pokemon_inicial_nombre'],
+                "monedas" => (int)($u['monedas'] ?? 300),
+                "inventario" => $inv,
+                "permitir_encuentros" => (int)($u['permitir_encuentros'] ?? 1)
+            ]]);
         } else {
             http_response_code(401);
             echo json_encode(["success" => false, "error" => "Credenciales inválidas"]);
@@ -136,7 +157,7 @@ try {
         }
 
         // 2. Recuperar la lista final con los datos actualizados de la plantilla
-        $sql = "SELECT h.*, t.icono, t.daño, t.nombre as current_nombre, t.activo as h_activo, g.activo as g_activo 
+        $sql = "SELECT h.*, t.icono, t.daño, t.nombre as current_nombre, t.activo as h_activo, g.activo as g_activo, g.tiempo
                 FROM habitos h 
                 JOIN habitos_template t ON h.habito_id = t.id 
                 JOIN gimnasios_template g ON h.gimnasio_id = g.gym_id
@@ -157,7 +178,8 @@ try {
                     "nombre" => $h['current_nombre'] ?? $h['habito_nombre'],
                     "icono" => $h['icono'] ?? '⚔️',
                     "daño" => (int)($h['daño'] ?? 20),
-                    "completado" => (bool)$h['completado']
+                    "completado" => (bool)$h['completado'],
+                    "tiempo" => $h['tiempo'] ?? 'day'
                 ];
             }
         }
@@ -176,6 +198,20 @@ try {
         $xp_gain = 20;
         $pdo->prepare("UPDATE pokemon_coleccion SET xp = xp + ? WHERE usuario_id = ? AND is_partner = 1")->execute([$xp_gain, $uid]);
         
+        // Otorgar monedas
+        $monedas_gain = 10;
+        $pdo->prepare("UPDATE usuarios SET monedas = monedas + ? WHERE id = ?")->execute([$monedas_gain, $uid]);
+        
+        // Obtener monedas e inventario actualizados
+        $stmt_user = $pdo->prepare("SELECT monedas, inventario FROM usuarios WHERE id = ?");
+        $stmt_user->execute([$uid]);
+        $user_row = $stmt_user->fetch();
+        $new_monedas = (int)($user_row['monedas'] ?? 300);
+        $inv = json_decode($user_row['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
+
         // Manejar Level Up (XP >= 100)
         $stmt = $pdo->prepare("SELECT id, xp, nivel FROM pokemon_coleccion WHERE usuario_id = ? AND is_partner = 1");
         $stmt->execute([$uid]);
@@ -196,7 +232,9 @@ try {
             "xp_gain" => $xp_gain, 
             "leveled_up" => $leveledUp,
             "new_xp" => (int)$p['xp'],
-            "new_level" => (int)$p['nivel']
+            "new_level" => (int)$p['nivel'],
+            "monedas" => $new_monedas,
+            "inventario" => $inv
         ]);
     }
     elseif (strpos($route, '/habitos/reset') === 0 && $method === 'POST') {
@@ -230,13 +268,48 @@ try {
         if (!in_array($data['gym_id'], $gyms)) {
             $gyms[] = $data['gym_id'];
             $pdo->prepare("INSERT INTO progreso_diario (usuario_id, fecha, gimnasios_completados) VALUES (?,?,?) ON DUPLICATE KEY UPDATE gimnasios_completados = ?")->execute([$uid, $today, json_encode($gyms), json_encode($gyms)]);
+            
+            // Otorgar pokemon a colección
+            $pdo->prepare("INSERT INTO pokemon_coleccion (usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, xp, nivel) VALUES (?, ?, ?, ?, 0, 5)")->execute([$uid, $data['pokemon_id'], $data['pokemon_nombre'], $data['gym_id']]);
         }
-        echo json_encode(["success" => true]);
+        
+        // Otorgar monedas (120 coins)
+        $monedas_gain = 120;
+        $pdo->prepare("UPDATE usuarios SET monedas = monedas + ? WHERE id = ?")->execute([$monedas_gain, $uid]);
+        
+        $stmt_user = $pdo->prepare("SELECT monedas, inventario FROM usuarios WHERE id = ?");
+        $stmt_user->execute([$uid]);
+        $user_row = $stmt_user->fetch();
+        $total_monedas = (int)($user_row['monedas'] ?? 300);
+        $inv = json_decode($user_row['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
+        
+        echo json_encode([
+            "success" => true,
+            "monedas" => $total_monedas,
+            "total_monedas" => $total_monedas,
+            "inventario" => $inv
+        ]);
     }
     elseif (strpos($route, '/battle/victory') === 0 && $method === 'POST') {
         $uid = get_user_id();
         $xp_gain = 10;
         $pdo->prepare("UPDATE pokemon_coleccion SET xp = xp + ? WHERE usuario_id = ? AND is_partner = 1")->execute([$xp_gain, $uid]);
+        
+        // Otorgar monedas (15 coins)
+        $monedas_gain = 15;
+        $pdo->prepare("UPDATE usuarios SET monedas = monedas + ? WHERE id = ?")->execute([$monedas_gain, $uid]);
+        
+        $stmt_user = $pdo->prepare("SELECT monedas, inventario FROM usuarios WHERE id = ?");
+        $stmt_user->execute([$uid]);
+        $user_row = $stmt_user->fetch();
+        $total_monedas = (int)($user_row['monedas'] ?? 300);
+        $inv = json_decode($user_row['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
         
         $stmt = $pdo->prepare("SELECT id, xp, nivel FROM pokemon_coleccion WHERE usuario_id = ? AND is_partner = 1");
         $stmt->execute([$uid]);
@@ -252,14 +325,397 @@ try {
             $p['nivel'] = $newLevel;
         }
 
-        echo json_encode(["success" => true, "xp_gain" => $xp_gain, "leveled_up" => $leveledUp, "new_xp" => (int)$p['xp'], "new_level" => (int)$p['nivel']]);
+        echo json_encode([
+            "success" => true,
+            "xp_gain" => $xp_gain,
+            "leveled_up" => $leveledUp,
+            "new_xp" => (int)$p['xp'],
+            "new_level" => (int)$p['nivel'],
+            "monedas_ganadas" => $monedas_gain,
+            "monedas" => $total_monedas,
+            "inventario" => $inv
+        ]);
     }
-    // ─── COLECCIÓN ────────────────────────────────────────────────────────────
+    // ─── TIENDA & INVENTARIO ──────────────────────────────────────────────────
+    elseif (strpos($route, '/tienda/comprar') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $item_id = $data['item_id'];
+        $cantidad = isset($data['cantidad']) ? (int)$data['cantidad'] : 1;
+        
+        $precios = [
+            'pokeball' => 50,
+            'superball' => 100,
+            'potion' => 30,
+            'superpotion' => 60
+        ];
+        
+        if (!isset($precios[$item_id])) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "Objeto no válido"]);
+            exit();
+        }
+        
+        $costo_total = $precios[$item_id] * $cantidad;
+        
+        $stmt = $pdo->prepare("SELECT monedas, inventario FROM usuarios WHERE id = ?");
+        $stmt->execute([$uid]);
+        $u = $stmt->fetch();
+        
+        if (!$u) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "error" => "Usuario no encontrado"]);
+            exit();
+        }
+        
+        $monedas = (int)($u['monedas'] ?? 300);
+        if ($monedas < $costo_total) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "No tienes suficientes monedas"]);
+            exit();
+        }
+        
+        $new_monedas = $monedas - $costo_total;
+        $inv = json_decode($u['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
+        
+        $inv[$item_id] = ($inv[$item_id] ?? 0) + $cantidad;
+        $inv_json = json_encode($inv);
+        
+        $pdo->prepare("UPDATE usuarios SET monedas = ?, inventario = ? WHERE id = ?")->execute([$new_monedas, $inv_json, $uid]);
+        
+        $stmt_full = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+        $stmt_full->execute([$uid]);
+        $u_full = $stmt_full->fetch();
+        
+        echo json_encode([
+            "success" => true,
+            "monedas" => $new_monedas,
+            "inventario" => $inv,
+            "usuario" => [
+                "id" => $u_full['id'],
+                "username" => $u_full['username'],
+                "email" => $u_full['email'],
+                "avatar" => $u_full['avatar'],
+                "starter_id" => $u_full['pokemon_inicial_id'],
+                "starter_nombre" => $u_full['pokemon_inicial_nombre'],
+                "monedas" => $new_monedas,
+                "inventario" => $inv
+            ]
+        ]);
+    }
+    elseif (strpos($route, '/usuario/usar_item') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $item_id = $data['item_id'];
+        
+        $stmt = $pdo->prepare("SELECT monedas, inventario FROM usuarios WHERE id = ?");
+        $stmt->execute([$uid]);
+        $u = $stmt->fetch();
+        
+        if (!$u) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "error" => "Usuario no encontrado"]);
+            exit();
+        }
+        
+        $inv = json_decode($u['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
+        
+        if (($inv[$item_id] ?? 0) <= 0) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "No tienes este objeto"]);
+            exit();
+        }
+        
+        if (in_array($item_id, ['potion', 'superpotion'])) {
+            $inv[$item_id] -= 1;
+            $inv_json = json_encode($inv);
+            $pdo->prepare("UPDATE usuarios SET inventario = ? WHERE id = ?")->execute([$inv_json, $uid]);
+            
+            $stmt_full = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+            $stmt_full->execute([$uid]);
+            $u_full = $stmt_full->fetch();
+            
+            echo json_encode([
+                "success" => true,
+                "inventario" => $inv,
+                "usuario" => [
+                    "id" => $u_full['id'],
+                    "username" => $u_full['username'],
+                    "email" => $u_full['email'],
+                    "avatar" => $u_full['avatar'],
+                    "starter_id" => $u_full['pokemon_inicial_id'],
+                    "starter_nombre" => $u_full['pokemon_inicial_nombre'],
+                    "monedas" => (int)$u_full['monedas'],
+                    "inventario" => $inv
+                ],
+                "message" => "¡Se usó " . strtoupper($item_id) . "!"
+            ]);
+        } else {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "Este objeto no se puede usar fuera de batalla o no es consumible"]);
+        }
+    }
+    elseif (strpos($route, '/usuario/configurar_encuentros') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $permitir = isset($data['permitir_encuentros']) ? $data['permitir_encuentros'] : null;
+        
+        if ($permitir === null) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "Parámetro 'permitir_encuentros' requerido"]);
+            exit();
+        }
+        
+        $val = $permitir ? 1 : 0;
+        $pdo->prepare("UPDATE usuarios SET permitir_encuentros = ? WHERE id = ?")->execute([$val, $uid]);
+        
+        $stmt_full = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+        $stmt_full->execute([$uid]);
+        $u_full = $stmt_full->fetch();
+        
+        $inv = json_decode($u_full['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
+        
+        echo json_encode([
+            "success" => true,
+            "permitir_encuentros" => $val,
+            "usuario" => [
+                "id" => $u_full['id'],
+                "username" => $u_full['username'],
+                "email" => $u_full['email'],
+                "avatar" => $u_full['avatar'],
+                "starter_id" => $u_full['pokemon_inicial_id'],
+                "starter_nombre" => $u_full['pokemon_inicial_nombre'],
+                "monedas" => (int)$u_full['monedas'],
+                "inventario" => $inv,
+                "permitir_encuentros" => $val
+            ]
+        ]);
+    }
+    // ─── COLECCIÓN (CAPTURAR) ─────────────────────────────────────────────────
+    elseif (strpos($route, '/coleccion/capturar') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $ball_type = $data['ball_type'] ?? 'pokeball';
+        
+        $stmt = $pdo->prepare("SELECT monedas, inventario FROM usuarios WHERE id = ?");
+        $stmt->execute([$uid]);
+        $u = $stmt->fetch();
+        
+        if (!$u) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "error" => "Usuario no encontrado"]);
+            exit();
+        }
+        
+        $inv = json_decode($u['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
+        if (!$inv) {
+            $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
+        }
+        
+        if (($inv[$ball_type] ?? 0) <= 0) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "¡No tienes " . strtoupper($ball_type) . " en tu mochila!"]);
+            exit();
+        }
+        
+        $inv[$ball_type] -= 1;
+        $inv_json = json_encode($inv);
+        
+        $stmt_ins = $pdo->prepare("INSERT INTO pokemon_coleccion (usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, xp, nivel) VALUES (?, ?, ?, 'wild', 0, 5)");
+        $stmt_ins->execute([$uid, $data['pokemon_id'], $data['pokemon_nombre']]);
+        
+        $pdo->prepare("UPDATE usuarios SET inventario = ? WHERE id = ?")->execute([$inv_json, $uid]);
+        
+        $stmt_full = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+        $stmt_full->execute([$uid]);
+        $u_full = $stmt_full->fetch();
+        
+        echo json_encode([
+            "success" => true,
+            "monedas" => (int)$u_full['monedas'],
+            "inventario" => $inv,
+            "usuario" => [
+                "id" => $u_full['id'],
+                "username" => $u_full['username'],
+                "email" => $u_full['email'],
+                "avatar" => $u_full['avatar'],
+                "starter_id" => $u_full['pokemon_inicial_id'],
+                "starter_nombre" => $u_full['pokemon_inicial_nombre'],
+                "monedas" => (int)$u_full['monedas'],
+                "inventario" => $inv
+            ]
+        ]);
+    }
     elseif (strpos($route, '/coleccion') === 0) {
         $uid = get_user_id();
         $stmt = $pdo->prepare("SELECT * FROM pokemon_coleccion WHERE usuario_id = ?");
         $stmt->execute([$uid]);
         echo json_encode(["success" => true, "pokemon" => $stmt->fetchAll()]);
+    }
+    // ─── AMIGOS ───────────────────────────────────────────────────────────────
+    elseif (strpos($route, '/amigos/enviar') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $friend_username = trim($data['username'] ?? '');
+        
+        if (empty($friend_username)) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "El nombre de usuario es obligatorio."]);
+            exit();
+        }
+        
+        // Buscar el usuario por nombre
+        $stmt = $pdo->prepare("SELECT id, username FROM usuarios WHERE username = ?");
+        $stmt->execute([$friend_username]);
+        $friend = $stmt->fetch();
+        
+        if (!$friend) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "error" => "No se encontró ningún entrenador con ese nombre."]);
+            exit();
+        }
+        
+        $friend_id = (int)$friend['id'];
+        if ($friend_id === $uid) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "No puedes agregarte a ti mismo como amigo."]);
+            exit();
+        }
+        
+        $u1 = min($uid, $friend_id);
+        $u2 = max($uid, $friend_id);
+        
+        $stmt = $pdo->prepare("SELECT * FROM amigos WHERE usuario_id_1 = ? AND usuario_id_2 = ?");
+        $stmt->execute([$u1, $u2]);
+        $existing = $stmt->fetch();
+        
+        if ($existing) {
+            if ($existing['estado'] === 'aceptado') {
+                http_response_code(400);
+                echo json_encode(["success" => false, "error" => "Ya eres amigo de " . $friend['username'] . "."]);
+            } else {
+                if ((int)$existing['solicitado_por'] === $uid) {
+                    http_response_code(400);
+                    echo json_encode(["success" => false, "error" => "Ya has enviado una solicitud a " . $friend['username'] . "."]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["success" => false, "error" => $friend['username'] . " ya te ha enviado una solicitud. ¡Acéptala en tu bandeja!"]);
+                }
+            }
+            exit();
+        }
+        
+        $stmt = $pdo->prepare("INSERT INTO amigos (usuario_id_1, usuario_id_2, estado, solicitado_por) VALUES (?, ?, 'pendiente', ?)");
+        $stmt->execute([$u1, $u2, $uid]);
+        
+        echo json_encode(["success" => true, "message" => "Solicitud de amistad enviada a " . $friend['username'] . "."]);
+    }
+    elseif (strpos($route, '/amigos/aceptar') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $friend_id = (int)($data['friend_id'] ?? 0);
+        
+        $u1 = min($uid, $friend_id);
+        $u2 = max($uid, $friend_id);
+        
+        $stmt = $pdo->prepare("SELECT * FROM amigos WHERE usuario_id_1 = ? AND usuario_id_2 = ? AND estado = 'pendiente'");
+        $stmt->execute([$u1, $u2]);
+        $req = $stmt->fetch();
+        
+        if (!$req) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "error" => "No se encontró la solicitud de amistad."]);
+            exit();
+        }
+        
+        if ((int)$req['solicitado_por'] === $uid) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "No puedes aceptar tu propia solicitud."]);
+            exit();
+        }
+        
+        $stmt = $pdo->prepare("UPDATE amigos SET estado = 'aceptado' WHERE usuario_id_1 = ? AND usuario_id_2 = ?");
+        $stmt->execute([$u1, $u2]);
+        
+        echo json_encode(["success" => true, "message" => "¡Solicitud de amistad aceptada!"]);
+    }
+    elseif (strpos($route, '/amigos/rechazar') === 0 && $method === 'POST') {
+        $uid = get_user_id();
+        $data = get_json_input();
+        $friend_id = (int)($data['friend_id'] ?? 0);
+        
+        $u1 = min($uid, $friend_id);
+        $u2 = max($uid, $friend_id);
+        
+        $stmt = $pdo->prepare("DELETE FROM amigos WHERE usuario_id_1 = ? AND usuario_id_2 = ?");
+        $stmt->execute([$u1, $u2]);
+        
+        echo json_encode(["success" => true, "message" => "Amistad o solicitud eliminada."]);
+    }
+    elseif (strpos($route, '/amigos') === 0) {
+        $uid = get_user_id();
+        
+        // Amigos aceptados
+        $sql = "SELECT a.id as amistad_id, 
+                       u.id as friend_id, u.username, u.avatar, u.monedas,
+                       p.pokemon_id, p.pokemon_nombre, p.nivel as partner_level
+                FROM amigos a
+                JOIN usuarios u ON u.id = IF(a.usuario_id_1 = ?, a.usuario_id_2, a.usuario_id_1)
+                LEFT JOIN pokemon_coleccion p ON p.usuario_id = u.id AND p.is_partner = 1
+                WHERE (a.usuario_id_1 = ? OR a.usuario_id_2 = ?) AND a.estado = 'aceptado'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$uid, $uid, $uid]);
+        $amigos = $stmt->fetchAll();
+        
+        foreach ($amigos as &$friend) {
+            $hStmt = $pdo->prepare("SELECT COUNT(*) FROM habitos WHERE usuario_id = ? AND completado = 1");
+            $hStmt->execute([$friend['friend_id']]);
+            $friend['habitos_completados'] = (int)$hStmt->fetchColumn();
+            
+            $gStmt = $pdo->prepare("SELECT COUNT(DISTINCT gimnasio_id) FROM habitos WHERE usuario_id = ? AND completado = 1");
+            $gStmt->execute([$friend['friend_id']]);
+            $friend['medallas'] = (int)$gStmt->fetchColumn();
+        }
+        
+        // Solicitudes recibidas
+        $sql = "SELECT a.id as amistad_id, 
+                       u.id as friend_id, u.username, u.avatar,
+                       p.pokemon_id, p.pokemon_nombre, p.nivel as partner_level
+                FROM amigos a
+                JOIN usuarios u ON u.id = a.solicitado_por
+                LEFT JOIN pokemon_coleccion p ON p.usuario_id = u.id AND p.is_partner = 1
+                WHERE (a.usuario_id_1 = ? OR a.usuario_id_2 = ?) AND a.estado = 'pendiente' AND a.solicitado_por != ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$uid, $uid, $uid]);
+        $recibidas = $stmt->fetchAll();
+        
+        // Solicitudes enviadas
+        $sql = "SELECT a.id as amistad_id, 
+                       u.id as friend_id, u.username, u.avatar,
+                       p.pokemon_id, p.pokemon_nombre, p.nivel as partner_level
+                FROM amigos a
+                JOIN usuarios u ON u.id = IF(a.usuario_id_1 = ?, a.usuario_id_2, a.usuario_id_1)
+                LEFT JOIN pokemon_coleccion p ON p.usuario_id = u.id AND p.is_partner = 1
+                WHERE (a.usuario_id_1 = ? OR a.usuario_id_2 = ?) AND a.estado = 'pendiente' AND a.solicitado_por = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$uid, $uid, $uid, $uid]);
+        $enviadas = $stmt->fetchAll();
+        
+        echo json_encode([
+            "success" => true,
+            "amigos" => $amigos,
+            "recibidas" => $recibidas,
+            "enviadas" => $enviadas
+        ]);
     }
     // ─── ESTADÍSTICAS ─────────────────────────────────────────────────────────
     elseif (strpos($route, '/stats') === 0) {
@@ -337,6 +793,7 @@ try {
                 $res[] = [
                     "gym_id" => $g['gym_id'],
                     "gym_nombre" => $g['gym_nombre'],
+                    "tiempo" => $g['tiempo'] ?? 'day',
                     "activo" => (bool)($g['activo'] ?? true),
                     "habitos" => $gym_habitos,
                     "pokemon" => $pokemon
@@ -350,8 +807,8 @@ try {
                 $habitos = $gym['habitos'] ?? [];
                 $gym_id = $gym['gym_id'];
                 
-                $pdo->prepare("UPDATE gimnasios_template SET gym_nombre = ?, activo = ? WHERE gym_id = ?")
-                    ->execute([$gym['gym_nombre'], $gym['activo'] ? 1 : 0, $gym_id]);
+                $pdo->prepare("UPDATE gimnasios_template SET gym_nombre = ?, activo = ?, tiempo = ? WHERE gym_id = ?")
+                    ->execute([$gym['gym_nombre'], $gym['activo'] ? 1 : 0, $gym['tiempo'] ?? 'day', $gym_id]);
 
                 // Extract incoming habit IDs
                 $incoming_habit_ids = array_map(function($h) { return $h['id']; }, $habitos);

@@ -20,6 +20,13 @@ export const GameProvider = ({children}) => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null); 
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('hm_theme') === 'dark');
+  const [timeOfDay, setTimeOfDay] = useState(() => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 15) return 'midday';
+    if (hour >= 15 && hour < 20) return 'day';
+    return 'night';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
@@ -175,6 +182,15 @@ export const GameProvider = ({children}) => {
           starter_nivel: r.new_level
         }));
       }
+
+      // Actualizar monedas e inventario
+      if (r.monedas !== undefined) {
+        setUser(prev => {
+          const updated = { ...prev, monedas: r.monedas, inventario: r.inventario || prev?.inventario };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
     }
     return r;
   };
@@ -182,7 +198,16 @@ export const GameProvider = ({children}) => {
   const completarGimnasio = async (gym_id, pk_id, pk_nombre) => {
     const r = await api.completarGimnasio(
       {gym_id, pokemon_id:pk_id, pokemon_nombre:pk_nombre});
-    if(r.success) await cargarDatos();
+    if(r.success) {
+      if (r.total_monedas !== undefined || r.monedas !== undefined) {
+        setUser(prev => {
+          const updated = { ...prev, monedas: r.total_monedas !== undefined ? r.total_monedas : r.monedas, inventario: r.inventario || prev?.inventario };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+      await cargarDatos();
+    }
     return r;
   };
 
@@ -233,10 +258,17 @@ export const GameProvider = ({children}) => {
     return r;
   };
 
-  const capturarPokemon = async (pk_id, pk_nombre) => {
+  const capturarPokemon = async (pk_id, pk_nombre, ball_type = 'pokeball') => {
     try {
-      const r = await api.capturarPokemon({ pokemon_id: pk_id, pokemon_nombre: pk_nombre });
+      const r = await api.capturarPokemon({ pokemon_id: pk_id, pokemon_nombre: pk_nombre, ball_type });
       if (r.success) {
+        if (r.monedas !== undefined) {
+          setUser(prev => {
+            const updated = { ...prev, monedas: r.monedas, inventario: r.inventario || prev?.inventario };
+            localStorage.setItem('hm_user', JSON.stringify(updated));
+            return updated;
+          });
+        }
         await cargarDatos(); 
       } else {
         // Fallback local en caso de error de servidor
@@ -260,8 +292,66 @@ export const GameProvider = ({children}) => {
         nivel: r.new_level !== undefined ? r.new_level : prev.nivel,
         xp: r.new_xp !== undefined ? r.new_xp : prev.xp
       }));
+      if (r.monedas !== undefined) {
+        setUser(prev => {
+          const updated = { ...prev, monedas: r.monedas, inventario: r.inventario || prev?.inventario };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
     }
     return r;
+  };
+
+  const comprarObjeto = async (item_id, cantidad) => {
+    try {
+      const r = await api.comprarObjeto({ item_id, cantidad });
+      if (r.success) {
+        setUser(prev => {
+          const updated = { ...prev, monedas: r.monedas, inventario: r.inventario };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+      return r;
+    } catch (e) {
+      console.error("comprarObjeto error:", e);
+      return { success: false, message: e.message };
+    }
+  };
+
+  const usarObjeto = async (item_id) => {
+    try {
+      const r = await api.usarObjeto({ item_id });
+      if (r.success) {
+        setUser(prev => {
+          const updated = { ...prev, inventario: r.inventario };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+      return r;
+    } catch (e) {
+      console.error("usarObjeto error:", e);
+      return { success: false, message: e.message };
+    }
+  };
+
+  const configurarEncuentros = async (permitir_encuentros) => {
+    try {
+      const r = await api.configurarEncuentros({ permitir_encuentros });
+      if (r.success) {
+        setUser(prev => {
+          const updated = { ...prev, permitir_encuentros: r.permitir_encuentros };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+      return r;
+    } catch (e) {
+      console.error("configurarEncuentros error:", e);
+      return { success: false, message: e.message };
+    }
   };
 
   useEffect(() => {
@@ -276,10 +366,11 @@ export const GameProvider = ({children}) => {
     <Ctx.Provider value={{
       user, token, starter, habitosHoy,
       template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset,
-      gimnasiosHoy, coleccion, loading, notification, darkMode,
+      gimnasiosHoy, coleccion, loading, notification, darkMode, timeOfDay, setTimeOfDay,
       login, register, logout, notify, toggleDarkMode,
       elegirStarter, completarHabito, resetHabitos, setupDay, deletePreset,
-      completarGimnasio, cargarDatos, capturarPokemon, ganarBatalla
+      completarGimnasio, cargarDatos, capturarPokemon, ganarBatalla,
+      comprarObjeto, usarObjeto, configurarEncuentros
     }}>
       {children}
     </Ctx.Provider>

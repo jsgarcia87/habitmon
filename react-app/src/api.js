@@ -107,6 +107,31 @@ export const api = {
   ganarBatalla: () => fetch(buildUrl('/battle/victory'),
     {method:'POST',headers:h()}).then(handleResponse).catch(e => { console.error("Battle Victory Error:", e); throw e; }),
   
+  comprarObjeto: (data) => fetch(buildUrl('/tienda/comprar'),
+    {method:'POST',headers:h(),
+     body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Buy Item Error:", e); throw e; }),
+
+  usarObjeto: (data) => fetch(buildUrl('/usuario/usar_item'),
+    {method:'POST',headers:h(),
+     body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Use Item Error:", e); throw e; }),
+
+  configurarEncuentros: (data) => fetch(buildUrl('/usuario/configurar_encuentros'),
+    {method:'POST',headers:h(),
+     body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Config Encounters Error:", e); throw e; }),
+
   getStats: () => fetch(buildUrl('/stats'),
     {headers:h()}).then(handleResponse).catch(e => { console.error("Get Stats Error:", e); throw e; }),
+
+  // Amigos
+  getAmigos: () => fetch(buildUrl('/amigos'),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Get Amigos Error:", e); throw e; }),
+
+  enviarSolicitudAmistad: (data) => fetch(buildUrl('/amigos/enviar'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Send Friend Request Error:", e); throw e; }),
+
+  aceptarSolicitudAmistad: (data) => fetch(buildUrl('/amigos/aceptar'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Accept Friend Request Error:", e); throw e; }),
+
+  rechazarSolicitudAmistad: (data) => fetch(buildUrl('/amigos/rechazar'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Decline Friend Request Error:", e); throw e; }),
 };

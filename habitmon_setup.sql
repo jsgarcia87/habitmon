@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
     `avatar` INT DEFAULT 0,
     `pokemon_inicial_id` VARCHAR(10) DEFAULT NULL,
     `pokemon_inicial_nombre` VARCHAR(50) DEFAULT NULL,
+    `monedas` INT DEFAULT 300,
+    `inventario` TEXT DEFAULT NULL, -- '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}'
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import CalendarView from '../components/CalendarView';
+import { SpriteAvatar } from '../components/GBSprite';
+import { getAssetPath } from '../api';
 
 const ProfileScreen = ({ onNavigate }) => {
   const { user, starter, coleccion, gimnasiosHoy, stats, darkMode, toggleDarkMode } = useGame();
@@ -71,14 +73,16 @@ const ProfileScreen = ({ onNavigate }) => {
                   overflow: 'hidden'
                 }}>
 
-                  <div style={{
-                    width: 32, height: 40,
-                    backgroundImage: `url(Graphics/characters/trchar${String(user?.avatar || 0).padStart(3, '0')}.png)`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '0 0',
-                    imageRendering: 'pixelated',
-                    transform: 'scale(2)',
-                  }} />
+                  <SpriteAvatar 
+                    path={getAssetPath(`/Graphics/characters/trchar${String(user?.avatar || 0).padStart(3, '0')}.png`)} 
+                    width={32}
+                    height={40}
+                    col={0}
+                    row={0}
+                    style={{
+                      transform: 'scale(2)'
+                    }}
+                  />
                 </div>
                 <div style={{ fontSize: 7, color: '#666' }}>ID No. {formatID(user?.id)}</div>
               </div>

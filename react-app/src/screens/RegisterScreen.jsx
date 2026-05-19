@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { getAssetPath } from '../api';
+import { SpriteAvatar } from '../components/GBSprite';
 
 const RegisterScreen = ({ onLoginClick }) => {
   const [formData, setFormData] = useState({
@@ -72,8 +73,8 @@ const RegisterScreen = ({ onLoginClick }) => {
                   key={id} 
                   onClick={() => setFormData({...formData, avatar: id})}
                   style={{
-                    width: '60px',
-                    height: '60px',
+                    width: '65px',
+                    height: '80px',
                     border: '4px solid ' + (formData.avatar === id ? 'var(--primary-color)' : '#ccc'),
                     display: 'flex',
                     flexDirection: 'column',
@@ -84,15 +85,12 @@ const RegisterScreen = ({ onLoginClick }) => {
                     padding: '5px'
                   }}
                 >
-                  <img 
-                    src={getAssetPath(`/Graphics/characters/trchar00${id}.png`)} 
-                    alt={`Avatar ${id}`} 
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      imageRendering: 'pixelated',
-                      objectFit: 'contain'
-                    }}
+                  <SpriteAvatar 
+                    path={getAssetPath(`/Graphics/characters/trchar00${id}.png`)} 
+                    width={32}
+                    height={40}
+                    col={0}
+                    row={0}
                   />
                   <span style={{ fontSize: '8px', marginTop: '5px' }}>ID:{id}</span>
                 </div>

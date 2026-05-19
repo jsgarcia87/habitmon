@@ -68,7 +68,7 @@ const DailySetupScreen = ({ onNavigate }) => {
         {template.map(gym => (
           <div key={gym.gym_id} style={S.gymCard}>
             <div style={S.gymHeader}>
-               <span style={S.gymBadge}>{gym.tiempo === 'morning' ? '☀️' : gym.tiempo === 'night' ? '🌙' : '☁️'}</span>
+               <span style={S.gymBadge}>{gym.tiempo === 'morning' ? '☀️' : gym.tiempo === 'midday' ? '🕛' : gym.tiempo === 'night' ? '🌙' : '⛅'}</span>
                <h3 style={S.gymName}>{gym.gym_nombre.toUpperCase()}</h3>
             </div>
 

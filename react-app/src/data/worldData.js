@@ -44,7 +44,8 @@ export const WORLD_DATA = {
     ],
     exits: {
       right: { targetMap: 'Map002', spawn: { x: 1, y: 11 } },
-      left: { targetMap: 'Map029', spawn: { x: 18, y: 12 } }
+      left:  { targetMap: 'Map029', spawn: { x: 18, y: 12 } },
+      up:    { targetMap: 'Map010', spawn: { x: 8, y: 34 } }
     },
     isInterior: false
   },
@@ -213,7 +214,7 @@ export const WORLD_DATA = {
       { type: 'home', nombre: 'Casa Sr. P', x: 15, y: 4, label: { x: 15, y: 2 }, targetMapId: 'house_pokemon', spawn: { x: 9, y: 9 } }
     ],
     exits: {
-      down: { targetMap: 'Map029', spawn: { x: 20, y: 1 } },
+      down: { targetMap: 'Map029', spawn: { x: 10, y: 1 } },
       up: { targetMap: 'Map040', spawn: { x: 15, y: 28 } }
     },
     isInterior: false
@@ -271,14 +272,14 @@ export const WORLD_DATA = {
       {
         nombre: 'Deportista',
         sprite: 'char_ 01_a',
-        posicion: { x: 25, y: 15 },
+        posicion: { x: 10, y: 19 },
         direccion: 1,
         mensajes: ['¡Correr por el pueblo por la mañana es el mejor hábito de cardio!']
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'Centro Pokémon', x: 29, y: 12, label: { x: 29, y: 10 }, targetMapId: 'Map031', spawn: { x: 9, y: 9 } },
-      { type: 'home', nombre: 'Tienda de Ganymaho', x: 23, y: 12, label: { x: 23, y: 10 }, targetMapId: 'Map032', spawn: { x: 9, y: 9 } }
+      { type: 'home', nombre: 'Centro Pokémon', x: 14, y: 9, label: { x: 14, y: 7 }, targetMapId: 'Map031', spawn: { x: 9, y: 9 } },
+      { type: 'home', nombre: 'Tienda de Ganymaho', x: 8, y: 9, label: { x: 8, y: 7 }, targetMapId: 'Map032', spawn: { x: 9, y: 9 } }
     ],
     exits: {
       right: { targetMap: 'Map008', spawn: { x: 1, y: 11 } },
@@ -298,7 +299,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map029', spawn: { x: 29, y: 13 } } },
+    exits: { down: { targetMap: 'Map029', spawn: { x: 14, y: 10 } } },
     isInterior: true
   },
   Map032: {
@@ -313,7 +314,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map029', spawn: { x: 23, y: 13 } } },
+    exits: { down: { targetMap: 'Map029', spawn: { x: 8, y: 10 } } },
     isInterior: true
   },
   house_1: {
@@ -376,6 +377,7 @@ export const WORLD_DATA = {
     ],
     buildings: [
       { type: 'home', nombre: 'Centro Pokémon', x: 16, y: 27, label: { x: 16, y: 25 }, targetMapId: 'Map011', spawn: { x: 12, y: 20 } },
+      { type: 'home', nombre: 'C.C. Trigal', x: 26, y: 27, label: { x: 26, y: 25 }, targetMapId: 'Map018', spawn: { x: 13, y: 11 } },
       { type: 'gym', gymId: 'orden', nombre: 'Gimnasio Trigal', x: 26, y: 7, label: { x: 26, y: 5 }, targetMapId: 'Map012', spawn: { x: 10, y: 19 } }
     ],
     exits: {
@@ -443,19 +445,36 @@ export const WORLD_DATA = {
     exits: { down: { targetMap: 'Map078', spawn: { x: 23, y: 12 } } },
     isInterior: true
   },
+  Map013: {
+    nombre: 'RUTA 32',
+    npcs: [
+      {
+        nombre: 'Pescador',
+        sprite: 'char_ 01_a',
+        posicion: { x: 10, y: 10 },
+        direccion: 2,
+        mensajes: ['¡Paciencia y constancia! Eso es lo que enseña la pesca.', 'Como un buen hábito, los peces no pican si no esperas.']
+      }
+    ],
+    buildings: [],
+    exits: {
+      up: { targetMap: 'Map078', spawn: { x: 15, y: 26 } }
+    },
+    isInterior: false
+  },
   Map018: {
     nombre: 'C.C. Trigal - 1F',
     npcs: [
       {
         nombre: 'Recepcionista',
         sprite: 'char_ 11_a',
-        posicion: { x: 13, y: 7 },
+        posicion: { x: 16, y: 5 },
         direccion: 2,
         mensajes: ['¡Bienvenido al Centro Comercial de Ciudad Trigal!', 'En cada planta encontrarás diferentes tiendas y entrenadores de hábitos.']
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map010', spawn: { x: 16, y: 28 } } },
+    exits: { down: { targetMap: 'Map010', spawn: { x: 26, y: 28 } } },
     isInterior: true
   }
 };

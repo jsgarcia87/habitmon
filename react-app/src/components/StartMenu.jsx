@@ -4,11 +4,14 @@ const StartMenu = ({ isOpen, onClose, onNavigate, user }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const menuItems = [
+    { label: 'MAPA',    icon: '🗺️', id: 'worldmap' },
     { label: 'POKÉDEX', icon: '📖', id: 'pokedex' },
     { label: 'POKÉMON', icon: '🐾', id: 'pokemon' },
     { label: 'BOLSA', icon: '🎒', id: 'bag' },
+    { label: 'TIENDA', icon: '🏪', id: 'shop' },
     { label: 'AGENDA', icon: '📋', id: 'agenda' },
     { label: user?.username?.toUpperCase() || 'FICHA', icon: '🆔', id: 'profile' },
+    { label: 'AMIGOS', icon: '👥', id: 'friends' },
     { label: 'GUARDAR', icon: '💾', id: 'save' },
     { label: 'OPCIONES', icon: '⚙️', id: 'admin' },
     { label: 'SALIR', icon: '❌', id: 'exit' },

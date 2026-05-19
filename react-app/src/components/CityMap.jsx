@@ -5,7 +5,7 @@ import { TILE_SIZE, parseRMXPTable, parseRMXPPassages, parseRMXPPriorities, chec
 import { safeDrawImage } from '../utils/gfxUtils';
 
 const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [], buildings = [], children }) => {
-  const { user, gimnasiosHoy, notify } = useGame();
+  const { user, gimnasiosHoy, habitosHoy, notify } = useGame();
   const canvasRef = useRef(null);
   const worldOverlayRef = useRef(null);
   const [mapData, setMapData] = useState(null);
@@ -339,7 +339,18 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
              // 2 second cooldown after returning to map
              if (now - lastEncounterRef.current > 2000) {
                lastEncounterRef.current = now;
-               onEvent({ type: 'encounter' });
+               
+               const totalHabits = habitosHoy?.length || 0;
+               const completedAll = totalHabits > 0 && (habitosHoy || []).every(h => h.completado);
+               const encountersAllowed = user?.permitir_encuentros !== 0;
+               
+               if (!encountersAllowed) {
+                 console.log("Wild encounters disabled: deactivated by parent control.");
+               } else if (totalHabits > 0 && !completedAll) {
+                 console.log("Wild encounters disabled: daily habits not yet completed.");
+               } else {
+                 onEvent({ type: 'encounter' });
+               }
              }
           }
         } else p.walkFrame = Math.floor(p.progress * 4) % 4;
@@ -498,46 +509,161 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
           // Renderizar solo si está en pantalla
           if (sx > -TILE_SIZE * 3 && sx < cw + TILE_SIZE * 3 && sy > -TILE_SIZE * 3 && sy < ch + TILE_SIZE * 3) {
             ctx.save();
-            const done = b.gymId ? gimnasiosHoy?.find(g => g.gym_id === b.gymId)?.completado : false;
             
-            // La etiqueta se dibuja exactamente en la coordenada calculada
-            // Quitamos el offset flotante y los decimales para máxima precisión en la cuadrícula
+            // Determinar estados y colores del cartel
+            const isGym = b.type === 'gym';
+            const labelH = isGym ? 24 : 16; // Más alto para gimnasios para dar buen espaciado
+
+            let baseColor = '#1A1A8A'; // Pending default blue
+            let textColor = '#ffffff';
+            let borderColor = '#ffffff';
+            let badgeText = '';
+            let iconAbove = null;
+            let pulseEffect = false;
+            let isGymActive = true;
+            let isDone = false;
+            
+            if (isGym) {
+              // 1. Obtener los hábitos de este gimnasio hoy
+              const gymHabits = b.gymId ? (habitosHoy || []).filter(h => h.gym_id === b.gymId) : [];
+              isGymActive = gymHabits.length > 0;
+              isDone = isGymActive && gymHabits.every(h => h.completado);
+              
+              // 2. Determinar si es el siguiente objetivo
+              const gymOrder = ['vestirse', 'desayuno', 'higiene', 'orden', 'comida', 'fitness'];
+              let nextPendingGymId = null;
+              for (const gymId of gymOrder) {
+                const gHabits = (habitosHoy || []).filter(h => h.gym_id === gymId);
+                if (gHabits.length > 0 && !gHabits.every(h => h.completado)) {
+                  nextPendingGymId = gymId;
+                  break;
+                }
+              }
+              if (!nextPendingGymId) {
+                const anyPending = (habitosHoy || []).find(h => !h.completado);
+                if (anyPending) nextPendingGymId = anyPending.gym_id;
+              }
+              
+              const isNextTarget = b.gymId === nextPendingGymId;
+
+              if (!isGymActive) {
+                baseColor = '#444444'; // Gris acero
+                textColor = '#888888';
+                borderColor = '#666666';
+                badgeText = 'CERRADO';
+                iconAbove = '🔒';
+              } else if (isDone) {
+                baseColor = '#2D8A2D'; // Verde alegre
+                textColor = '#ffffff';
+                borderColor = '#85e085';
+                badgeText = 'HECHO';
+                iconAbove = '🏅';
+              } else if (isNextTarget) {
+                baseColor = '#FFD700'; // Dorado brillante
+                textColor = '#000000'; // Texto negro para máxima legibilidad
+                borderColor = '#ffffff';
+                badgeText = '¡AQUÍ!';
+                iconAbove = '⭐';
+                pulseEffect = true;
+              } else {
+                baseColor = '#1A1A8A'; // Azul clásico
+                textColor = '#ffffff';
+                borderColor = '#8ab4f8';
+                badgeText = 'PENDIENTE';
+                iconAbove = '❓';
+              }
+            } else {
+              // Home
+              baseColor = '#A83030'; // Rojo clásico
+              textColor = '#ffffff';
+              borderColor = '#ffffff';
+              iconAbove = '🏠';
+            }
+
+            const cleanName = (b.nombre || '???').toUpperCase();
+            
+            // ¡Ancho dinámico del cartel para evitar textos amontonados o recortados!
+            const labelW = Math.max(TILE_SIZE * 2.5, cleanName.length * 6 + 18);
             const labelY = sy;
-            const labelW = TILE_SIZE * 2.5;
             const labelX = sx - (labelW / 2) + 16;
             
+            // Pulsing glow border for the next target
+            if (pulseEffect) {
+              ctx.save();
+              ctx.strokeStyle = '#FFD700';
+              ctx.lineWidth = 3 + Math.sin(Date.now() / 150) * 1.5;
+              ctx.strokeRect(Math.floor(labelX - 1), Math.floor(labelY - 1), labelW + 2, labelH + 2);
+              ctx.restore();
+            }
+
             // Sign Shadow (Offset relative to animated label)
             ctx.fillStyle = 'rgba(0,0,0,0.4)';
-            ctx.fillRect(Math.floor(labelX + 2), Math.floor(labelY + 2), labelW, 16);
+            ctx.fillRect(Math.floor(labelX + 2), Math.floor(labelY + 2), labelW, labelH);
             
-            // Sign Base (Johto style)
-            const baseColor = b.type === 'home' ? '#A83030' : (done ? '#2D8A2D' : '#1A1A8A');
+            // Sign Base
             ctx.fillStyle = baseColor;
-            ctx.fillRect(Math.floor(labelX), Math.floor(labelY), labelW, 16);
+            ctx.fillRect(Math.floor(labelX), Math.floor(labelY), labelW, labelH);
             
             // Sign Border
-            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
-            ctx.strokeRect(Math.floor(labelX + 1), Math.floor(labelY + 1), labelW - 2, 14);
+            ctx.strokeStyle = borderColor; ctx.lineWidth = 1;
+            ctx.strokeRect(Math.floor(labelX + 1), Math.floor(labelY + 1), labelW - 2, labelH - 2);
             
-            // Text Rendering
-            ctx.fillStyle = '#fff'; 
-            ctx.font = '8px "Press Start 2P", monospace'; 
+            // Configuración de renderizado de texto
+            ctx.save();
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
             
-            // Text Shadow/Stroke for extra clarity
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            const textX = Math.floor(labelX + labelW/2);
-            const textY = Math.floor(labelY + 9);
-            const cleanName = (b.nombre || '???').toUpperCase();
-            ctx.strokeText(cleanName, textX, textY);
-            ctx.fillText(cleanName, textX, textY);
+            if (isGym) {
+              ctx.textBaseline = 'top';
+              
+              // Línea 1: Nombre del gimnasio (tamaño 6px para máxima nitidez pixel-art)
+              ctx.font = '6px "Press Start 2P", monospace';
+              const textX = Math.floor(labelX + labelW / 2);
+              const textY1 = Math.floor(labelY + 5);
+              
+              // Sombra retro de 1px
+              ctx.fillStyle = pulseEffect ? 'rgba(0,0,0,0.15)' : '#000000';
+              ctx.fillText(cleanName, textX + 1, textY1 + 1);
+              // Texto principal
+              ctx.fillStyle = textColor;
+              ctx.fillText(cleanName, textX, textY1);
+              
+              // Línea 2: Estado del gimnasio (tamaño 5px)
+              ctx.font = '5px "Press Start 2P", monospace';
+              const textY2 = Math.floor(labelY + 14);
+              const badgeColor = isGymActive ? (isDone ? '#85e085' : '#8ab4f8') : '#888888';
+              
+              // Sombra retro de 1px
+              ctx.fillStyle = pulseEffect ? 'rgba(0,0,0,0.15)' : '#000000';
+              ctx.fillText(badgeText, textX + 1, textY2 + 1);
+              // Texto principal
+              ctx.fillStyle = pulseEffect ? '#000000' : badgeColor;
+              ctx.fillText(badgeText, textX, textY2);
+              
+            } else {
+              // Alineación única al centro para casas (sin duplicidad redundante)
+              ctx.textBaseline = 'middle';
+              ctx.font = '7px "Press Start 2P", monospace';
+              const textX = Math.floor(labelX + labelW / 2);
+              const textY = Math.floor(labelY + labelH / 2 + 1);
+              
+              // Sombra retro de 1px
+              ctx.fillStyle = '#000000';
+              ctx.fillText(cleanName, textX + 1, textY + 1);
+              // Texto principal
+              ctx.fillStyle = textColor;
+              ctx.fillText(cleanName, textX, textY);
+            }
+            ctx.restore();
             
-            if (done) { 
+            // Bouncing Icon Above
+            if (iconAbove) { 
+              ctx.save();
               const bounce = Math.sin(Date.now() / 150) * 3;
               ctx.font = '14px serif'; 
-              ctx.fillText('🏅', Math.floor(labelX + labelW/2), Math.floor(labelY - 12 + bounce)); 
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(iconAbove, Math.floor(labelX + labelW / 2), Math.floor(labelY - 12 + bounce)); 
+              ctx.restore();
             }
             ctx.restore();
           }
@@ -553,7 +679,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [mapData, isLoading, gimnasiosHoy, npcs, buildings, direction, onEvent]);
+  }, [mapData, isLoading, gimnasiosHoy, habitosHoy, npcs, buildings, direction, onEvent]);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000', overflow: 'hidden' }}>
