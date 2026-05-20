@@ -54,6 +54,26 @@ export const GYM_CONFIGS = {
     dialogo: ['¡Sin dolor no hay gloria!', '¿Has hecho ya tu ejercicio hoy?'],
     tiles: { floor: 10, wall: 4, carpet: 26 },
     leaderPos: { x: 9, y: 3 }
+  },
+  'pokecenter': {
+    id: null,
+    type: 'pokecenter',
+    nombre: 'CENTRO POKÉMON',
+    sprite: 'char_ 11_a',
+    tileset: `${BASE}Graphics/tilesets/gsc gym 1a.png`,
+    dialogo: ['¡Hola! Bienvenido al Centro Pokémon.', '¿Quieres que restauremos las fuerzas de tus Habitmon?'],
+    tiles: { floor: 28, wall: 17, carpet: 21 },
+    leaderPos: { x: 9, y: 3 }
+  },
+  'mart': {
+    id: null,
+    type: 'mart',
+    nombre: 'TIENDA POKÉMON',
+    sprite: 'char_ 02_a',
+    tileset: `${BASE}Graphics/tilesets/gsc gym 2b.png`,
+    dialogo: ['¡Hola! Bienvenido a la Tienda Pokémon.', '¿En qué te puedo ayudar hoy?'],
+    tiles: { floor: 15, wall: 11, carpet: 37 },
+    leaderPos: { x: 9, y: 3 }
   }
 };
 
@@ -181,13 +201,35 @@ function generateFitness(cfg) {
   return { width: w, height: h, layers };
 }
 
+// Pokecenter: counter row near top (gap at x=9,10 to reach Joy), open floor for players
+function generatePokecenter(cfg) {
+  const { w, h, layers } = createBaseRoom(cfg);
+  setWalls(layers, cfg.tiles.wall, [
+    [6,4],[7,4],[8,4],[11,4],[12,4],[13,4]
+  ]);
+  return { width: w, height: h, layers };
+}
+
+// Mart: counter near top + shelving units on both sides
+function generateMart(cfg) {
+  const { w, h, layers } = createBaseRoom(cfg);
+  setWalls(layers, cfg.tiles.wall, [
+    [6,4],[7,4],[8,4],[11,4],[12,4],[13,4],
+    [6,6],[6,8],[6,10],
+    [13,6],[13,8],[13,10]
+  ]);
+  return { width: w, height: h, layers };
+}
+
 const GENERATORS = {
   'Map015': generateVestirse,
   'Map046': generateHigiene,
   'Map007': generateOrden,
   'Map016': generateComida,
   'Map005': generateDesayuno,
-  'Map008': generateFitness
+  'Map008': generateFitness,
+  'pokecenter': generatePokecenter,
+  'mart': generateMart,
 };
 
 export const GYM_MAPS = {};

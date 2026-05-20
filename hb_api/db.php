@@ -12,8 +12,8 @@ if (file_exists($_env_file)) {
 
 $db_host = getenv('HM_DB_HOST') ?: '127.0.0.1';
 $db_name = getenv('HM_DB_NAME') ?: 'habitmon_db';
-$db_user = getenv('HM_DB_USER') ?: '';
-$db_pass = getenv('HM_DB_PASS') ?: '';
+$db_user = getenv('HM_DB_USER') ?: 'Sangar';
+$db_pass = getenv('HM_DB_PASS') ?: 'SangarBD';
 
 define('TOKEN_SECRET', getenv('HM_TOKEN_SECRET') ?: 'habitmon-token-dev-only-change-me');
 
@@ -79,6 +79,30 @@ try {
     } catch(Exception $ex) {}
     try { $pdo->exec("ALTER TABLE gimnasios_template MODIFY COLUMN `tiempo` ENUM('morning', 'midday', 'day', 'night') DEFAULT 'day'"); } catch(Exception $ex) {}
 
+    // ── Seed default gym/habit templates if all are inactive or missing ────────
+    try {
+        $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
+        if ($activeGyms === 0) {
+            // Reactivate any existing gyms first
+            $pdo->exec("UPDATE gimnasios_template SET activo = 1");
+            $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
+        }
+        if ($activeGyms === 0) {
+            // Insert default gyms if table is empty
+            $pdo->exec("INSERT IGNORE INTO gimnasios_template (gym_id, gym_nombre, tiempo, orden, activo) VALUES
+                ('vestirse','Gimnasio Vestirse','morning',1,1),
+                ('higiene','Gimnasio Higiene','morning',2,1),
+                ('desayuno','Gimnasio Desayuno','morning',3,1),
+                ('orden','Gimnasio Orden','night',4,1)");
+        }
+    } catch(Exception $ex) {}
+    try {
+        $activeHabits = (int)$pdo->query("SELECT COUNT(*) FROM habitos_template WHERE activo = 1")->fetchColumn();
+        if ($activeHabits === 0) {
+            $pdo->exec("UPDATE habitos_template SET activo = 1");
+        }
+    } catch(Exception $ex) {}
+
     // ── Migrate plaintext passwords → bcrypt (runs once per user) ────────────
     try {
         $rows = $pdo->query("SELECT id, password_hash FROM usuarios WHERE password_hash NOT LIKE '\$2y\$%' AND password_hash != ''")->fetchAll();
@@ -90,7 +114,10 @@ try {
 
 } catch(PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Database connection failed']);
+    $msg = getenv('APP_DEBUG') === 'true'
+        ? 'DB error: ' . $e->getMessage()
+        : 'Database connection failed';
+    echo json_encode(['success' => false, 'error' => $msg]);
     exit();
 }
 ?>
