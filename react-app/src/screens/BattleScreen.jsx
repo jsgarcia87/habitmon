@@ -75,8 +75,8 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   }, [habitosHoy, gymId, localCompleted]);
 
   const activeAnimsRef = useRef([]);
-  const playerOffsetRef = useRef({ x: 0, y: 0 });
-  const enemyOffsetRef = useRef({ x: 0, y: 0 });
+  const playerOffsetRef = useRef({ x: 0, y: 0, visible: true, opacity: 1, scale: 1, tintColor: null, tintAlpha: 0 });
+  const enemyOffsetRef = useRef({ x: 0, y: 0, visible: true, opacity: 1, scale: 1, tintColor: null, tintAlpha: 0 });
   const screenOffsetRef = useRef({ x: 0, y: 0 });
   const isFlashingRef = useRef(false);
   const statusPulseRef = useRef(0); // ms accumulator for status-effect animations
@@ -228,7 +228,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       const enemyFormattedId = String(eTeam[0].id).padStart(3, '0');
       const en = new Image(); en.src = getAssetPath(`Graphics/battlers/${enemyFormattedId}.png`); en.onload = () => { enemyImgRef.current = en; };
 
-      const pPk = new Image(); const starterId = String(pInst.id).padStart(3, '0');
+      const pPk = new Image(); const starterId = String(pInst.id || 16).padStart(3, '0');
       pPk.src = getAssetPath(`Graphics/battlers/${starterId}b.png`); pPk.onload = () => { playerPkImgRef.current = pPk; };
     } catch (err) {
       console.error("Battle Init Error:", err);
@@ -380,8 +380,10 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     
     // Enemy pokemon drawing with full color-tint support
     if (intro.enemyOpacity > 0 && enemyImgRef.current && enemyOffsetRef.current.visible) {
-      ctx.save(); ctx.globalAlpha = intro.enemyOpacity * (enemyOffsetRef.current.opacity ?? 1);
+      const eOpacity = intro.enemyOpacity * (enemyOffsetRef.current.opacity ?? 1);
       const eScale = (enemyOffsetRef.current.scale ?? 1) * (intro.enemyScale || 1);
+      if (eOpacity > 0 && eScale > 0) {
+      ctx.save(); ctx.globalAlpha = eOpacity;
       ctx.translate(W * 0.73 + enemyOffsetRef.current.x + (intro.enemyOffsetX || 0), H * 0.38 + enemyOffsetRef.current.y);
       ctx.scale(eScale, eScale);
       
@@ -413,12 +415,15 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         ctx.restore();
       }
       ctx.restore();
+      } // end eOpacity/eScale guard
     }
 
     // Player pokemon drawing with energy discharge popping and damage flashes
     if ([INTRO_STATES.BALL_FLASH, INTRO_STATES.POKEMON_APPEAR, INTRO_STATES.HUD_SLIDE, INTRO_STATES.READY].includes(intro.state) && playerPkImgRef.current && playerOffsetRef.current.visible) {
-      ctx.save(); ctx.globalAlpha = playerOffsetRef.current.opacity ?? 1;
+      const pOpacity = playerOffsetRef.current.opacity ?? 1;
       const pScale = (playerOffsetRef.current.scale ?? 1) * (intro.playerScale || 1);
+      if (pOpacity > 0 && pScale > 0) {
+      ctx.save(); ctx.globalAlpha = pOpacity;
       ctx.translate(W * 0.22 + playerOffsetRef.current.x + (intro.playerShake || 0), H * 0.70 + playerOffsetRef.current.y);
       ctx.scale(pScale, pScale);
       
@@ -451,6 +456,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         ctx.restore();
       }
       ctx.restore();
+      } // end pOpacity/pScale guard
     }
 
     if (intro.ballVisible) {
@@ -738,12 +744,14 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     if (!win) {
       sfx.faint();
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'player', duration: 1000 }));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'player', duration: 99999, delay: 1000 }));
       await new Promise(r => setTimeout(r, 1200));
       await showMessage(`¡${playerPkmn.name.toUpperCase()} se debilitó!`);
       navigate('city');
     } else {
       sfx.faint();
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 2500 }));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'enemy', duration: 99999, delay: 2500 }));
       await new Promise(r => setTimeout(r, 2700));
       const gymReward = !isWild ? await completarGimnasio(gymId, starter.starter_id, starter.starter_nombre).catch(() => ({})) : {};
       const reward = await ganarBatalla().catch(() => ({}));
