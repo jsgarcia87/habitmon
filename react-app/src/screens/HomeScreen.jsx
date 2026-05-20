@@ -59,7 +59,6 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
            ]
          });
        } else if (npc.id === 'leader') {
-         // Diálogo del líder del gimnasio
          const gymConfig = INTERIOR_CONFIGS[currentMapId];
          setDialogue({
            name: gymConfig.nombre,
@@ -67,6 +66,24 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
            options: [
              { label: "¡DESAFÍO!", value: "battle" },
              { label: "LUEGO...", value: "cancel" }
+           ]
+         });
+       } else if (npc.id === 'joy') {
+         setDialogue({
+           name: "ENFERMERA JOY",
+           text: ["¡Hola! Bienvenido al Centro Pokémon.", "¿Quieres que restauremos las fuerzas de tus Habitmon?"],
+           options: [
+             { label: "SÍ, POR FAVOR", value: "heal_joy" },
+             { label: "NO, GRACIAS", value: "cancel" }
+           ]
+         });
+       } else if (npc.id === 'dependiente') {
+         setDialogue({
+           name: "DEPENDIENTE",
+           text: ["¡Hola! Bienvenido a la Tienda Pokémon.", "¿Qué deseas comprar hoy?"],
+           options: [
+             { label: "VER ARTÍCULOS", value: "shop" },
+             { label: "NADA, GRACIAS", value: "cancel" }
            ]
          });
        }
@@ -111,19 +128,27 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
     if (currentMapId === 'house_1') {
       return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }];
     }
-    
-    const gymConfig = INTERIOR_CONFIGS[currentMapId];
-    if (gymConfig && gymConfig.id) {
+
+    const cfg = INTERIOR_CONFIGS[currentMapId];
+    if (!cfg) return [];
+
+    if (cfg.type === 'pokecenter') {
+      return [{ id: 'joy', nombre: 'Enfermera Joy', sprite: cfg.sprite || 'char_ 11_a', x: cfg.leaderPos?.x || 9, y: cfg.leaderPos?.y || 3, direccion: 2 }];
+    }
+    if (cfg.type === 'mart') {
+      return [{ id: 'dependiente', nombre: 'Dependiente', sprite: cfg.sprite || 'char_ 02_a', x: cfg.leaderPos?.x || 9, y: cfg.leaderPos?.y || 3, direccion: 2 }];
+    }
+    if (cfg.id) {
       return [{
         id: 'leader',
-        nombre: gymConfig.nombre,
-        sprite: gymConfig.sprite,
-        x: gymConfig.leaderPos?.x || 9,
-        y: gymConfig.leaderPos?.y || 5,
+        nombre: cfg.nombre,
+        sprite: cfg.sprite,
+        x: cfg.leaderPos?.x || 9,
+        y: cfg.leaderPos?.y || 5,
         direccion: 2
       }];
     }
-    
+
     return [];
   }, [currentMapId]);
 
@@ -171,6 +196,17 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
                 }, 1000);
               }, 500);
             }
+            else if (val === 'heal_joy') {
+              setDialogue(null);
+              setIsFading(true);
+              setTimeout(() => {
+                setTimeout(() => {
+                  setIsFading(false);
+                  setDialogue({ name: "ENFERMERA JOY", text: ["¡Tus Habitmon han recuperado todas sus fuerzas!", "¡Buena suerte en tu aventura!"] });
+                }, 1000);
+              }, 500);
+            }
+            else if (val === 'shop') navigate('shop');
             else setDialogue(null);
           }}
           options={dialogue.options}
