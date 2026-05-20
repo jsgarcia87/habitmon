@@ -790,7 +790,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           </div>
           <BattleActionMenu isWild={isWild} menuView={menuView} setMenuView={setMenuView} phase={phase} habitsForStage={habitsForStage} localCompleted={localCompleted} handleHabitAttack={handleHabitAttack} moves={playerPkmn?.moves || []} onMoveSelect={resolveTurn} setMessage={setMessage} navigate={navigate} user={user} handleUseItemInBattle={handleUseItemInBattle} />
         </div>
-        <VictoryOverlay victoryData={victoryData} displayXp={displayXp} displayMonedas={displayMonedas} showContinueHint={showContinueHint} onClose={() => navigate('city')} />
+        <VictoryOverlay victoryData={victoryData} displayXp={displayXp} displayMonedas={displayMonedas} showContinueHint={showContinueHint} onClose={() => pendingEvolution ? navigate('evolution', pendingEvolution) : navigate('city')} />
         <style>{`
           .battle-btn { background: #e8e8d8; border: 2px solid #666; border-radius: 3px; font-family: "Press Start 2P", monospace; font-size: 8px; color: #222; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4px 2px; }
           .battle-btn:hover:not(:disabled) { background: #d0d0c0; }

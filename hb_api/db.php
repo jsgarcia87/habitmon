@@ -17,6 +17,15 @@ $db_pass = getenv('HM_DB_PASS') ?: '';
 
 define('TOKEN_SECRET', getenv('HM_TOKEN_SECRET') ?: 'habitmon-token-dev-only-change-me');
 
+// ── Inventory helper ──────────────────────────────────────────────────────────
+
+function parse_inventory(?string $json): array {
+    $default = ['pokeball' => 5, 'superball' => 0, 'potion' => 2, 'superpotion' => 0];
+    if (!$json) return $default;
+    $inv = json_decode($json, true);
+    return is_array($inv) ? $inv : $default;
+}
+
 // ── Token helpers (HMAC-SHA256 signed, no external lib needed) ──────────────
 
 function base64url_encode(string $data): string {

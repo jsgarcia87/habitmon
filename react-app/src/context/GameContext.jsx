@@ -34,6 +34,19 @@ export const GameProvider = ({children}) => {
     localStorage.setItem('hm_theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
+  // Update timeOfDay every minute so it stays accurate across long sessions
+  useEffect(() => {
+    const getTimeOfDay = () => {
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 12) return 'morning';
+      if (hour >= 12 && hour < 15) return 'midday';
+      if (hour >= 15 && hour < 20) return 'day';
+      return 'night';
+    };
+    const id = setInterval(() => setTimeOfDay(getTimeOfDay()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const notify = (message, type = 'info') => {
@@ -87,8 +100,6 @@ export const GameProvider = ({children}) => {
 
   const cargarDatos = useCallback(async () => {
     const tok = localStorage.getItem('hm_token');
-    console.log('Token en localStorage:', tok ? 
-      tok.substring(0,20)+'...' : 'NULL');
     if(!tok) return;
     setLoading(true);
     try {
@@ -126,30 +137,22 @@ export const GameProvider = ({children}) => {
         return;
       }
 
-      console.log('API Results:', { starter: s, habitos: h, stats: statsRes });
-
       if(s?.success) {
         const data = s.starter || s;
-        console.log('Starter Data found:', data);
         setStarter({
           ...data,
-          // Normalización para consistencia interna (usamos los nombres del backend directamente)
           starter_id: data.starter_id || data.pokemon_id,
           starter_nombre: data.starter_nombre || data.pokemon_nombre,
           starter_nivel: data.starter_nivel || data.nivel || 5,
           starter_exp: data.starter_exp || data.xp || 0
         });
-        
-        // Sync user state if starter was found on server but missing locally
+
         const serverStarterId = data.starter_id || data.pokemon_id;
         if (serverStarterId && (!user || !user.starter_id)) {
-            console.log('Syncing user starter_id from server:', serverStarterId);
             const updatedUser = { ...(user || {}), starter_id: serverStarterId };
             localStorage.setItem('hm_user', JSON.stringify(updatedUser));
             setUser(updatedUser);
         }
-      } else {
-        console.warn('Starter API returned failure:', s);
       }
       if(h?.success) setHabitosHoy(h.habitos || []);
       if(g?.success) setGimnasiosHoy(g.gimnasios || []);
@@ -338,6 +341,24 @@ export const GameProvider = ({children}) => {
     }
   };
 
+  const evolucionar = async (fromId, toId, toName) => {
+    try {
+      const r = await api.evolucionar({ from_id: fromId, to_id: toId, to_name: toName });
+      if (r.success) {
+        setStarter(prev => ({ ...prev, starter_id: toId, pokemon_id: toId, starter_nombre: toName, pokemon_nombre: toName }));
+        setUser(prev => {
+          const updated = { ...prev, starter_id: toId, starter_nombre: toName };
+          localStorage.setItem('hm_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+      return r;
+    } catch (e) {
+      console.error("evolucionar error:", e);
+      return { success: false, message: e.message };
+    }
+  };
+
   const configurarEncuentros = async (permitir_encuentros) => {
     try {
       const r = await api.configurarEncuentros({ permitir_encuentros });
@@ -385,7 +406,7 @@ export const GameProvider = ({children}) => {
       login, register, logout, notify, toggleDarkMode,
       elegirStarter, completarHabito, resetHabitos, setupDay, deletePreset,
       completarGimnasio, cargarDatos, capturarPokemon, ganarBatalla,
-      comprarObjeto, usarObjeto, configurarEncuentros
+      comprarObjeto, usarObjeto, configurarEncuentros, evolucionar
     }}>
       {children}
     </Ctx.Provider>

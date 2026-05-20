@@ -140,6 +140,9 @@ export const api = {
     {method:'POST',headers:h(),body:JSON.stringify(data)})
     .then(handleResponse).catch(() => ({ success: false, amigos_en_mapa: [] })),
 
+  evolucionar: (data) => fetch(buildUrl('/coleccion/evolucionar'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Evolucionar Error:", e); throw e; }),
+
   getAmigosGimnasios: (friendId) => fetch(buildUrl(`/amigos/${friendId}/gimnasios`),
     {headers:h()}).then(handleResponse).catch(e => { console.error("Friend Gyms Error:", e); throw e; }),
 };
