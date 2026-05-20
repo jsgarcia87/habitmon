@@ -55,6 +55,7 @@ cp -r Graphics/* react-app/public/Graphics/
 # 5. Copiar Backend (PHP & Flask)
 echo "📂 Preparando Backend..."
 cp -r hb_api "$DIST_DIR/"
+rm -f "$DIST_DIR/hb_api/.env"            # No incluir credenciales en el release
 cp habitmon_setup.sql "$DIST_DIR/hb_api/" # Copia estándar para PHP
 mkdir -p "$DIST_DIR/backend"
 cp app.py "$DIST_DIR/backend/"
