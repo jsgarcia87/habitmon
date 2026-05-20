@@ -33,7 +33,7 @@ function drawTinted(ctx, img, x, y, w, h, whiteness) {
 }
 
 const EvolutionScreen = ({ navigate, fromId, toId, fromName, toName }) => {
-  const { cargarDatos } = useGame();
+  const { cargarDatos, evolucionar } = useGame();
   const canvasRef = useRef(null);
   const fromImg   = useRef(null);
   const toImg     = useRef(null);
@@ -111,6 +111,8 @@ const EvolutionScreen = ({ navigate, fromId, toId, fromName, toName }) => {
       setPhase(PHASE_FANFARE);
       phaseRef.current = PHASE_FANFARE;
       sfx.levelUp();
+      // Persist evolution in backend and sync local state
+      evolucionar(fromId, toId, resolvedTo).catch(console.error);
       setTimeout(() => {
         typeText(`¡${resolvedFrom.toUpperCase()} EVOLUCIONÓ EN ${resolvedTo.toUpperCase()}!`, () => {
           setShowCursor(true);

@@ -197,8 +197,10 @@ export const updateBattleAnimations = (anims, dt) => {
         break;
       }
       case ANIM_TYPES.HIDE_SPRITE: {
-        offsets.enemy.scale = 0;
-        offsets.enemy.opacity = 0;
+        const tgt = a.target || 'enemy';
+        offsets[tgt].scale = 0;
+        offsets[tgt].opacity = 0;
+        offsets[tgt].visible = false;
         if (a.showBall) {
           a._ballX = a.endX;
           a._ballY = a.endY + 25;
