@@ -79,6 +79,30 @@ try {
     } catch(Exception $ex) {}
     try { $pdo->exec("ALTER TABLE gimnasios_template MODIFY COLUMN `tiempo` ENUM('morning', 'midday', 'day', 'night') DEFAULT 'day'"); } catch(Exception $ex) {}
 
+    // ── Seed default gym/habit templates if all are inactive or missing ────────
+    try {
+        $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
+        if ($activeGyms === 0) {
+            // Reactivate any existing gyms first
+            $pdo->exec("UPDATE gimnasios_template SET activo = 1");
+            $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
+        }
+        if ($activeGyms === 0) {
+            // Insert default gyms if table is empty
+            $pdo->exec("INSERT IGNORE INTO gimnasios_template (gym_id, gym_nombre, tiempo, orden, activo) VALUES
+                ('vestirse','Gimnasio Vestirse','morning',1,1),
+                ('higiene','Gimnasio Higiene','morning',2,1),
+                ('desayuno','Gimnasio Desayuno','morning',3,1),
+                ('orden','Gimnasio Orden','night',4,1)");
+        }
+    } catch(Exception $ex) {}
+    try {
+        $activeHabits = (int)$pdo->query("SELECT COUNT(*) FROM habitos_template WHERE activo = 1")->fetchColumn();
+        if ($activeHabits === 0) {
+            $pdo->exec("UPDATE habitos_template SET activo = 1");
+        }
+    } catch(Exception $ex) {}
+
     // ── Migrate plaintext passwords → bcrypt (runs once per user) ────────────
     try {
         $rows = $pdo->query("SELECT id, password_hash FROM usuarios WHERE password_hash NOT LIKE '\$2y\$%' AND password_hash != ''")->fetchAll();

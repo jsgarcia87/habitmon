@@ -286,8 +286,8 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'CENTRO POKÉMON', x: 15, y: 17, label: { x: 15, y: 15 }, targetMapId: 'pokecenter', spawn: { x: 9, y: 9 } },
-      { type: 'home', nombre: 'TIENDA', x: 11, y: 11, label: { x: 11, y: 9 }, targetMapId: 'mart', spawn: { x: 9, y: 9 } }
+      { type: 'home', nombre: 'CENTRO POKÉMON', x: 15, y: 17, label: { x: 15, y: 15 }, targetMapId: 'Map031', spawn: { x: 10, y: 10 } },
+      { type: 'home', nombre: 'TIENDA', x: 11, y: 11, label: { x: 11, y: 9 }, targetMapId: 'Map032', spawn: { x: 9, y: 10 } }
     ],
     exits: {
       right: { targetMap: 'Map038', spawn: { x: 0, y: 12 } },
@@ -434,8 +434,8 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'CENTRO POKÉMON', x: 16, y: 27, label: { x: 16, y: 25 }, targetMapId: 'pokecenter', spawn: { x: 9, y: 9 } },
-      { type: 'home', nombre: 'TIENDA', x: 26, y: 27, label: { x: 26, y: 25 }, targetMapId: 'mart', spawn: { x: 9, y: 9 } },
+      { type: 'home', nombre: 'CENTRO POKÉMON', x: 16, y: 27, label: { x: 16, y: 25 }, targetMapId: 'Map011', spawn: { x: 10, y: 10 } },
+      { type: 'home', nombre: 'TIENDA', x: 26, y: 27, label: { x: 26, y: 25 }, targetMapId: 'Map018', spawn: { x: 9, y: 10 } },
       { type: 'gym', gymId: 'orden', nombre: 'Gimnasio Trigal', x: 26, y: 7, label: { x: 26, y: 5 }, targetMapId: 'Map007', spawn: { x: 9, y: 11 } }
     ],
     exits: {
