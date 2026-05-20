@@ -20,6 +20,7 @@ export const GameProvider = ({children}) => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null); 
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('hm_theme') === 'dark');
+  const [racha, setRacha] = useState(() => parseInt(localStorage.getItem('hm_racha') || '0'));
   const [timeOfDay, setTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 12) return 'morning';
@@ -354,9 +355,23 @@ export const GameProvider = ({children}) => {
     }
   };
 
+  // Streak: update when all habits for today are completed
+  useEffect(() => {
+    if (!habitosHoy || habitosHoy.length === 0) return;
+    if (!habitosHoy.every(h => h.completado)) return;
+    const today = new Date().toISOString().split('T')[0];
+    const lastDate = localStorage.getItem('hm_racha_date');
+    if (lastDate === today) return;
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    const prev = parseInt(localStorage.getItem('hm_racha') || '0');
+    const next = lastDate === yesterday ? prev + 1 : 1;
+    localStorage.setItem('hm_racha', String(next));
+    localStorage.setItem('hm_racha_date', today);
+    setRacha(next);
+  }, [habitosHoy]);
+
   useEffect(() => {
     if(token) {
-      // Si no tenemos user heredado de localStorage, forzamos loading inicial
       if (!user) setLoading(true);
       cargarDatos();
     }
@@ -364,7 +379,7 @@ export const GameProvider = ({children}) => {
 
   return (
     <Ctx.Provider value={{
-      user, token, starter, habitosHoy,
+      user, token, starter, habitosHoy, racha,
       template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset,
       gimnasiosHoy, coleccion, loading, notification, darkMode, timeOfDay, setTimeOfDay,
       login, register, logout, notify, toggleDarkMode,

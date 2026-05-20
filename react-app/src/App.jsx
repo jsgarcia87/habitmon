@@ -25,6 +25,7 @@ import StartMenu from './components/StartMenu';
 import { useDebouncedInput } from './hooks/useDebouncedInput';
 import LandingPage from './screens/LandingPage';
 import WorldMapScreen from './screens/WorldMapScreen';
+import EvolutionScreen from './screens/EvolutionScreen';
 
 
 const LoadingScreen = () => (
@@ -122,6 +123,15 @@ function App() {
       case 'gym': return <GymScreen navigate={navigate} gymId={screenData?.gymId} screenData={screenData} direction={debouncedDirection} aPressed={debouncedAPressed} onBack={() => navigate('city')} />;
       case 'battle': return <BattleScreen navigate={navigate} battleData={screenData} aPressed={debouncedAPressed} />;
       case 'capture': return <CaptureScreen navigate={navigate} gymId={screenData?.gymId} />;
+      case 'evolution': return (
+        <EvolutionScreen
+          navigate={navigate}
+          fromId={screenData?.fromId}
+          toId={screenData?.toId}
+          fromName={screenData?.fromName}
+          toName={screenData?.toName}
+        />
+      );
       case 'profile': return <ProfileScreen onNavigate={(s) => navigate(String(s || '').toLowerCase())} />;
       case 'admin': return <AdminScreen onNavigate={navigate} />;
       case 'agenda': return <AgendaScreen onNavigate={navigate} />;

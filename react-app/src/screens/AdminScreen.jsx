@@ -20,6 +20,9 @@ const AdminScreen = ({ onNavigate }) => {
   const [pin, setPin] = useState('');
   const [pinVerified, setPinVerified] = useState(false);
   const [pinError, setPinError] = useState(false);
+  const [showChangePin, setShowChangePin] = useState(false);
+  const [newPin, setNewPin] = useState('');
+  const [pinChanged, setPinChanged] = useState(false);
 
   const DEFAULT_CONFIG = [
     {
@@ -244,13 +247,23 @@ const AdminScreen = ({ onNavigate }) => {
   };
 
   const handleVerifyPin = () => {
-    if (pin === '0000') { // Default PIN for parents
+    const stored = localStorage.getItem('hm_admin_pin') || '0000';
+    if (pin === stored) {
       setPinVerified(true);
       setPinError(false);
     } else {
       setPinError(true);
       setTimeout(() => setPinError(false), 2000);
     }
+  };
+
+  const handleChangePin = () => {
+    if (newPin.length < 4) return;
+    localStorage.setItem('hm_admin_pin', newPin);
+    setNewPin('');
+    setShowChangePin(false);
+    setPinChanged(true);
+    setTimeout(() => setPinChanged(false), 2000);
   };
 
   if (!pinVerified) {
@@ -501,13 +514,58 @@ const AdminScreen = ({ onNavigate }) => {
       </button>
 
       {/* Botón Reset Manual */}
-      <button 
-        onClick={handleResetDay} 
-        disabled={resetting} 
+      <button
+        onClick={handleResetDay}
+        disabled={resetting}
         style={{...saveBtnStyle(resetDone, resetting), background: resetDone ? '#4CAF50' : '#444', marginTop: 12}}
       >
         {resetting ? 'REINICIANDO...' : resetDone ? '✓ DÍA REINICIADO' : '🔄 RESETEAR PROGRESO HOY'}
       </button>
+
+      {/* Cambiar PIN — Crystal style box */}
+      <div style={{ marginTop: 20, border: '3px solid #333', background: '#f8f8f0', padding: '12px 10px' }}>
+        <div style={{ fontSize: 7, color: '#1a1a8a', fontFamily: '"Press Start 2P"', marginBottom: 10, borderBottom: '2px solid #333', paddingBottom: 6 }}>
+          🔒 CAMBIAR PIN PARENTAL
+        </div>
+        {!showChangePin ? (
+          <button
+            onClick={() => setShowChangePin(true)}
+            style={{ fontFamily: '"Press Start 2P"', fontSize: 6, background: '#1a1a8a', color: '#fff', border: '3px solid #333', padding: '8px 14px', cursor: 'pointer', width: '100%' }}
+          >
+            CAMBIAR PIN
+          </button>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <input
+              type="password"
+              inputMode="numeric"
+              maxLength={8}
+              value={newPin}
+              onChange={e => setNewPin(e.target.value.replace(/\D/g,''))}
+              placeholder="NUEVO PIN"
+              style={{ fontFamily: '"Press Start 2P"', fontSize: 12, padding: '8px', background: '#fff', border: '3px solid #333', color: '#000', textAlign: 'center', letterSpacing: 4 }}
+            />
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={handleChangePin}
+                disabled={newPin.length < 4}
+                style={{ flex: 1, fontFamily: '"Press Start 2P"', fontSize: 6, background: newPin.length >= 4 ? '#1a6e1a' : '#888', color: '#fff', border: '3px solid #333', padding: '8px', cursor: newPin.length >= 4 ? 'pointer' : 'default' }}
+              >
+                CONFIRMAR
+              </button>
+              <button
+                onClick={() => { setShowChangePin(false); setNewPin(''); }}
+                style={{ flex: 1, fontFamily: '"Press Start 2P"', fontSize: 6, background: '#444', color: '#fff', border: '3px solid #333', padding: '8px', cursor: 'pointer' }}
+              >
+                CANCELAR
+              </button>
+            </div>
+          </div>
+        )}
+        {pinChanged && (
+          <p style={{ fontFamily: '"Press Start 2P"', fontSize: 6, color: '#1a6e1a', marginTop: 6, textAlign: 'center' }}>✓ PIN ACTUALIZADO</p>
+        )}
+      </div>
     </div>
   );
 };

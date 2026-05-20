@@ -18,10 +18,10 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'HOGAR', x: 15, y: 7, label: { x: 15, y: 5 }, targetMapId: 'house_1', spawn: { x: 9, y: 9 } },
-      { type: 'gym', gymId: 'vestirse', nombre: 'VESTIMENTA', x: 8, y: 5, label: { x: 8, y: 3 }, targetMapId: 'Map015', spawn: { x: 9, y: 12 } },
-      { type: 'gym', gymId: 'orden', nombre: 'ORDEN', x: 13, y: 15, label: { x: 13, y: 13 }, targetMapId: 'Map007', spawn: { x: 9, y: 12 } },
-      { type: 'gym', gymId: 'higiene', nombre: 'HIGIENE', x: 5, y: 13, label: { x: 5, y: 11 }, targetMapId: 'Map046', spawn: { x: 9, y: 12 } }
+      { type: 'home', nombre: 'HOGAR', x: 15, y: 7, label: { x: 15, y: 5 }, targetMapId: 'Map003', spawn: { x: 12, y: 11 } },
+      { type: 'gym', gymId: 'vestirse', nombre: 'VESTIMENTA', x: 8, y: 5, label: { x: 8, y: 3 }, targetMapId: 'Map015', spawn: { x: 9, y: 11 } },
+      { type: 'gym', gymId: 'orden', nombre: 'ORDEN', x: 13, y: 15, label: { x: 13, y: 13 }, targetMapId: 'Map007', spawn: { x: 8, y: 11 } },
+      { type: 'gym', gymId: 'higiene', nombre: 'HIGIENE', x: 5, y: 13, label: { x: 5, y: 11 }, targetMapId: 'Map046', spawn: { x: 8, y: 11 } }
     ],
     exits: {
       left: { targetMap: 'Map008', spawn: { x: 41, y: 11 } }
@@ -40,7 +40,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'gym', gymId: 'desayuno', nombre: 'DESAYUNO', x: 15, y: 7, label: { x: 15, y: 5 }, targetMapId: 'Map005', spawn: { x: 9, y: 12 } }
+      { type: 'gym', gymId: 'desayuno', nombre: 'DESAYUNO', x: 15, y: 7, label: { x: 15, y: 5 }, targetMapId: 'Map005', spawn: { x: 9, y: 11 } }
     ],
     exits: {
       right: { targetMap: 'Map002', spawn: { x: 1, y: 11 } },
@@ -61,10 +61,8 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'gym', gymId: 'higiene', nombre: 'Higiene', x: 16, y: 5, label: { x: 16, y: 3 }, targetMapId: 'Map046', spawn: { x: 9, y: 12 } },
-      { type: 'gym', gymId: 'orden', nombre: 'Orden', x: 25, y: 5, label: { x: 25, y: 3 }, targetMapId: 'Map007', spawn: { x: 9, y: 12 } },
-      { type: 'gym', gymId: 'comida', nombre: 'Comida', x: 21, y: 13, label: { x: 21, y: 11 }, targetMapId: 'Map016', spawn: { x: 9, y: 12 } },
-      { type: 'gym', gymId: 'cena', nombre: 'Cena', x: 5, y: 20, label: { x: 5, y: 18 }, targetMapId: 'Map064', spawn: { x: 9, y: 12 } } 
+      { type: 'gym', gymId: 'higiene', nombre: 'Higiene', x: 16, y: 22, label: { x: 16, y: 20 }, targetMapId: 'Map046', spawn: { x: 9, y: 11 } },
+      { type: 'gym', gymId: 'comida', nombre: 'Comida', x: 17, y: 13, label: { x: 17, y: 11 }, targetMapId: 'Map016', spawn: { x: 9, y: 11 } }
     ],
     exits: {
       right: { targetMap: 'Map008', spawn: { x: 1, y: 13 } }
@@ -72,20 +70,18 @@ export const WORLD_DATA = {
     isInterior: false
   },
   Map015: {
-    nombre: 'Gimnasio Vestirse',
+    nombre: 'Edificio Trigal A',
     npcs: [
-      { 
-        nombre: 'LYRA', 
-        sprite: 'char_ 01_b', 
-        posicion: { x: 11, y: 4 }, 
-        direccion: 0, 
-        isLeader: true, 
-        gymId: 'vestirse',
-        mensajes: ['¡Hola! Soy LYRA.', 'Para salir a la aventura hay que ir bien vestido.', '¡Enséñame tu estilo en combate!']
+      {
+        nombre: 'Empleado',
+        sprite: 'char_ 02_a',
+        posicion: { x: 11, y: 4 },
+        direccion: 0,
+        mensajes: ['¡Bienvenido al Edificio A de Ciudad Trigal!', 'En las plantas superiores encontrarás más tiendas.']
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map002', spawn: { x: 8, y: 6 } } },
+    exits: { down: { targetMap: 'Map010', spawn: { x: 11, y: 6 } } },
     isInterior: true
   },
   Map046: {
@@ -102,43 +98,58 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map070', spawn: { x: 16, y: 6 } } },
+    exits: { down: { targetMap: 'Map044', spawn: { x: 22, y: 8 } } },
     isInterior: true
   },
   Map007: {
+    nombre: 'Gimnasio Vestirse',
+    npcs: [
+      {
+        nombre: 'LYRA',
+        sprite: 'char_ 01_b',
+        posicion: { x: 11, y: 4 },
+        direccion: 0,
+        isLeader: true,
+        gymId: 'vestirse',
+        mensajes: ['¡Hola! Soy LYRA.', 'Para salir a la aventura hay que ir bien vestido.', '¡Enséñame tu estilo en combate!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map002', spawn: { x: 8, y: 6 } } },
+    isInterior: true
+  },
+  Map005: {
     nombre: 'Gimnasio Orden',
     npcs: [
-      { 
-        nombre: 'MORTY', 
-        sprite: 'char_ 35_a', 
-        posicion: { x: 10, y: 3 }, 
-        direccion: 0, 
-        isLeader: true, 
+      {
+        nombre: 'MORTY',
+        sprite: 'char_ 35_a',
+        posicion: { x: 10, y: 3 },
+        direccion: 0,
+        isLeader: true,
         gymId: 'orden',
         mensajes: ['Soy MORTY. En este gimnasio apreciamos el silencio y el ORDEN.', '¿Están tus juguetes recogidos?', '¡Veamos si tu vida está tan bien organizada como mi equipo!']
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map070', spawn: { x: 25, y: 6 } } },
+    exits: { down: { targetMap: 'Map002', spawn: { x: 13, y: 16 } } },
     isInterior: true
   },
-  Map005: {
-    nombre: 'Gimnasio Desayuno',
+  Map006: {
+    nombre: 'Gimnasio Higiene',
     npcs: [
       {
-        nombre: 'ETHAN',
-        sprite: 'char_ 02_a',
-        posicion: { x: 7, y: 2 },
+        nombre: 'CLAIR',
+        sprite: 'char_ 11_a',
+        posicion: { x: 13, y: 5 },
         direccion: 0,
         isLeader: true,
-        gymId: 'desayuno',
-        mensajes: ['¡Buenísimos días! Soy ETHAN.', '¿Te has comido ya tus cereales?', '¡Demuestra tu energía ganándome en el desayuno!']
+        gymId: 'higiene',
+        mensajes: ['Soy CLAIR.', 'La limpieza es fundamental para un gran entrenador.', '¡Lávate los dientes y prepárate para morder el polvo!']
       }
     ],
     buildings: [],
-    exits: {
-      down: { targetMap: 'Map008', spawn: { x: 15, y: 8 } }
-    },
+    exits: { down: { targetMap: 'Map002', spawn: { x: 5, y: 14 } } },
     isInterior: true
   },
   Map016: {
@@ -155,7 +166,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map070', spawn: { x: 21, y: 14 } } },
+    exits: { down: { targetMap: 'Map010', spawn: { x: 13, y: 30 } } },
     isInterior: true
   },
   Map064: {
@@ -176,20 +187,17 @@ export const WORLD_DATA = {
     isInterior: true
   },
   Map004: {
-    nombre: 'Gimnasio Noche',
+    nombre: 'Hogar - Habitación',
     npcs: [
-      { 
-        nombre: 'LORD TRASNOCHO', 
-        sprite: 'char_ 35_a', 
-        posicion: { x: 7, y: 4 }, 
-        direccion: 0, 
-        isLeader: true, 
-        gymId: 'gym_noche',
-        mensajes: ['¡HAS LLEGADO AL FINAL!', 'Soy LORD TRASNOCHO.', 'Sólo los que cumplen sus hábitos nocturnos pueden vencerme.']
+      {
+        nombre: 'Ordenador',
+        sprite: null,
+        posicion: { x: 7, y: 4 },
+        mensajes: ['Es tu ordenador personal. ¡Aquí puedes revisar tus hábitos pendientes!']
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map070', spawn: { x: 5, y: 21 } } },
+    exits: { down: { targetMap: 'Map003', spawn: { x: 13, y: 5 } } },
     isInterior: true
   },
   Map038: {
@@ -211,11 +219,11 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'Casa Sr. P', x: 15, y: 4, label: { x: 15, y: 2 }, targetMapId: 'house_pokemon', spawn: { x: 9, y: 9 } }
+      { type: 'home', nombre: 'Casa Sr. P', x: 56, y: 11, label: { x: 56, y: 9 }, targetMapId: 'Map039', spawn: { x: 21, y: 15 } }
     ],
     exits: {
-      down: { targetMap: 'Map029', spawn: { x: 10, y: 1 } },
-      up: { targetMap: 'Map040', spawn: { x: 15, y: 28 } }
+      left: { targetMap: 'Map029', spawn: { x: 17, y: 13 } },
+      down: { targetMap: 'Map040', spawn: { x: 14, y: 0 } }
     },
     isInterior: false
   },
@@ -232,7 +240,7 @@ export const WORLD_DATA = {
     ],
     buildings: [],
     exits: {
-      down: { targetMap: 'Map038', spawn: { x: 15, y: 6 } },
+      up:   { targetMap: 'Map038', spawn: { x: 46, y: 24 } },
       left: { targetMap: 'Map078', spawn: { x: 26, y: 15 } }
     },
     isInterior: false
@@ -249,7 +257,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'gym', gymId: 'orden', nombre: 'Torre Bellsprout', x: 25, y: 5, label: { x: 25, y: 3 }, targetMapId: 'Map007', spawn: { x: 9, y: 12 } },
+      { type: 'gym', gymId: 'orden', nombre: 'Torre Bellsprout', x: 15, y: 5, label: { x: 15, y: 3 }, targetMapId: 'Map007', spawn: { x: 9, y: 11 } },
       { type: 'home', nombre: 'Centro Pokémon', x: 7, y: 11, label: { x: 7, y: 9 }, targetMapId: 'Map079', spawn: { x: 9, y: 11 } },
       { type: 'home', nombre: 'Tienda de Malva', x: 23, y: 11, label: { x: 23, y: 9 }, targetMapId: 'Map080', spawn: { x: 9, y: 11 } }
     ],
@@ -278,12 +286,12 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [
-      { type: 'home', nombre: 'Centro Pokémon', x: 14, y: 9, label: { x: 14, y: 7 }, targetMapId: 'Map031', spawn: { x: 9, y: 9 } },
-      { type: 'home', nombre: 'Tienda de Ganymaho', x: 8, y: 9, label: { x: 8, y: 7 }, targetMapId: 'Map032', spawn: { x: 9, y: 9 } }
+      { type: 'home', nombre: 'Centro Pokémon', x: 15, y: 17, label: { x: 15, y: 15 }, targetMapId: 'Map031', spawn: { x: 9, y: 11 } },
+      { type: 'home', nombre: 'Tienda de Ganymaho', x: 11, y: 11, label: { x: 11, y: 9 }, targetMapId: 'Map032', spawn: { x: 9, y: 11 } }
     ],
     exits: {
-      right: { targetMap: 'Map008', spawn: { x: 1, y: 11 } },
-      up: { targetMap: 'Map038', spawn: { x: 48, y: 24 } }
+      right: { targetMap: 'Map038', spawn: { x: 0, y: 12 } },
+      left:  { targetMap: 'Map008', spawn: { x: 39, y: 12 } }
     },
     isInterior: false
   },
@@ -299,7 +307,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map029', spawn: { x: 14, y: 10 } } },
+    exits: { down: { targetMap: 'Map029', spawn: { x: 15, y: 18 } } },
     isInterior: true
   },
   Map032: {
@@ -314,7 +322,7 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map029', spawn: { x: 8, y: 10 } } },
+    exits: { down: { targetMap: 'Map029', spawn: { x: 11, y: 12 } } },
     isInterior: true
   },
   house_1: {
@@ -361,7 +369,57 @@ export const WORLD_DATA = {
       }
     ],
     buildings: [],
-    exits: { down: { targetMap: 'Map038', spawn: { x: 15, y: 5 } } },
+    exits: { down: { targetMap: 'Map038', spawn: { x: 56, y: 12 } } },
+    isInterior: true
+  },
+  Map003: {
+    nombre: 'Hogar - Planta Baja',
+    npcs: [
+      {
+        nombre: 'Madre',
+        sprite: 'char_ 11_a',
+        posicion: { x: 13, y: 6 },
+        direccion: 0,
+        mensajes: ['¡Pórtate bien, hijo! Cumple tus hábitos para ganar medallas.', 'Recuerda que en el ORDENADOR de casa puedes ver tus LOGROS pulsando A.']
+      }
+    ],
+    buildings: [],
+    exits: {
+      down: { targetMap: 'Map002', spawn: { x: 15, y: 8 } },
+      up:   { targetMap: 'Map004', spawn: { x: 10, y: 4 } }
+    },
+    isInterior: true
+  },
+  Map009: {
+    nombre: 'Gimnasio Desayuno',
+    npcs: [
+      {
+        nombre: 'ETHAN',
+        sprite: 'char_ 02_a',
+        posicion: { x: 7, y: 2 },
+        direccion: 0,
+        isLeader: true,
+        gymId: 'desayuno',
+        mensajes: ['¡Buenísimos días! Soy ETHAN.', '¿Te has comido ya tus cereales?', '¡Demuestra tu energía ganándome en el desayuno!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map008', spawn: { x: 15, y: 8 } } },
+    isInterior: true
+  },
+  Map039: {
+    nombre: 'Casa del Sr. Pokémon',
+    npcs: [
+      {
+        nombre: 'Sr. Pokémon',
+        sprite: 'char_ 02_a',
+        posicion: { x: 10, y: 5 },
+        direccion: 2,
+        mensajes: ['¡Oh! ¡Un joven entrenador!', 'Tengo algo muy especial para ti... ¡un Huevo de Hábito!', 'Cuídalo cumpliendo tus tareas diarias.']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map038', spawn: { x: 56, y: 12 } } },
     isInterior: true
   },
   Map010: {
@@ -378,7 +436,7 @@ export const WORLD_DATA = {
     buildings: [
       { type: 'home', nombre: 'Centro Pokémon', x: 16, y: 27, label: { x: 16, y: 25 }, targetMapId: 'Map011', spawn: { x: 12, y: 20 } },
       { type: 'home', nombre: 'C.C. Trigal', x: 26, y: 27, label: { x: 26, y: 25 }, targetMapId: 'Map018', spawn: { x: 13, y: 11 } },
-      { type: 'gym', gymId: 'orden', nombre: 'Gimnasio Trigal', x: 26, y: 7, label: { x: 26, y: 5 }, targetMapId: 'Map012', spawn: { x: 10, y: 19 } }
+      { type: 'gym', gymId: 'orden', nombre: 'Gimnasio Trigal', x: 26, y: 7, label: { x: 26, y: 5 }, targetMapId: 'Map007', spawn: { x: 9, y: 11 } }
     ],
     exits: {
       down: { targetMap: 'Map008', spawn: { x: 8, y: 1 } }
@@ -443,6 +501,57 @@ export const WORLD_DATA = {
     ],
     buildings: [],
     exits: { down: { targetMap: 'Map078', spawn: { x: 23, y: 12 } } },
+    isInterior: true
+  },
+  Map083: {
+    nombre: 'Torre Bellsprout',
+    npcs: [
+      {
+        nombre: 'Monje Sabio',
+        sprite: 'char_ 35_a',
+        posicion: { x: 9, y: 4 },
+        direccion: 0,
+        isLeader: true,
+        gymId: 'orden',
+        mensajes: ['Soy el guardián de la Torre Bellsprout.', 'El ORDEN y la disciplina son el camino del verdadero entrenador.', '¡Demuéstrame que puedes mantener el orden en tu vida!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map078', spawn: { x: 15, y: 6 } } },
+    isInterior: true
+  },
+  Map067: {
+    nombre: 'Gimnasio Higiene de Fronsaf',
+    npcs: [
+      {
+        nombre: 'CLAIR',
+        sprite: 'char_ 11_a',
+        posicion: { x: 14, y: 5 },
+        direccion: 0,
+        isLeader: true,
+        gymId: 'higiene',
+        mensajes: ['Soy CLAIR.', 'La limpieza no es opcional, es la base de todo.', '¡Demuéstrame que te lavas los dientes cada día!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map070', spawn: { x: 16, y: 23 } } },
+    isInterior: true
+  },
+  Map026: {
+    nombre: 'Pasaje Subterráneo',
+    npcs: [
+      {
+        nombre: 'CHUCK',
+        sprite: 'char_ 01_a',
+        posicion: { x: 11, y: 4 },
+        direccion: 0,
+        isLeader: true,
+        gymId: 'comida',
+        mensajes: ['¡GUAAAH! ¡Soy CHUCK!', '¡Una buena comida te da la fuerza para mover rocas!', '¡Acepta mi desafío de mediodía!']
+      }
+    ],
+    buildings: [],
+    exits: { down: { targetMap: 'Map070', spawn: { x: 17, y: 14 } } },
     isInterior: true
   },
   Map013: {

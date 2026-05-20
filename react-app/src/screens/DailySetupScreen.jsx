@@ -47,7 +47,7 @@ const DailySetupScreen = ({ onNavigate }) => {
     }));
 
     await setupDay(updatedTemplate);
-    onNavigate('MAP');
+    onNavigate('city');
   };
 
   if (!template || !Array.isArray(template)) return <div style={S.screen}>CARGANDO...</div>;

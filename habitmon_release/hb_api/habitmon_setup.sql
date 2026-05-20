@@ -120,3 +120,29 @@ INSERT INTO `habitos_template` (id, pokemon_template_id, nombre, daño, icono) V
 ('d_leche', 2, 'Tomar leche', 30, '🥛'),
 ('h_dientes', 3, 'Lavar dientes', 40, '🪥'),
 ('o_cuarto', 4, 'Recoger cuarto', 50, '🧸');
+
+
+-- 8. Tabla de Amistades (sistema MMO)
+CREATE TABLE IF NOT EXISTS `amigos` (
+  `id`           INT AUTO_INCREMENT PRIMARY KEY,
+  `usuario_id_1` INT NOT NULL,
+  `usuario_id_2` INT NOT NULL,
+  `estado`       ENUM("pendiente","aceptado") NOT NULL DEFAULT "pendiente",
+  `solicitado_por` INT NOT NULL,
+  `created_at`   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uq_amistad` (`usuario_id_1`, `usuario_id_2`),
+  FOREIGN KEY (`usuario_id_1`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`usuario_id_2`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 9. Posición online de jugadores (MMO presencia)
+CREATE TABLE IF NOT EXISTS `usuario_posicion` (
+  `usuario_id`          INT NOT NULL PRIMARY KEY,
+  `mapa_id`             VARCHAR(20) NOT NULL DEFAULT "Map002",
+  `posicion_x`          INT NOT NULL DEFAULT 12,
+  `posicion_y`          INT NOT NULL DEFAULT 12,
+  `direccion`           INT NOT NULL DEFAULT 0,
+  `ultima_actualizacion` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`usuario_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

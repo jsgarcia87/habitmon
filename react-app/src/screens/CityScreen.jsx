@@ -1,18 +1,68 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
 import CityMap from '../components/CityMap';
 import DialogBox from '../components/DialogBox';
 import PokemonSprite from '../components/PokemonSprite';
+import { SpriteAvatar } from '../components/GBSprite';
 import { WORLD_DATA } from '../data/worldData';
+import { api, getAssetPath } from '../api';
 
-const CityScreen = ({ 
+const GYM_LIST = [
+  { id: 'vestirse', icon: '👕', name: 'VESTIRSE' },
+  { id: 'desayuno', icon: '🥛', name: 'DESAYUNO' },
+  { id: 'higiene', icon: '🪥', name: 'HIGIENE' },
+  { id: 'orden',   icon: '🧸', name: 'ORDEN'    },
+  { id: 'comida',  icon: '🥗', name: 'COMIDA'   },
+  { id: 'fitness', icon: '💪', name: 'FITNESS'  },
+];
+
+const CityScreen = ({
   navigate, direction, aPressed, pPos, setPPos,
   currentMapId, setCurrentMapId, 
   lastExtMap, setLastExtMap,
   lastExtPos, setLastExtPos
 }) => {
-  const { habitosHoy, template, starter } = useGame();
-  const [mapFade, setMapFade] = useState(false);
+  const { habitosHoy, template, starter, token, racha } = useGame();
+  const [irisPhase, setIrisPhase] = useState(null); // null | 'closing' | 'opening'
+  const irisCanvasRef = useRef(null);
+  const irisAnimRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = irisCanvasRef.current;
+    if (!canvas) return;
+    cancelAnimationFrame(irisAnimRef.current);
+
+    const ctx = canvas.getContext('2d');
+    if (!irisPhase) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    const parent = canvas.parentElement;
+    const W = canvas.width = parent?.offsetWidth || 320;
+    const H = canvas.height = parent?.offsetHeight || 568;
+    const maxR = Math.hypot(W, H) / 2 + 4;
+    const cx = W / 2, cy = H / 2;
+    const DURATION = 280;
+    let startTime = null;
+
+    const animate = (now) => {
+      if (!startTime) startTime = now;
+      const t = Math.min(1, (now - startTime) / DURATION);
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+      const r = irisPhase === 'closing' ? maxR * (1 - t) : maxR * t;
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(0, r), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      if (t < 1) irisAnimRef.current = requestAnimationFrame(animate);
+    };
+    irisAnimRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(irisAnimRef.current);
+  }, [irisPhase]);
   
   // Custom states for the multi-page dialogue system and Speaker Names
   const [dialogs, setDialogs] = useState([]);
@@ -23,6 +73,33 @@ const CityScreen = ({
   const [showQuestJournal, setShowQuestJournal] = useState(false);
   const [interactiveDialogue, setInteractiveDialogue] = useState(null);
   const [healFlash, setHealFlash] = useState(false);
+
+  // MMO — amigos online en el mapa actual
+  const [amigosEnMapa, setAmigosEnMapa] = useState([]);
+  const [activeFriend, setActiveFriend] = useState(null); // amigo seleccionado (A-press)
+  const lastFacingRef = useRef(0);   // 0=down 1=left 2=right 3=up
+  const posRef = useRef(pPos);
+  useEffect(() => { posRef.current = pPos; }, [pPos]);
+  useEffect(() => {
+    if (direction) lastFacingRef.current = { up:3, down:0, left:1, right:2 }[direction] ?? 0;
+  }, [direction]);
+
+  // MMO polling — actualiza posición propia y recibe amigos en el mapa cada 4 s
+  useEffect(() => {
+    if (!token) return;
+    const sync = async () => {
+      const pos = posRef.current || { x: 12, y: 12 };
+      const result = await api.actualizarPosicion({
+        mapa_id: currentMapId,
+        x: pos.x, y: pos.y,
+        direccion: lastFacingRef.current
+      });
+      if (result?.success) setAmigosEnMapa(result.amigos_en_mapa || []);
+    };
+    sync();
+    const id = setInterval(sync, 4000);
+    return () => clearInterval(id);
+  }, [token, currentMapId]);
 
   // Backward compatibility helper
   const setDialog = (msg) => {
@@ -183,14 +260,13 @@ const CityScreen = ({
 
   // Transition helper with smooth fades
   const transitionToMap = (mapId, spawnPos) => {
-    setMapFade(true);
+    setIrisPhase('closing');
     setTimeout(() => {
       setCurrentMapId(mapId);
       if (setPPos && spawnPos) setPPos(spawnPos);
-      setTimeout(() => {
-        setMapFade(false);
-      }, 100);
-    }, 200);
+      setIrisPhase('opening');
+      setTimeout(() => setIrisPhase(null), 300);
+    }, 300);
   };
 
   const handleEvent = (event) => {
@@ -280,6 +356,8 @@ const CityScreen = ({
         setDialogs([dynamicMsg]);
         setDialogIndex(0);
       }
+    } else if (event.type === 'friend_talk') {
+      setActiveFriend(event.friend);
     } else if (event.type === 'transfer') {
       if (currentMap.isInterior && event.side === 'down') {
         const targetMap = lastExtMap || 'Map002';
@@ -335,31 +413,48 @@ const CityScreen = ({
           setPlayerPos={setPPos}
           npcs={currentMap.npcs}
           buildings={activeBuildings}
+          onlineFriends={amigosEnMapa}
         />
 
-        {/* Local Map Fade Overlay */}
-        <div style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: '#000',
-          zIndex: 99,
-          opacity: mapFade ? 1 : 0,
-          pointerEvents: 'none',
-          transition: 'opacity 0.15s ease-in-out'
-        }} />
+        {/* Iris-wipe transition canvas */}
+        <canvas
+          ref={irisCanvasRef}
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            zIndex: 99, pointerEvents: 'none'
+          }}
+        />
 
         {/* Map Header HUD */}
-        <div style={{ 
-          position: 'absolute', top: '10px', left: '10px', 
-          background: 'var(--bg-panel)', padding: '5px 10px',
-          border: '2px solid var(--border-color)', 
-          color: 'var(--text-main)',
-          fontSize: '8px', zIndex: 10,
-          fontFamily: '"Press Start 2P"',
-          opacity: 0.9,
-          boxShadow: '2px 2px 0 rgba(0,0,0,0.2)'
+        <div style={{
+          position: 'absolute', top: '10px', left: '10px',
+          display: 'flex', alignItems: 'flex-start', gap: '4px', zIndex: 10
         }}>
-          {currentMap.nombre.toUpperCase()}
+          {/* Nombre del mapa — Crystal dialog box style */}
+          <div style={{
+            background: '#f8f8f0', padding: '4px 8px',
+            border: '3px solid #333',
+            color: '#111', fontSize: '7px',
+            fontFamily: '"Press Start 2P"',
+            boxShadow: '3px 3px 0 #000'
+          }}>
+            {currentMap.nombre.toUpperCase()}
+          </div>
+          {/* Racha badge — solo visible si racha > 0 */}
+          {racha > 0 && (
+            <div style={{
+              background: racha >= 7 ? '#f80000' : racha >= 3 ? '#f87800' : '#f8c800',
+              padding: '4px 6px',
+              border: '3px solid #333',
+              color: '#fff', fontSize: '6px',
+              fontFamily: '"Press Start 2P"',
+              boxShadow: '3px 3px 0 #000',
+              whiteSpace: 'nowrap'
+            }}>
+              🔥{racha}
+            </div>
+          )}
         </div>
 
         {/* COMPACT FLOATING QUEST BADGE */}
@@ -559,6 +654,86 @@ const CityScreen = ({
             onComplete={() => setInteractiveDialogue(null)}
             onOptionSelect={handleInteractiveOption}
           />
+        )}
+
+        {/* MMO — Friend profile overlay */}
+        {activeFriend && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            zIndex: 500,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: '"Press Start 2P", monospace',
+            padding: '16px', boxSizing: 'border-box'
+          }}>
+            <div style={{
+              background: '#0a0a1a',
+              border: '4px solid #00e5ff',
+              boxShadow: '0 0 20px #00e5ff66',
+              padding: '16px',
+              width: '100%', maxWidth: '280px',
+              display: 'flex', flexDirection: 'column', gap: '12px'
+            }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #00e5ff', paddingBottom: '8px' }}>
+                <span style={{ fontSize: '8px', color: '#00e5ff' }}>👤 ENTRENADOR</span>
+                <button onClick={() => setActiveFriend(null)} style={{ background: '#E83030', color: '#fff', border: '2px solid #fff', fontFamily: '"Press Start 2P"', fontSize: '8px', padding: '2px 6px', cursor: 'pointer' }}>✕</button>
+              </div>
+
+              {/* Avatar + Name */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ border: '3px solid #00e5ff', background: '#000', width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 10px #00e5ff44' }}>
+                  <SpriteAvatar
+                    src={getAssetPath(`Graphics/characters/char_ ${String(activeFriend.avatar || 1).padStart(2,'0')}_a.png`)}
+                    direction={activeFriend.direccion ?? 0}
+                    size={48}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '8px', color: '#fff' }}>{(activeFriend.username || '???').toUpperCase()}</span>
+                  <span style={{ fontSize: '6px', color: '#aaa' }}>🐾 {(activeFriend.pokemon_nombre || '?').toUpperCase()}</span>
+                  <span style={{ fontSize: '6px', color: '#aaa' }}>LV.{activeFriend.partner_level || '?'}</span>
+                </div>
+              </div>
+
+              {/* Gym medals grid */}
+              <div>
+                <span style={{ fontSize: '6px', color: '#aaa', display: 'block', marginBottom: '6px' }}>MEDALLAS DE HOY:</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '4px' }}>
+                  {GYM_LIST.map(g => {
+                    const done = (activeFriend.gimnasios_completados || []).includes(g.id);
+                    return (
+                      <div key={g.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', padding: '4px', border: `2px solid ${done ? '#2D8A2D' : '#444'}`, background: done ? 'rgba(45,138,45,0.15)' : 'transparent' }}>
+                        <span style={{ fontSize: '12px', opacity: done ? 1 : 0.3 }}>{g.icon}</span>
+                        <span style={{ fontSize: '5px', color: done ? '#85e085' : '#666' }}>{g.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Challenge button */}
+              <button
+                onClick={() => {
+                  const friend = activeFriend;
+                  setActiveFriend(null);
+                  navigate('battle', {
+                    tipo: 'wild',
+                    pokemon: { id: friend.pokemon_id, nivel: friend.partner_level || 5 }
+                  });
+                }}
+                style={{
+                  background: '#E83030', color: '#fff',
+                  border: '3px solid #fff',
+                  fontFamily: '"Press Start 2P"',
+                  fontSize: '7px', padding: '8px',
+                  cursor: 'pointer', width: '100%'
+                }}
+              >
+                ⚔️ ¡RETAR A DUELO!
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

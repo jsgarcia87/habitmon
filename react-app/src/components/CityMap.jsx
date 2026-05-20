@@ -4,8 +4,8 @@ import { getAssetPath } from '../api/assets';
 import { TILE_SIZE, parseRMXPTable, parseRMXPPassages, parseRMXPPriorities, checkPassage } from '../utils/TilesetManager';
 import { safeDrawImage } from '../utils/gfxUtils';
 
-const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [], buildings = [], children }) => {
-  const { user, gimnasiosHoy, habitosHoy, notify } = useGame();
+const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [], buildings = [], onlineFriends = [], children }) => {
+  const { user, gimnasiosHoy, habitosHoy, notify, timeOfDay } = useGame();
   const canvasRef = useRef(null);
   const worldOverlayRef = useRef(null);
   const [mapData, setMapData] = useState(null);
@@ -21,6 +21,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
   const autotileImages = useRef([]);
   const playerImg = useRef(new Image());
   const npcImgCache = useRef({});
+  const friendImgCache = useRef({});
   const playerState = useRef({
     x: playerPos.x, y: playerPos.y,
     targetX: playerPos.x, targetY: playerPos.y,
@@ -34,13 +35,8 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
   const lastEncounterRef = useRef(0);
 
-  // Helper to get time-based tileset suffix
-  const getTimeOfDay = () => {
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour < 10) return 'morning'; // 6am - 10am
-    if (hour >= 10 && hour < 18) return 'day';    // 10am - 6pm (18:00)
-    return 'nite';                                // 6pm - 6am
-  };
+  // Map GameContext timeOfDay → tileset suffix
+  const tileTimeOfDay = timeOfDay === 'morning' ? 'morning' : timeOfDay === 'night' ? 'nite' : 'day';
 
   // Responsive canvas size adjustment
   useEffect(() => {
@@ -151,6 +147,17 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
     });
   }, [npcs]);
 
+  useEffect(() => {
+    onlineFriends.forEach(f => {
+      const key = `char_ ${String(f.avatar).padStart(2, '0')}_a`;
+      if (!friendImgCache.current[key]) {
+        const img = new Image();
+        img.src = getAssetPath(`Graphics/characters/${key.toLowerCase()}.png`);
+        friendImgCache.current[key] = img;
+      }
+    });
+  }, [onlineFriends]);
+
   // Sync initial location ONLY on map change or MAJOR manual reset (teleport > 1.1 tiles)
   useEffect(() => {
     const p = playerState.current;
@@ -174,6 +181,8 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
     // NPC collision
     if (npcs.some(n => n.posicion.x === nx && n.posicion.y === ny)) return true;
+    // Online friend collision
+    if (onlineFriends.some(f => f.posicion_x === nx && f.posicion_y === ny)) return true;
 
     // Building/Event Exception for entry (doors)
     if (buildings.some(b => b.x === nx && b.y === ny)) return false;
@@ -249,6 +258,12 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
       if (p.facing === 'down') ty++;
       if (p.facing === 'left') tx--;
       if (p.facing === 'right') tx++;
+
+      const friend = onlineFriends.find(f => f.posicion_x === tx && f.posicion_y === ty);
+      if (friend) {
+        onEvent({ type: 'friend_talk', friend });
+        return;
+      }
 
       const npc = npcs.find(n => n.posicion.x === tx && n.posicion.y === ty);
       if (npc) {
@@ -460,6 +475,28 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
         }
       });
 
+      onlineFriends.forEach(f => {
+        const key = `char_ ${String(f.avatar).padStart(2, '0')}_a`;
+        const img = friendImgCache.current[key];
+        const fdx = Math.floor(f.posicion_x * TILE_SIZE - camX);
+        const fdy = Math.floor(f.posicion_y * TILE_SIZE - camY);
+        // Cyan glow behind sprite
+        ctx.save();
+        ctx.shadowColor = '#00e5ff';
+        ctx.shadowBlur = 10;
+        if (img) safeDrawImage(ctx, img, 0, (f.direccion || 0) * 40, 32, 40, fdx, fdy - 8, 32, 40);
+        ctx.restore();
+        // Username badge above
+        const name = (f.username || '?').substring(0, 8).toUpperCase();
+        ctx.font = '5px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#000';
+        ctx.fillText(name, fdx + 16 + 1, fdy - 11 + 1);
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillText(name, fdx + 16, fdy - 11);
+        ctx.textAlign = 'left';
+      });
+
       const px = vX * TILE_SIZE - camX, py = vY * TILE_SIZE - camY;
       const row = p.facing === 'down' ? 0 : p.facing === 'left' ? 1 : p.facing === 'right' ? 2 : 3;
       if (playerImg.current) {
@@ -490,7 +527,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
       }
 
       // Atmosphere Nite
-      if (getTimeOfDay() === 'nite') {
+      if (tileTimeOfDay === 'nite') {
         ctx.fillStyle = 'rgba(26, 26, 138, 0.25)';
         ctx.fillRect(0, 0, cw, ch);
       }

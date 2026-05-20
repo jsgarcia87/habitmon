@@ -134,4 +134,12 @@ export const api = {
 
   rechazarSolicitudAmistad: (data) => fetch(buildUrl('/amigos/rechazar'),
     {method:'POST',headers:h(),body:JSON.stringify(data)}).then(handleResponse).catch(e => { console.error("Decline Friend Request Error:", e); throw e; }),
+
+  // MMO — posición y presencia
+  actualizarPosicion: (data) => fetch(buildUrl('/mapa/posicion'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)})
+    .then(handleResponse).catch(() => ({ success: false, amigos_en_mapa: [] })),
+
+  getAmigosGimnasios: (friendId) => fetch(buildUrl(`/amigos/${friendId}/gimnasios`),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Friend Gyms Error:", e); throw e; }),
 };

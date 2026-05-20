@@ -661,6 +661,19 @@ try {
         
         echo json_encode(["success" => true, "message" => "Amistad o solicitud eliminada."]);
     }
+    // MMO: obtener gimnasios de un amigo específico hoy
+    elseif (preg_match('/^\/amigos\/(\d+)\/gimnasios$/', $route, $rm) && $method === 'GET') {
+        $uid = get_user_id();
+        $fid = (int)$rm[1];
+        $chk = $pdo->prepare("SELECT id FROM amigos WHERE estado='aceptado' AND ((usuario_id_1=? AND usuario_id_2=?) OR (usuario_id_1=? AND usuario_id_2=?))");
+        $chk->execute([$uid, $fid, $fid, $uid]);
+        if (!$chk->fetch()) { http_response_code(403); echo json_encode(["success"=>false,"error"=>"No son amigos"]); exit; }
+        $stmt = $pdo->prepare("SELECT gimnasios_completados FROM progreso_diario WHERE usuario_id=? AND fecha=CURDATE()");
+        $stmt->execute([$fid]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $gyms = json_decode($row['gimnasios_completados'] ?? '[]', true) ?: [];
+        echo json_encode(["success"=>true, "friend_id"=>$fid, "gimnasios_completados"=>$gyms]);
+    }
     elseif (strpos($route, '/amigos') === 0) {
         $uid = get_user_id();
         
@@ -857,6 +870,49 @@ try {
             }
             echo json_encode(["success" => true]);
         }
+    }
+    // MMO: actualizar posición propia y obtener amigos en el mismo mapa
+    elseif (strpos($route, '/mapa/posicion') === 0 && $method === 'POST') {
+        $uid  = get_user_id();
+        $data = get_json_input();
+        $map  = $data['mapa_id']   ?? 'Map002';
+        $x    = (int)($data['x']   ?? 0);
+        $y    = (int)($data['y']   ?? 0);
+        $dir  = (int)($data['direccion'] ?? 0);
+
+        $pdo->prepare("INSERT INTO usuario_posicion (usuario_id,mapa_id,posicion_x,posicion_y,direccion)
+                       VALUES (?,?,?,?,?)
+                       ON DUPLICATE KEY UPDATE mapa_id=VALUES(mapa_id),posicion_x=VALUES(posicion_x),
+                       posicion_y=VALUES(posicion_y),direccion=VALUES(direccion),ultima_actualizacion=NOW()")
+            ->execute([$uid, $map, $x, $y, $dir]);
+
+        $stmt = $pdo->prepare("
+            SELECT u.id AS friend_id, u.username, u.avatar,
+                   up.posicion_x, up.posicion_y, up.direccion,
+                   pc.pokemon_id, pc.pokemon_nombre, pc.nivel AS partner_level,
+                   pd.gimnasios_completados
+            FROM amigos a
+            JOIN usuarios u ON u.id = IF(a.usuario_id_1=?, a.usuario_id_2, a.usuario_id_1)
+            JOIN usuario_posicion up ON up.usuario_id = u.id
+            LEFT JOIN pokemon_coleccion pc ON pc.usuario_id = u.id AND pc.is_partner = 1
+            LEFT JOIN progreso_diario pd ON pd.usuario_id = u.id AND pd.fecha = CURDATE()
+            WHERE (a.usuario_id_1=? OR a.usuario_id_2=?)
+              AND a.estado = 'aceptado'
+              AND up.mapa_id = ?
+              AND up.ultima_actualizacion >= DATE_SUB(NOW(), INTERVAL 10 SECOND)");
+        $stmt->execute([$uid, $uid, $uid, $map]);
+        $amigos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($amigos as &$a) {
+            $a['friend_id']   = (int)$a['friend_id'];
+            $a['avatar']      = (int)$a['avatar'];
+            $a['posicion_x']  = (int)$a['posicion_x'];
+            $a['posicion_y']  = (int)$a['posicion_y'];
+            $a['direccion']   = (int)$a['direccion'];
+            $a['partner_level'] = (int)$a['partner_level'];
+            $a['gimnasios_completados'] = json_decode($a['gimnasios_completados'] ?? '[]', true) ?: [];
+        }
+        echo json_encode(["success" => true, "amigos_en_mapa" => $amigos]);
     }
     else {
         http_response_code(404);

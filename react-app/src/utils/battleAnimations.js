@@ -4,6 +4,27 @@
  * Highly polished GSC/GBA Pokémon style animations.
  */
 
+// GSC/Essentials-style type colors for damage flashes and particles
+export const TYPE_COLORS = {
+  NORMAL:   { flash: '#A8A878', particle: '#C8C8A0' },
+  FIRE:     { flash: '#F97316', particle: '#EF4444' },
+  WATER:    { flash: '#3B82F6', particle: '#38BDF8' },
+  GRASS:    { flash: '#22C55E', particle: '#4ADE80' },
+  ELECTRIC: { flash: '#FACC15', particle: '#FCD34D' },
+  ICE:      { flash: '#A5F3FC', particle: '#7DD3FC' },
+  FIGHTING: { flash: '#DC2626', particle: '#B91C1C' },
+  POISON:   { flash: '#A855F7', particle: '#C084FC' },
+  GROUND:   { flash: '#D97706', particle: '#B45309' },
+  FLYING:   { flash: '#A5B4FC', particle: '#818CF8' },
+  PSYCHIC:  { flash: '#EC4899', particle: '#F472B6' },
+  BUG:      { flash: '#84CC16', particle: '#A3E635' },
+  ROCK:     { flash: '#A0906C', particle: '#78716C' },
+  GHOST:    { flash: '#7C3AED', particle: '#8B5CF6' },
+  DRAGON:   { flash: '#7C3AED', particle: '#6D28D9' },
+  DARK:     { flash: '#374151', particle: '#6B7280' },
+  STEEL:    { flash: '#94A3B8', particle: '#CBD5E1' },
+};
+
 export const ANIM_TYPES = {
   STRIKE:      'strike',
   PROJECTILE:  'projectile',
@@ -28,7 +49,9 @@ export const ANIM_TYPES = {
   CAPTURE_SHAKE: 'capture_shake',
   CAPTURE_SUCCESS: 'capture_success',
   CAPTURE_BREAKOUT: 'capture_breakout',
-  HIDE_SPRITE: 'hide_sprite'
+  HIDE_SPRITE: 'hide_sprite',
+  TYPE_FLASH: 'type_flash',       // colored full-screen tint matching move type
+  CRITICAL_FLASH: 'critical_flash' // bright white flash for critical hits
 };
 
 export const createAnimation = (type, params) => ({
@@ -100,13 +123,14 @@ export const updateBattleAnimations = (anims, dt) => {
       case ANIM_TYPES.FLASH_SPRITE: {
         const visible = Math.floor(activeTime / 40) % 2 === 0;
         const tintAlpha = Math.max(0, 1 - t) * 0.8;
+        const flashColor = a.color || '#ff3b30';
         if (a.target === 'player') {
           offsets.player.visible = visible;
-          offsets.player.tintColor = '#ff3b30'; // red flash on damage
+          offsets.player.tintColor = flashColor;
           offsets.player.tintAlpha = tintAlpha;
         } else {
           offsets.enemy.visible = visible;
-          offsets.enemy.tintColor = '#ff3b30'; // red flash on damage
+          offsets.enemy.tintColor = flashColor;
           offsets.enemy.tintAlpha = tintAlpha;
         }
         break;
@@ -471,6 +495,25 @@ export const drawBattleAnimations = (ctx, anims, W, H) => {
         break;
       }
 
+      case ANIM_TYPES.TYPE_FLASH: {
+        // Colored screen tint matching move type (GSC style)
+        const alpha = (1 - t) * 0.32;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = a.color || '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+        break;
+      }
+
+      case ANIM_TYPES.CRITICAL_FLASH: {
+        // Bright white flash for critical hits — peaks at t=0.2, fades out
+        const alpha = t < 0.2 ? (t / 0.2) : (1 - (t - 0.2) / 0.8);
+        ctx.fillStyle = `rgba(255,255,255,${alpha * 0.92})`;
+        ctx.fillRect(0, 0, W, H);
+        break;
+      }
+
       case ANIM_TYPES.TEXT: {
         ctx.save();
         ctx.globalAlpha = 1 - t;
@@ -596,7 +639,7 @@ function drawPokeball(ctx, x, y, radius, angle, type = 'pokeball', isOpen = fals
 
 // ─── Move animations ───────────────────────────────────────────────────────
 
-export const getMoveAnimation = (moveKey, isPlayer, W, H) => {
+export const getMoveAnimation = (moveKey, isPlayer, W, H, moveType) => {
   const pPos = { x: W * 0.22, y: H * 0.68 };
   const ePos = { x: W * 0.75, y: H * 0.38 };
 
@@ -838,10 +881,61 @@ export const getMoveAnimation = (moveKey, isPlayer, W, H) => {
       anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 300, color: '#fff' }));
   }
 
-  // Universal: damage shake + sprite damage flash + global SCREEN SHAKE!
+  // Universal: damage shake + type-colored sprite flash + screen shake
+  const typeColor = (moveType && TYPE_COLORS[moveType]) ? TYPE_COLORS[moveType].flash : '#ff3b30';
   anims.push(createAnimation(ANIM_TYPES.SHAKE,        { target, duration: 450, amount: 12 }));
-  anims.push(createAnimation(ANIM_TYPES.FLASH_SPRITE, { target, duration: 500 }));
+  anims.push(createAnimation(ANIM_TYPES.FLASH_SPRITE, { target, duration: 500, color: typeColor }));
   anims.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 400, amount: 6 }));
+  // Type-colored screen tint (Essentials style)
+  if (moveType && TYPE_COLORS[moveType]) {
+    anims.push(createAnimation(ANIM_TYPES.TYPE_FLASH,  { color: typeColor, duration: 350 }));
+  }
 
   return anims;
+};
+
+// ─── Status effect tint overlay ────────────────────────────────────────────
+// Returns { color, alpha } to tint a sprite based on its status condition.
+// `pulse` is an accumulating timer (ms) used to animate the effect.
+
+export const getStatusTint = (status, pulse) => {
+  if (!status) return null;
+  const t = pulse / 1000; // seconds
+  switch (status) {
+    case 'poison': {
+      // Slow purple pulse (every 2s)
+      const a = (Math.sin(t * Math.PI) * 0.5 + 0.5) * 0.55;
+      return { color: '#a855f7', alpha: a };
+    }
+    case 'paralysis': {
+      // Random yellow static flicker
+      const flicker = Math.random() < 0.06 ? 0.75 : 0.0;
+      return { color: '#facc15', alpha: flicker };
+    }
+    case 'burn': {
+      // Steady warm orange shimmer
+      const a = 0.22 + Math.sin(t * Math.PI * 1.5) * 0.12;
+      return { color: '#f97316', alpha: a };
+    }
+    case 'freeze': {
+      // Icy blue constant overlay
+      return { color: '#a5f3fc', alpha: 0.38 };
+    }
+    case 'sleep':
+      return null; // Sleep uses floating ZZZ text instead
+    default:
+      return null;
+  }
+};
+
+// Returns floating "ZZZ" positions for sleep animation
+export const getSleepZzzText = (pulse, spriteX, spriteY) => {
+  const t = pulse / 1000;
+  const idx = Math.floor(t * 1.5) % 3; // which Z is visible
+  return Array.from({ length: idx + 1 }, (_, i) => ({
+    text: 'Z',
+    x: spriteX + 28 + i * 7,
+    y: spriteY - 30 - i * 10 + Math.sin(t * 2 + i) * 3,
+    alpha: Math.max(0, 1 - (t * 1.5 % 1)) * (0.5 + i * 0.25)
+  }));
 };

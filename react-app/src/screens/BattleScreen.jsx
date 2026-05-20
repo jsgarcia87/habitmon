@@ -5,14 +5,19 @@ import { getAssetPath } from '../api/assets';
 import { safeDrawImage, drawTintedImage } from '../utils/gfxUtils';
 import { MOVE_DATA, POKEMON_MOVES } from '../data/moveData';
 import { createBattlePokemon, getPokemonByGym } from '../data/pokemonData';
+import { getEvolution } from '../data/evolutionData';
+import { POKEMON_SPECIES } from '../data/pokemonData';
 import { determineTurnOrder, processMove, processEndTurnEffects } from '../utils/battleEngine';
-import { 
-  ANIM_TYPES, 
-  updateBattleAnimations, 
-  drawBattleAnimations, 
+import {
+  ANIM_TYPES,
+  updateBattleAnimations,
+  drawBattleAnimations,
   getMoveAnimation,
-  createAnimation
+  createAnimation,
+  getStatusTint,
+  getSleepZzzText
 } from '../utils/battleAnimations';
+import { sfx, initAudio } from '../utils/audioEngine';
 
 // New Modular Components
 import BattleHUD from '../components/battle/BattleHUD';
@@ -20,6 +25,7 @@ import BattleActionMenu from '../components/battle/BattleActionMenu';
 import VictoryOverlay from '../components/battle/VictoryOverlay';
 
 const INTRO_STATES = {
+  ENCOUNTER_FLASH: 'encounterFlash', // 3 white flashes before battle (wild only, GSC style)
   FADE_IN:        'fadeIn',
   TRAINER_ENTER:  'trainerEnter',
   TRAINER_THROW:  'trainerThrow',
@@ -44,6 +50,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
   const [phase, setPhase] = useState(BATTLE_PHASES.SELECT);
   const [menuView, setMenuView] = useState('main');
+  const [pendingEvolution, setPendingEvolution] = useState(null);
   const [message, setMessage] = useState('');
   const [introReady, setIntroReady] = useState(false);
   const [victoryData, setVictoryData] = useState(null);
@@ -72,6 +79,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const enemyOffsetRef = useRef({ x: 0, y: 0 });
   const screenOffsetRef = useRef({ x: 0, y: 0 });
   const isFlashingRef = useRef(false);
+  const statusPulseRef = useRef(0); // ms accumulator for status-effect animations
 
   const [displayXp, setDisplayXp] = useState(0);
   const [displayMonedas, setDisplayMonedas] = useState(0);
@@ -95,10 +103,10 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const playerPkImgRef = useRef(null);
 
   const introRef = useRef({
-    state: INTRO_STATES.FADE_IN,
+    state: isWild ? INTRO_STATES.ENCOUNTER_FLASH : INTRO_STATES.FADE_IN,
     timer: 0, fadeAlpha: 1, trainerX: -80, ballVisible: false, ballX: 0, ballY: 0,
     ballAngle: 0, enemyOpacity: 0, enemyScale: 1, enemyOffsetX: 0, flashAlpha: 0,
-    enemyHudX: -200, playerHudX: 430, playerScale: 0.1
+    enemyHudX: -200, playerHudX: 430, playerScale: 0.1, encounterFlashAlpha: 0
   });
 
   const initializedRef = useRef(false);
@@ -127,6 +135,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     const tick = () => {
       i++;
       setDisplayedMsg(message.slice(0, i));
+      if (i % 2 === 0) sfx.dialog(); // bleep every other character
       if (i < message.length) {
         typewriterTimerRef.current = setTimeout(tick, 28);
       } else {
@@ -183,6 +192,12 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       resolve();
     }
   };
+
+  // Unlock Web Audio on first interaction and play encounter sound
+  useEffect(() => {
+    initAudio();
+    if (isWild) setTimeout(() => sfx.encounter(), 120);
+  }, []);
 
   useEffect(() => {
     if (initializedRef.current) return;
@@ -246,6 +261,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         playerOffsetRef.current = offsets.player;
         enemyOffsetRef.current = offsets.enemy;
         screenOffsetRef.current = offsets.screen || { x: 0, y: 0 };
+        statusPulseRef.current += dt;
         
         ctx.save();
         ctx.translate(screenOffsetRef.current.x, screenOffsetRef.current.y);
@@ -264,6 +280,19 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     if (intro.state === INTRO_STATES.READY) return;
     intro.timer += dt;
     switch(intro.state) {
+      case INTRO_STATES.ENCOUNTER_FLASH: {
+        // GSC-style 3 white flashes before wild battle (120ms on / 120ms off)
+        const cycle = 240;
+        const flashIdx = Math.floor(intro.timer / cycle);
+        const withinCycle = intro.timer % cycle;
+        intro.encounterFlashAlpha = (flashIdx < 3 && withinCycle < 120) ? 1 : 0;
+        if (intro.timer > 720) {
+          intro.encounterFlashAlpha = 0;
+          intro.state = INTRO_STATES.FADE_IN;
+          intro.timer = 0;
+        }
+        break;
+      }
       case INTRO_STATES.FADE_IN:
         intro.fadeAlpha = Math.max(0, 1 - intro.timer / 400);
         if(intro.timer > 400) { intro.state = INTRO_STATES.TRAINER_ENTER; intro.timer = 0; }
@@ -369,9 +398,23 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       } else {
         safeDrawImage(ctx, enemyImgRef.current, -48, -48, 96, 96);
       }
+      // Persistent status effect tint (PSN/PAR/BRN/FRZ)
+      const eSt = enemyPkmnRef.current?.status;
+      if (eSt && eSt !== 'sleep' && enemyImgRef.current) {
+        const st = getStatusTint(eSt, statusPulseRef.current);
+        if (st && st.alpha > 0) drawTintedImage(ctx, enemyImgRef.current, 0, 0, enemyImgRef.current.width, enemyImgRef.current.height, -48, -48, 96, 96, st.color, st.alpha);
+      }
+      // ZZZ for sleep
+      if (eSt === 'sleep') {
+        const zzz = getSleepZzzText(statusPulseRef.current, 0, -48);
+        ctx.save();
+        ctx.font = '8px "Press Start 2P", monospace';
+        zzz.forEach(z => { ctx.globalAlpha = z.alpha; ctx.fillStyle = '#a8a878'; ctx.fillText(z.text, z.x, z.y); });
+        ctx.restore();
+      }
       ctx.restore();
     }
-    
+
     // Player pokemon drawing with energy discharge popping and damage flashes
     if ([INTRO_STATES.BALL_FLASH, INTRO_STATES.POKEMON_APPEAR, INTRO_STATES.HUD_SLIDE, INTRO_STATES.READY].includes(intro.state) && playerPkImgRef.current && playerOffsetRef.current.visible) {
       ctx.save(); ctx.globalAlpha = playerOffsetRef.current.opacity ?? 1;
@@ -394,9 +437,22 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       } else {
         safeDrawImage(ctx, playerPkImgRef.current, -48, -48, 96, 96);
       }
+      // Persistent status effect tint for player Pokémon
+      const pSt = playerPkmn?.status;
+      if (pSt && pSt !== 'sleep' && playerPkImgRef.current) {
+        const st = getStatusTint(pSt, statusPulseRef.current);
+        if (st && st.alpha > 0) drawTintedImage(ctx, playerPkImgRef.current, 0, 0, playerPkImgRef.current.width, playerPkImgRef.current.height, -48, -48, 96, 96, st.color, st.alpha);
+      }
+      if (pSt === 'sleep') {
+        const zzz = getSleepZzzText(statusPulseRef.current, 0, -48);
+        ctx.save();
+        ctx.font = '8px "Press Start 2P", monospace';
+        zzz.forEach(z => { ctx.globalAlpha = z.alpha; ctx.fillStyle = '#a8a878'; ctx.fillText(z.text, z.x, z.y); });
+        ctx.restore();
+      }
       ctx.restore();
     }
-    
+
     if (intro.ballVisible) {
       ctx.save(); ctx.translate(intro.ballX, intro.ballY); ctx.rotate(intro.ballAngle);
       ctx.fillStyle = '#E8190C'; ctx.beginPath(); ctx.arc(0, 0, 8, Math.PI, 0); ctx.fill();
@@ -415,11 +471,16 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       }
       ctx.fillStyle = `rgba(255,255,255,${intro.flashAlpha})`; ctx.fillRect(0, 0, W, H);
     }
+    if (intro.encounterFlashAlpha > 0) {
+      ctx.fillStyle = `rgba(255,255,255,${intro.encounterFlashAlpha})`;
+      ctx.fillRect(0, 0, W, H);
+    }
     if (intro.fadeAlpha > 0) { ctx.fillStyle = `rgba(0,0,0,${intro.fadeAlpha})`; ctx.fillRect(0, 0, W, H); }
   };
 
   const resolveTurn = async (pMoveKey) => {
     if (phase !== BATTLE_PHASES.SELECT) return;
+    sfx.confirm();
     setPhase(BATTLE_PHASES.RESOLVING);
 
     const pMove = MOVE_DATA[pMoveKey];
@@ -435,7 +496,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // 1. Attack message → player presses A → then animation plays
       await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
-      activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200);
+      activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
       await new Promise(r => setTimeout(r, 600));
 
       const result = processMove(attacker, defender, move);
@@ -448,6 +509,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // 3. Damage
       if (result.damageDealt > 0) {
+        sfx.hit();
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
         if (side === 'player') {
@@ -463,7 +525,12 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         }));
         await new Promise(r => setTimeout(r, 400));
 
-        if (result.isCritical) await showMessage('¡Un golpe crítico!');
+        if (result.isCritical) {
+          sfx.critical();
+          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.CRITICAL_FLASH, { duration: 500 }));
+          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 600, amount: 14 }));
+          await showMessage('¡Un golpe crítico!');
+        }
         if (result.effectiveness > 1) await showMessage('¡Es muy eficaz!');
         else if (result.effectiveness < 1 && result.effectiveness > 0) await showMessage('No es muy eficaz...');
         else if (result.effectiveness === 0) await showMessage('¡No afecta!');
@@ -607,6 +674,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       const startX = 300 * 0.22, startY = 200 * 0.68;
       const endX = 300 * 0.75, endY = 200 * 0.38;
 
+      sfx.throwBall();
       activeAnimsRef.current = [createAnimation(ANIM_TYPES.THROW_POKEBALL, { startX, startY, endX, endY, duration: 600, ballType: itemId })];
       await new Promise(r => setTimeout(r, 600));
       activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_SUCK, { endX, endY, duration: 800, ballType: itemId })];
@@ -617,6 +685,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       const shakes = r.success ? 3 : Math.max(1, Math.floor(Math.random() * 3));
 
       for (let i = 0; i < shakes; i++) {
+        sfx.wobble();
         activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_SHAKE, { endX, endY, duration: 400, ballType: itemId })];
         await new Promise(r => setTimeout(r, 400));
         activeAnimsRef.current = [createAnimation(ANIM_TYPES.HIDE_SPRITE, { endX, endY, duration: 800, ballType: itemId, showBall: true })];
@@ -624,6 +693,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       }
 
       if (r.success) {
+        sfx.catchSuccess();
         activeAnimsRef.current = [createAnimation(ANIM_TYPES.CAPTURE_SUCCESS, { endX, endY, duration: 1000, ballType: itemId })];
         await showMessage(`¡Atrapaste a ${enemyPkmn.name.toUpperCase()} exitosamente!`);
         navigate('capture', { gymId: enemyPkmn.id });
@@ -666,24 +736,36 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const endBattle = async (win) => {
     setPhase(BATTLE_PHASES.FINISHED);
     if (!win) {
+      sfx.faint();
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'player', duration: 1000 }));
       await new Promise(r => setTimeout(r, 1200));
       await showMessage(`¡${playerPkmn.name.toUpperCase()} se debilitó!`);
       navigate('city');
     } else {
+      sfx.faint();
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 2500 }));
       await new Promise(r => setTimeout(r, 2700));
       const gymReward = !isWild ? await completarGimnasio(gymId, starter.starter_id, starter.starter_nombre).catch(() => ({})) : {};
       const reward = await ganarBatalla().catch(() => ({}));
+      const newLevel = gymReward?.nuevo_nivel || reward?.new_level || playerPkmn.level;
+      const leveledUp = gymReward?.subio_nivel || reward?.subio_nivel;
       setVictoryData({
         type: isWild ? 'wild' : 'gym', enemyName: enemyPkmn.name, gymName: battleData?.gymName || 'GIMNASIO',
         xpGained: (gymReward?.exp_ganada || 0) + (reward?.xp_ganada || 20),
         newXp: gymReward?.new_xp || reward?.new_xp || 0,
-        newLevel: gymReward?.nuevo_nivel || reward?.new_level || playerPkmn.level,
-        levelUp: gymReward?.subio_nivel || reward?.subio_nivel,
+        newLevel, levelUp: leveledUp,
         monedas: (gymReward?.monedas_ganadas || 0) + (reward?.monedas_ganadas || 0),
         medallaUrl: gymReward?.medalla_imagen || null,
       });
+      if (leveledUp) {
+        const currentId = String(starter.starter_id || starter.pokemon_id || '').padStart(3, '0');
+        const evoId = getEvolution(currentId, newLevel);
+        if (evoId) {
+          const fromName = starter.starter_nombre || starter.pokemon_nombre || '';
+          const toName = POKEMON_SPECIES?.[evoId]?.name || `#${evoId}`;
+          setPendingEvolution({ fromId: currentId, toId: evoId, fromName, toName });
+        }
+      }
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const StartMenu = ({ isOpen, onClose, onNavigate, user }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [savedMsg, setSavedMsg] = useState(false);
 
   const menuItems = [
     { label: 'MAPA',    icon: '🗺️', id: 'worldmap' },
@@ -23,8 +24,8 @@ const StartMenu = ({ isOpen, onClose, onNavigate, user }) => {
     if (id === 'exit') {
       onClose();
     } else if (id === 'save') {
-      alert('¡Partida guardada!'); // Temporary
-      onClose();
+      setSavedMsg(true);
+      setTimeout(() => { setSavedMsg(false); onClose(); }, 1400);
     } else {
       onNavigate(id);
       onClose();
@@ -109,13 +110,19 @@ const StartMenu = ({ isOpen, onClose, onNavigate, user }) => {
           </div>
         ))}
 
-        {/* Bottom border decoration */}
+        {/* Crystal-style save confirmation */}
         <div style={{
-          height: '4px',
-          background: '#333',
-          margin: '4px 8px',
-          opacity: 0.1
-        }} />
+          margin: '4px 8px 2px',
+          borderTop: '2px solid #333',
+          paddingTop: '6px',
+          minHeight: '16px',
+          textAlign: 'center',
+          fontFamily: '"Press Start 2P"',
+          fontSize: '6px',
+          color: savedMsg ? '#1a6e1a' : 'transparent'
+        }}>
+          {savedMsg ? '✓ GUARDADO' : '·'}
+        </div>
       </div>
 
       <style>{`

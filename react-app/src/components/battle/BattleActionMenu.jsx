@@ -1,4 +1,6 @@
 import React from 'react';
+import { MOVE_DATA } from '../../data/moveData';
+import { TYPE_COLORS } from '../../utils/battleAnimations';
 
 const BattleActionMenu = ({ 
   isWild, 
@@ -37,16 +39,31 @@ const BattleActionMenu = ({
 
   const renderMovesMenu = () => (
     <div style={S.grid2x2}>
-      {moves.map(mKey => (
-        <button key={mKey}
-          disabled={!isSelectPhase}
-          className="battle-btn"
-          onClick={() => onMoveSelect(mKey)}>
-          {mKey.toUpperCase()}
-        </button>
-      ))}
-      <button 
-        className="battle-btn" 
+      {moves.map(mKey => {
+        const moveInfo = MOVE_DATA[mKey];
+        const tc = moveInfo?.type ? TYPE_COLORS[moveInfo.type] : null;
+        return (
+          <button key={mKey}
+            disabled={!isSelectPhase}
+            className="battle-btn"
+            onClick={() => onMoveSelect(mKey)}
+            style={{ flexDirection: 'column', gap: 2, padding: '4px 2px' }}>
+            <span style={{ fontSize: 8 }}>{moveInfo?.nombre || mKey}</span>
+            {tc && (
+              <span style={{
+                fontSize: 5, padding: '1px 4px', borderRadius: 2,
+                background: tc.flash, color: '#fff',
+                textShadow: '0 1px 0 rgba(0,0,0,0.4)',
+                letterSpacing: '0.5px'
+              }}>
+                {moveInfo.type}
+              </span>
+            )}
+          </button>
+        );
+      })}
+      <button
+        className="battle-btn"
         style={{ gridColumn: 'span 2', height: '32px', marginTop: 'auto' }}
         onClick={() => setMenuView('main')}>
         ← VOLVER
