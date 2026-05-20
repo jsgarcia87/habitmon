@@ -6,8 +6,11 @@ $_debug = getenv('APP_DEBUG') === 'true';
 ini_set('display_errors', $_debug ? 1 : 0);
 ini_set('display_startup_errors', $_debug ? 1 : 0);
 error_reporting($_debug ? E_ALL : 0);
+<<<<<<< Updated upstream
 
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Madrid');
+=======
+>>>>>>> Stashed changes
 
 require_once 'db.php';
 
