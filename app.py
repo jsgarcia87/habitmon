@@ -5,7 +5,7 @@ from flask_jwt_extended import (JWTManager,
   create_access_token, jwt_required, get_jwt_identity)
 from werkzeug.security import (generate_password_hash, 
   check_password_hash)
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import json
 import os
 
@@ -62,8 +62,8 @@ def php_shim():
 # Use an absolute path for the database to avoid issues with current working directory
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'habitmon.db')
-app.config['JWT_SECRET_KEY'] = 'habitmon-secret-2024'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'habitmon-secret-dev-only-change-me')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=30)
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config['JWT_HEADER_NAME'] = 'Authorization'
 app.config['JWT_HEADER_TYPE'] = 'Bearer'
