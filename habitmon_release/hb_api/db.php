@@ -90,7 +90,10 @@ try {
 
 } catch(PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Database connection failed']);
+    $msg = getenv('APP_DEBUG') === 'true'
+        ? 'DB error: ' . $e->getMessage()
+        : 'Database connection failed';
+    echo json_encode(['success' => false, 'error' => $msg]);
     exit();
 }
 ?>
