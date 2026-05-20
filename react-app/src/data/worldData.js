@@ -19,8 +19,6 @@ export const WORLD_DATA = {
     ],
     buildings: [
       { type: 'home', nombre: 'HOGAR', x: 15, y: 7, label: { x: 15, y: 5 }, targetMapId: 'Map003', spawn: { x: 12, y: 11 } },
-      { type: 'home', nombre: 'CENTRO POKÉMON', x: 17, y: 7, label: { x: 17, y: 5 }, targetMapId: 'pokecenter', spawn: { x: 9, y: 9 } },
-      { type: 'home', nombre: 'TIENDA', x: 17, y: 12, label: { x: 17, y: 10 }, targetMapId: 'mart', spawn: { x: 9, y: 9 } },
       { type: 'gym', gymId: 'vestirse', nombre: 'VESTIMENTA', x: 8, y: 5, label: { x: 8, y: 3 }, targetMapId: 'Map015', spawn: { x: 9, y: 11 } },
       { type: 'gym', gymId: 'orden', nombre: 'ORDEN', x: 13, y: 15, label: { x: 13, y: 13 }, targetMapId: 'Map007', spawn: { x: 8, y: 11 } },
       { type: 'gym', gymId: 'higiene', nombre: 'HIGIENE', x: 5, y: 13, label: { x: 5, y: 11 }, targetMapId: 'Map046', spawn: { x: 8, y: 11 } }

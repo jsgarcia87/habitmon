@@ -7,6 +7,8 @@ ini_set('display_errors', $_debug ? 1 : 0);
 ini_set('display_startup_errors', $_debug ? 1 : 0);
 error_reporting($_debug ? E_ALL : 0);
 
+date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Madrid');
+
 require_once 'db.php';
 
 header('Content-Type: application/json');
