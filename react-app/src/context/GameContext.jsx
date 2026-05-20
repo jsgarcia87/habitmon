@@ -202,6 +202,7 @@ export const GameProvider = ({children}) => {
 
   const resetHabitos = async () => {
     const r = await api.resetHabitosHoy();
+    if (r?._unauthorized) { logout(); return r; }
     if(r.success) await cargarDatos();
     return r;
   };
@@ -229,6 +230,7 @@ export const GameProvider = ({children}) => {
   const saveCustomTemplate = async (newTemplate) => {
     try {
       const r = await api.saveAdminConfig(newTemplate);
+      if (r?._unauthorized) { logout(); return r; }
       if(r.success) {
         setTemplate(newTemplate);
         await cargarDatos(); // Refresh today's habits
