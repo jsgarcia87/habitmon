@@ -83,12 +83,10 @@ try {
     try {
         $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
         if ($activeGyms === 0) {
-            // Reactivate any existing gyms first
             $pdo->exec("UPDATE gimnasios_template SET activo = 1");
             $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
         }
         if ($activeGyms === 0) {
-            // Insert default gyms if table is empty
             $pdo->exec("INSERT IGNORE INTO gimnasios_template (gym_id, gym_nombre, tiempo, orden, activo) VALUES
                 ('vestirse','Gimnasio Vestirse','morning',1,1),
                 ('higiene','Gimnasio Higiene','morning',2,1),
@@ -97,9 +95,45 @@ try {
         }
     } catch(Exception $ex) {}
     try {
+        // Ensure pokemon_template has rows for each active gym
+        $missingPk = $pdo->query(
+            "SELECT g.gym_id FROM gimnasios_template g
+             LEFT JOIN pokemon_template p ON p.gym_id = g.gym_id
+             WHERE g.activo = 1 AND p.id IS NULL"
+        )->fetchAll(PDO::FETCH_COLUMN);
+        $defaults = [
+            'vestirse' => ['052','Meowth',5],
+            'higiene'  => ['019','Rattata',10],
+            'desayuno' => ['094','Gengar',8],
+            'orden'    => ['066','Machop',12],
+            'comida'   => ['104','Cubone',10],
+            'fitness'  => ['056','Mankey',8],
+        ];
+        foreach ($missingPk as $gid) {
+            $d = $defaults[$gid] ?? ['001','Bulbasaur',5];
+            $pdo->prepare("INSERT IGNORE INTO pokemon_template (gym_id, pokemon_id, nombre, nivel, orden_en_gym) VALUES (?,?,?,?,0)")
+                ->execute([$gid, $d[0], $d[1], $d[2]]);
+        }
+    } catch(Exception $ex) {}
+    try {
         $activeHabits = (int)$pdo->query("SELECT COUNT(*) FROM habitos_template WHERE activo = 1")->fetchColumn();
         if ($activeHabits === 0) {
             $pdo->exec("UPDATE habitos_template SET activo = 1");
+            // If still 0, seed defaults using actual pokemon_template IDs
+            if ((int)$pdo->query("SELECT COUNT(*) FROM habitos_template WHERE activo = 1")->fetchColumn() === 0) {
+                $pkRows = $pdo->query("SELECT id, gym_id FROM pokemon_template LIMIT 10")->fetchAll();
+                $seedMap = ['vestirse'=>[['q_pant','Quitar ropa',20,'👕'],['q_calc','Ponerse calcetines',20,'🧦']],
+                            'higiene' =>[['h_dien','Lavar dientes',40,'🪥'],['h_cara','Lavar cara',25,'🧼']],
+                            'desayuno'=>[['d_lech','Tomar leche',30,'🥛'],['d_tost','Tostadas',25,'🍞']],
+                            'orden'   =>[['o_cama','Hacer cama',40,'🛏️'],['o_reco','Recoger cuarto',50,'🧸']]];
+                foreach ($pkRows as $pk) {
+                    $habits = $seedMap[$pk['gym_id']] ?? [];
+                    foreach ($habits as $h) {
+                        $pdo->prepare("INSERT IGNORE INTO habitos_template (id,pokemon_template_id,nombre,daño,icono,activo) VALUES (?,?,?,?,?,1)")
+                            ->execute([$h[0], $pk['id'], $h[1], $h[2], $h[3]]);
+                    }
+                }
+            }
         }
     } catch(Exception $ex) {}
 

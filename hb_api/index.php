@@ -41,6 +41,17 @@ function get_json_input() {
     return json_decode(file_get_contents('php://input'), true);
 }
 
+function require_uid(): int {
+    global $pdo;
+    $uid = get_user_id();
+    if (!$uid) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'error' => 'Token inválido o expirado']);
+        exit();
+    }
+    return $uid;
+}
+
 function get_user_id() {
     $headers = [];
     if (function_exists('getallheaders')) {
@@ -120,7 +131,7 @@ try {
     }
     // ─── STARTER ───────────────────────────────────────────────────────────────
     elseif (strpos($route, '/starter/info') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         $stmt = $pdo->prepare("SELECT p.* FROM pokemon_coleccion p 
                                JOIN usuarios u ON p.usuario_id = u.id 
                                WHERE u.id = ? AND p.is_partner = 1 
@@ -149,7 +160,7 @@ try {
         }
     }
     elseif (strpos($route, '/starter/elegir') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $pdo->prepare("UPDATE usuarios SET pokemon_inicial_id = ?, pokemon_inicial_nombre = ? WHERE id = ?")->execute([$data['pokemon_id'], $data['pokemon_nombre'], $uid]);
         $pdo->prepare("INSERT INTO pokemon_coleccion (usuario_id, pokemon_id, pokemon_nombre, gimnasio_origen, xp, nivel, is_partner) VALUES (?, ?, ?, 'starter', 0, 5, 1)")->execute([$uid, $data['pokemon_id'], $data['pokemon_nombre']]);
@@ -157,7 +168,7 @@ try {
     }
     // ─── HÁBITOS ──────────────────────────────────────────────────────────────
     elseif (strpos($route, '/habitos/hoy') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         $today = date('Y-m-d');
         
         // 1. Sincronizar SIEMPRE los hábitos activos con la tabla de hoy
@@ -206,7 +217,7 @@ try {
         echo json_encode(["success" => true, "habitos" => $res]);
     }
     elseif (strpos($route, '/habitos/completar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $today = date('Y-m-d');
         
@@ -254,7 +265,7 @@ try {
         ]);
     }
     elseif (strpos($route, '/habitos/reset') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $today = date('Y-m-d');
         
         // Delete today's progress in both tables
@@ -265,7 +276,7 @@ try {
     }
     // ─── GIMNASIOS ────────────────────────────────────────────────────────────
     elseif (strpos($route, '/gimnasios/hoy') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         $today = date('Y-m-d');
         $stmt = $pdo->prepare("SELECT gimnasios_completados FROM progreso_diario WHERE usuario_id = ? AND fecha = ?");
         $stmt->execute([$uid, $today]);
@@ -273,7 +284,7 @@ try {
         echo json_encode(["success" => true, "gimnasios" => json_decode($row['gimnasios_completados'] ?? '[]')]);
     }
     elseif (strpos($route, '/gimnasios/completar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $today = date('Y-m-d');
         // Update progress
@@ -307,7 +318,7 @@ try {
         ]);
     }
     elseif (strpos($route, '/battle/victory') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $xp_gain = 10;
         $pdo->prepare("UPDATE pokemon_coleccion SET xp = xp + ? WHERE usuario_id = ? AND is_partner = 1")->execute([$xp_gain, $uid]);
         
@@ -348,7 +359,7 @@ try {
     }
     // ─── TIENDA & INVENTARIO ──────────────────────────────────────────────────
     elseif (strpos($route, '/tienda/comprar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $item_id = $data['item_id'];
         $cantidad = isset($data['cantidad']) ? (int)$data['cantidad'] : 1;
@@ -414,7 +425,7 @@ try {
         ]);
     }
     elseif (strpos($route, '/usuario/usar_item') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $item_id = $data['item_id'];
         
@@ -466,7 +477,7 @@ try {
         }
     }
     elseif (strpos($route, '/usuario/configurar_encuentros') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $permitir = isset($data['permitir_encuentros']) ? $data['permitir_encuentros'] : null;
         
@@ -503,7 +514,7 @@ try {
     }
     // ─── COLECCIÓN (CAPTURAR) ─────────────────────────────────────────────────
     elseif (strpos($route, '/coleccion/evolucionar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $to_id   = $data['to_id']   ?? null;
         $to_name = $data['to_name'] ?? $to_id;
@@ -519,7 +530,7 @@ try {
         echo json_encode(["success" => true]);
     }
     elseif (strpos($route, '/coleccion/capturar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $ball_type = $data['ball_type'] ?? 'pokeball';
 
@@ -582,14 +593,14 @@ try {
         ]);
     }
     elseif (strpos($route, '/coleccion') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         $stmt = $pdo->prepare("SELECT * FROM pokemon_coleccion WHERE usuario_id = ?");
         $stmt->execute([$uid]);
         echo json_encode(["success" => true, "pokemon" => $stmt->fetchAll()]);
     }
     // ─── AMIGOS ───────────────────────────────────────────────────────────────
     elseif (strpos($route, '/amigos/enviar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $friend_username = trim($data['username'] ?? '');
         
@@ -646,7 +657,7 @@ try {
         echo json_encode(["success" => true, "message" => "Solicitud de amistad enviada a " . $friend['username'] . "."]);
     }
     elseif (strpos($route, '/amigos/aceptar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $friend_id = (int)($data['friend_id'] ?? 0);
         
@@ -675,7 +686,7 @@ try {
         echo json_encode(["success" => true, "message" => "¡Solicitud de amistad aceptada!"]);
     }
     elseif (strpos($route, '/amigos/rechazar') === 0 && $method === 'POST') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $data = get_json_input();
         $friend_id = (int)($data['friend_id'] ?? 0);
         
@@ -689,7 +700,7 @@ try {
     }
     // MMO: obtener gimnasios de un amigo específico hoy
     elseif (preg_match('/^\/amigos\/(\d+)\/gimnasios$/', $route, $rm) && $method === 'GET') {
-        $uid = get_user_id();
+        $uid = require_uid();
         $fid = (int)$rm[1];
         $chk = $pdo->prepare("SELECT id FROM amigos WHERE estado='aceptado' AND ((usuario_id_1=? AND usuario_id_2=?) OR (usuario_id_1=? AND usuario_id_2=?))");
         $chk->execute([$uid, $fid, $fid, $uid]);
@@ -701,7 +712,7 @@ try {
         echo json_encode(["success"=>true, "friend_id"=>$fid, "gimnasios_completados"=>$gyms]);
     }
     elseif (strpos($route, '/amigos') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         
         // Amigos aceptados — counts agregados en el mismo JOIN para evitar N+1
         $sql = "SELECT a.id as amistad_id,
@@ -752,7 +763,7 @@ try {
     }
     // ─── ESTADÍSTICAS ─────────────────────────────────────────────────────────
     elseif (strpos($route, '/stats') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         
         // 1. Total habitos completados
         $hStmt = $pdo->prepare("SELECT COUNT(*) FROM habitos WHERE usuario_id = ? AND completado = 1");
@@ -780,7 +791,7 @@ try {
     }
     // ─── ADMIN PRESETS ────────────────────────────────────────────────────────
     elseif (strpos($route, '/admin/presets') === 0) {
-        $uid = get_user_id();
+        $uid = require_uid();
         if ($method === 'GET') {
             $stmt = $pdo->prepare("SELECT * FROM habito_presets WHERE usuario_id = ? ORDER BY created_at DESC");
             $stmt->execute([$uid]);
@@ -893,7 +904,7 @@ try {
     }
     // MMO: actualizar posición propia y obtener amigos en el mismo mapa
     elseif (strpos($route, '/mapa/posicion') === 0 && $method === 'POST') {
-        $uid  = get_user_id();
+        $uid  = require_uid();
         $data = get_json_input();
         $map  = $data['mapa_id']   ?? 'Map002';
         $x    = (int)($data['x']   ?? 0);
