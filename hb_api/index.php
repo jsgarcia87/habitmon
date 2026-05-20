@@ -2,9 +2,10 @@
 /**
  * index.php - Sincronizado con api.js
  */
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+$_debug = getenv('APP_DEBUG') === 'true';
+ini_set('display_errors', $_debug ? 1 : 0);
+ini_set('display_startup_errors', $_debug ? 1 : 0);
+error_reporting($_debug ? E_ALL : 0);
 
 require_once 'db.php';
 
@@ -51,8 +52,8 @@ function get_user_id() {
     }
     
     $auth = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
-    if ($auth && preg_match('/Bearer\s(\d+)/', $auth, $matches)) {
-        return (int)$matches[1];
+    if ($auth && preg_match('/Bearer\s(\S+)/', $auth, $matches)) {
+        return verify_token($matches[1]);
     }
     return null;
 }
@@ -61,11 +62,26 @@ try {
     // ─── AUTH ──────────────────────────────────────────────────────────────────
     if (strpos($route, '/auth/register') === 0 && $method === 'POST') {
         $data = get_json_input();
-        $stmt = $pdo->prepare("INSERT INTO usuarios (username, email, password_hash, avatar, monedas, inventario) VALUES (?, ?, ?, ?, 300, ?)");
+        if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "Faltan campos obligatorios"]);
+            exit();
+        }
+        // Check for duplicate email/username before inserting
+        $dupStmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ? OR username = ? LIMIT 1");
+        $dupStmt->execute([$data['email'], $data['username']]);
+        if ($dupStmt->fetch()) {
+            http_response_code(409);
+            echo json_encode(["success" => false, "error" => "El email o nombre de usuario ya está registrado"]);
+            exit();
+        }
+        $hashed = password_hash($data['password'], PASSWORD_DEFAULT);
         $default_inv = '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}';
-        $stmt->execute([$data['username'], $data['email'], $data['password'], $data['avatar'] ?? 0, $default_inv]);
+        $stmt = $pdo->prepare("INSERT INTO usuarios (username, email, password_hash, avatar, monedas, inventario) VALUES (?, ?, ?, ?, 300, ?)");
+        $stmt->execute([$data['username'], $data['email'], $hashed, $data['avatar'] ?? 0, $default_inv]);
         $id = $pdo->lastInsertId();
-        echo json_encode(["success" => true, "token" => (string)$id, "usuario" => [
+        $token = generate_token((int)$id);
+        echo json_encode(["success" => true, "token" => $token, "usuario" => [
             "id" => $id,
             "username" => $data['username'],
             "avatar" => $data['avatar'] ?? 0,
@@ -76,15 +92,16 @@ try {
     }
     elseif (strpos($route, '/auth/login') === 0 && $method === 'POST') {
         $data = get_json_input();
-        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ? AND password_hash = ?");
-        $stmt->execute([$data['email'], $data['password']]);
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
+        $stmt->execute([$data['email']]);
         $u = $stmt->fetch();
-        if ($u) {
+        if ($u && password_verify($data['password'], $u['password_hash'])) {
             $inv = json_decode($u['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);
             if (!$inv) {
                 $inv = ["pokeball" => 5, "superball" => 0, "potion" => 2, "superpotion" => 0];
             }
-            echo json_encode(["success" => true, "token" => (string)$u['id'], "usuario" => [
+            $token = generate_token((int)$u['id']);
+            echo json_encode(["success" => true, "token" => $token, "usuario" => [
                 "id" => $u['id'],
                 "username" => $u['username'],
                 "avatar" => $u['avatar'],
