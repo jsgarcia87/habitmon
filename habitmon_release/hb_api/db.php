@@ -12,8 +12,8 @@ if (file_exists($_env_file)) {
 
 $db_host = getenv('HM_DB_HOST') ?: '127.0.0.1';
 $db_name = getenv('HM_DB_NAME') ?: 'habitmon_db';
-$db_user = getenv('HM_DB_USER') ?: '';
-$db_pass = getenv('HM_DB_PASS') ?: '';
+$db_user = getenv('HM_DB_USER') ?: 'Sangar';
+$db_pass = getenv('HM_DB_PASS') ?: 'SangarBD';
 
 define('TOKEN_SECRET', getenv('HM_TOKEN_SECRET') ?: 'habitmon-token-dev-only-change-me');
 
