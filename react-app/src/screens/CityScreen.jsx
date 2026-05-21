@@ -247,7 +247,7 @@ const CityScreen = ({
       }, 1200);
     } else if (value === 'shop') {
       setInteractiveDialogue(null);
-      navigate('shop');
+      navigate('pokemon_shop');
     } else {
       setInteractiveDialogue(null);
     }
@@ -321,35 +321,11 @@ const CityScreen = ({
       if (event.npc.isLeader) {
         navigate('battle', { tipo: 'gym', gymId: event.npc.gymId });
       } else if (event.npc.nombre === 'Enfermera Joy') {
-        setInteractiveDialogue({
-          name: 'ENFERMERA JOY',
-          text: [
-            '¡Hola! Bienvenido al Centro Pokémon.',
-            '¿Quieres que restauremos las fuerzas de tus Habitmon?'
-          ],
-          options: [
-            { label: 'SÍ, POR FAVOR', value: 'heal', primary: true },
-            { label: 'NO, GRACIAS', value: 'cancel' }
-          ]
-        });
+        navigate('pokemon_center');
       } else if (event.npc.nombre === 'Dependiente') {
-        setInteractiveDialogue({
-          name: 'DEPENDIENTE',
-          text: ['¡Hola! Bienvenido a la tienda. ¿Qué deseas comprar hoy?'],
-          options: [
-            { label: 'COMPRAR', value: 'shop', primary: true },
-            { label: 'SALIR', value: 'cancel' }
-          ]
-        });
+        navigate('pokemon_shop');
       } else if (event.npc.nombre === 'Recepcionista') {
-        setInteractiveDialogue({
-          name: 'RECEPCIONISTA',
-          text: ['¡Bienvenido al C.C. Trigal!', '¿Te puedo ayudar con algo hoy?'],
-          options: [
-            { label: 'COMPRAR', value: 'shop', primary: true },
-            { label: 'SALIR', value: 'cancel' }
-          ]
-        });
+        navigate('pokemon_shop');
       } else {
         setEventNpcName(event.npc.nombre);
         const dynamicMsg = getDynamicNpcMessage(event.npc);

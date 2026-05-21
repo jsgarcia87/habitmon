@@ -206,7 +206,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
                 }, 1000);
               }, 500);
             }
-            else if (val === 'shop') navigate('shop');
+            else if (val === 'shop') navigate('pokemon_shop');
             else setDialogue(null);
           }}
           options={dialogue.options}

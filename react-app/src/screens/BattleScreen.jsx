@@ -5,6 +5,7 @@ import { getAssetPath } from '../api/assets';
 import { safeDrawImage, drawTintedImage } from '../utils/gfxUtils';
 import { MOVE_DATA, POKEMON_MOVES } from '../data/moveData';
 import { createBattlePokemon, getPokemonByGym } from '../data/pokemonData';
+import { GYM_CONFIGS } from '../data/gymData';
 import { getEvolution } from '../data/evolutionData';
 import { POKEMON_SPECIES } from '../data/pokemonData';
 import { determineTurnOrder, processMove, processEndTurnEffects } from '../utils/battleEngine';
@@ -27,6 +28,7 @@ import VictoryOverlay from '../components/battle/VictoryOverlay';
 const INTRO_STATES = {
   ENCOUNTER_FLASH: 'encounterFlash', // 3 white flashes before battle (wild only, GSC style)
   FADE_IN:        'fadeIn',
+  VS_SCREEN:      'vsScreen',        // trainer portrait VS screen (trainer battles only)
   TRAINER_ENTER:  'trainerEnter',
   TRAINER_THROW:  'trainerThrow',
   BALL_FLY:       'ballFly',
@@ -103,12 +105,14 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const enemyImgRef = useRef(null);
   const bgImgRef = useRef(null);
   const playerPkImgRef = useRef(null);
+  const enemyTrainerImgRef = useRef(null);
 
   const introRef = useRef({
     state: isWild ? INTRO_STATES.ENCOUNTER_FLASH : INTRO_STATES.FADE_IN,
     timer: 0, fadeAlpha: 1, trainerX: -80, ballVisible: false, ballX: 0, ballY: 0,
     ballAngle: 0, enemyOpacity: 0, enemyScale: 1, enemyOffsetX: 0, flashAlpha: 0,
-    enemyHudX: -200, playerHudX: 430, playerScale: 0.1, encounterFlashAlpha: 0
+    enemyHudX: -200, playerHudX: 430, playerScale: 0.1, encounterFlashAlpha: 0,
+    vsPlayerX: -120, vsEnemyX: 420, vsLogoScale: 0, vsFlashAlpha: 0, silhouetteAlpha: 0
   });
 
   const initializedRef = useRef(false);
@@ -235,6 +239,18 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       const pPk = new Image(); const starterId = String(pInst.id || 16).padStart(3, '0');
       pPk.src = getAssetPath(`Graphics/battlers/${starterId}b.png`); pPk.onload = () => { playerPkImgRef.current = pPk; };
+
+      // Load enemy trainer sprite for VS screen (gym battles only)
+      if (!isWild && gymId) {
+        // Find the gym config by matching gymId against the GYM_CONFIGS map values
+        const gymCfg = Object.values(GYM_CONFIGS).find(cfg => cfg.id === gymId) ||
+                       GYM_CONFIGS[gymId];
+        if (gymCfg?.sprite) {
+          const et = new Image();
+          et.src = getAssetPath(`Graphics/characters/${gymCfg.sprite}.png`);
+          et.onload = () => { enemyTrainerImgRef.current = et; };
+        }
+      }
     } catch (err) {
       console.error("Battle Init Error:", err);
     }
@@ -300,8 +316,46 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       }
       case INTRO_STATES.FADE_IN:
         intro.fadeAlpha = Math.max(0, 1 - intro.timer / 400);
-        if(intro.timer > 400) { intro.state = INTRO_STATES.TRAINER_ENTER; intro.timer = 0; }
+        if(intro.timer > 400) {
+          intro.fadeAlpha = 0;
+          if (!isWild) {
+            intro.state = INTRO_STATES.VS_SCREEN;
+            intro.vsPlayerX = -120; intro.vsEnemyX = 420;
+            intro.vsLogoScale = 0; intro.vsFlashAlpha = 0;
+            sfx.encounter();
+          } else {
+            intro.state = INTRO_STATES.TRAINER_ENTER;
+          }
+          intro.timer = 0;
+        }
         break;
+      case INTRO_STATES.VS_SCREEN: {
+        // Canvas is 300×200 — use fixed dims
+        const BW = 300;
+        // 0-400ms: trainers slide in from both sides
+        // 400-700ms: VS logo pops in
+        // 700-1100ms: hold
+        // 1100-1300ms: flash white → end
+        if (intro.timer < 400) {
+          const tSlide = Math.min(1, intro.timer / 400);
+          const ease = 1 - Math.pow(1 - tSlide, 3);
+          intro.vsPlayerX = -120 + ease * (BW * 0.18 + 120);
+          intro.vsEnemyX = BW + 120 - ease * (BW * 0.38 + 120);
+          intro.vsLogoScale = 0;
+        } else if (intro.timer < 700) {
+          const tLogo = Math.min(1, (intro.timer - 400) / 200);
+          intro.vsLogoScale = tLogo < 0.5 ? 2 * tLogo * tLogo : 1 - Math.pow(-2 * tLogo + 2, 2) / 2;
+          intro.vsLogoScale = Math.min(1.15, intro.vsLogoScale * 1.15);
+        } else if (intro.timer > 1100) {
+          intro.vsFlashAlpha = Math.min(1, (intro.timer - 1100) / 200);
+        }
+        if (intro.timer > 1300) {
+          intro.vsFlashAlpha = 0;
+          intro.state = INTRO_STATES.TRAINER_ENTER;
+          intro.timer = 0;
+        }
+        break;
+      }
       case INTRO_STATES.TRAINER_ENTER: {
         const t = Math.min(1, intro.timer / 800);
         const easeCubic = 1 - Math.pow(1 - t, 3); // decelerating cubic ease-out
@@ -315,6 +369,11 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       }
       case INTRO_STATES.TRAINER_THROW:
         intro.trainerFrame = Math.min(4, Math.floor(intro.timer / 100));
+        if (intro.timer > 0 && !intro.throwMsgShown) {
+          intro.throwMsgShown = true;
+          const pkName = playerPkmn?.name?.toUpperCase() || 'POKÉMON';
+          setMessage(`¡Vamos, ${pkName}!`);
+        }
         if(intro.timer > 500) { intro.ballVisible = true; intro.ballX = intro.trainerX + 40; intro.ballY = 200 * 0.65; intro.state = INTRO_STATES.BALL_FLY; intro.timer = 0; }
         break;
       case INTRO_STATES.BALL_FLY:
@@ -349,15 +408,22 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           if (tPop < 200) { intro.playerScale = 0.1 + (tPop / 200) * 1.05; intro.playerShake = Math.sin(intro.timer * 0.1) * 2; }
           else { intro.playerScale = Math.max(1, 1.15 - ((tPop - 200) / 100) * 0.15); intro.playerShake = 0; }
         }
+        // Silhouette: Pokémon emerges as black shape first
+        intro.silhouetteAlpha = 1;
         if(intro.timer > 400) { intro.state = INTRO_STATES.POKEMON_APPEAR; intro.timer = 0; }
         break;
-      case INTRO_STATES.POKEMON_APPEAR:
-        if(intro.timer > 400) { 
+      case INTRO_STATES.POKEMON_APPEAR: {
+        // Silhouette dissolves to full color during first 350ms
+        intro.silhouetteAlpha = Math.max(0, 1 - intro.timer / 350);
+        if(intro.timer > 500) {
+          intro.silhouetteAlpha = 0;
+          setMessage('');
           const name = enemyPkmn?.name.toUpperCase() || 'ENEMIGO';
           setMessage(isWild ? `¡${name} SALVAJE APARECIÓ!` : `¡EL LÍDER TE DESAFÍA CON ${name}!`);
-          intro.state = INTRO_STATES.HUD_SLIDE; intro.timer = 0; 
+          intro.state = INTRO_STATES.HUD_SLIDE; intro.timer = 0;
         }
         break;
+      }
       case INTRO_STATES.HUD_SLIDE: {
         const t = Math.min(1, intro.timer / 400);
         const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
@@ -372,6 +438,68 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
   const drawIntro = (ctx, W, H) => {
     const intro = introRef.current;
+
+    // VS Screen — full override drawing for trainer battles intro
+    if (intro.state === INTRO_STATES.VS_SCREEN) {
+      // Split diagonal background
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, W, H);
+      // Left half (player side — warm dark red)
+      ctx.fillStyle = '#3a1a1a';
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W * 0.55, 0); ctx.lineTo(W * 0.45, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
+      // Right half (enemy side — dark blue)
+      ctx.fillStyle = '#1a1a3a';
+      ctx.beginPath(); ctx.moveTo(W, 0); ctx.lineTo(W * 0.55, 0); ctx.lineTo(W * 0.45, H); ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+
+      // Player trainer (left side) — uses back sprite
+      if (trainerImgRef.current) {
+        const img = trainerImgRef.current;
+        const frameW = img.width / 5;
+        const destW = 72, destH = Math.round(72 * img.height / frameW);
+        ctx.save();
+        ctx.translate(intro.vsPlayerX, H * 0.5 - destH * 0.5);
+        safeDrawImage(ctx, img, 0, 0, frameW, img.height, 0, 0, destW, destH);
+        ctx.restore();
+      }
+
+      // Enemy trainer (right side) — uses overworld character sprite
+      if (enemyTrainerImgRef.current) {
+        const img = enemyTrainerImgRef.current;
+        // Character sprites are 4-frame strips (down/left/right/up directions, 2 walk frames each = 8 cols × 4 rows)
+        const sprW = Math.floor(img.width / 4);
+        const sprH = Math.floor(img.height / 4);
+        const destW = 56, destH = Math.round(56 * sprH / sprW);
+        ctx.save();
+        ctx.translate(intro.vsEnemyX - destW, H * 0.5 - destH * 0.5);
+        safeDrawImage(ctx, img, 0, 0, sprW, sprH, 0, 0, destW, destH);
+        ctx.restore();
+      }
+
+      // VS logo in the center
+      if (intro.vsLogoScale > 0) {
+        ctx.save();
+        ctx.translate(W * 0.5, H * 0.5);
+        ctx.scale(intro.vsLogoScale, intro.vsLogoScale);
+        // Shadow
+        ctx.font = 'bold 22px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#000';
+        ctx.fillText('VS', 2, 2);
+        // Main text gradient
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText('VS', 0, 0);
+        ctx.restore();
+      }
+
+      // End flash
+      if (intro.vsFlashAlpha > 0) {
+        ctx.fillStyle = `rgba(255,255,255,${intro.vsFlashAlpha})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+      return;
+    }
+
     if (bgImgRef.current) safeDrawImage(ctx, bgImgRef.current, 0, 0, W, H);
     else { ctx.fillStyle = '#d8d0c0'; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = 'rgba(0,0,0,0.20)';
@@ -432,9 +560,17 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       ctx.translate(W * 0.22 + playerOffsetRef.current.x + (intro.playerShake || 0), H * 0.70 + playerOffsetRef.current.y);
       ctx.scale(pScale, pScale);
       
+      // Silhouette takes priority: black tint while emerging from Poké Ball
+      const silAlpha = intro.silhouetteAlpha || 0;
       const isBallOpeningFlash = intro.state === INTRO_STATES.BALL_FLASH;
-      const tintColor = playerOffsetRef.current.tintColor || (isBallOpeningFlash ? '#00f3ff' : null);
-      const tintAlpha = playerOffsetRef.current.tintAlpha || (isBallOpeningFlash ? Math.max(0, 1 - intro.timer / 400) : 0);
+      let tintColor, tintAlpha;
+      if (silAlpha > 0) {
+        tintColor = '#000000';
+        tintAlpha = silAlpha;
+      } else {
+        tintColor = playerOffsetRef.current.tintColor || (isBallOpeningFlash ? '#00f3ff' : null);
+        tintAlpha = playerOffsetRef.current.tintAlpha || (isBallOpeningFlash ? Math.max(0, 1 - intro.timer / 400) : 0);
+      }
       
       if (tintColor && tintAlpha > 0) {
         drawTintedImage(ctx, playerPkImgRef.current, 0, 0, playerPkImgRef.current.width, playerPkImgRef.current.height, -48, -48, 96, 96, tintColor, tintAlpha);
