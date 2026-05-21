@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { getAssetPath } from '../api/assets';
+import { sfx } from '../utils/audioEngine';
 
 const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, status = null }) => {
   // Ensure we have numbers. Fallback to 1/1 if data is missing to avoid NaN.
   const cur = Number(current) || 0;
   const mx = Number(max) || 100;
-  const pct = Math.max(0, Math.min(100, (cur / mx) * 100));
+  
+  const [displayCur, setDisplayCur] = useState(cur);
+
+  useEffect(() => {
+    if (displayCur === cur) return;
+    
+    const diff = cur - displayCur;
+    const durationMs = 600; // 0.6s
+    let startTimestamp = null;
+    let startVal = displayCur;
+    let lastTickVal = Math.floor(displayCur);
+    
+    let rafId;
+    const updateHP = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const t = Math.min(1, elapsed / durationMs);
+      
+      const nextVal = startVal + diff * t;
+      setDisplayCur(nextVal);
+      
+      if (Math.floor(nextVal) < lastTickVal) {
+        lastTickVal = Math.floor(nextVal);
+        sfx.dmgPop();
+      }
+      
+      if (t < 1) {
+        rafId = requestAnimationFrame(updateHP);
+      } else {
+        setDisplayCur(cur);
+      }
+    };
+    rafId = requestAnimationFrame(updateHP);
+    return () => cancelAnimationFrame(rafId);
+  }, [cur]);
+
+  const pct = Math.max(0, Math.min(100, (displayCur / mx) * 100));
 
   // Status colors/text
   const STATUS_MAP = {
@@ -92,7 +129,7 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
           width: `${pct}%`,
           height: '100%',
           backgroundColor: hpColor,
-          transition: 'width 0.6s ease-out, background-color 0.3s'
+          transition: 'background-color 0.3s'
         }} />
       </div>
 
@@ -106,7 +143,7 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
           fontSize: 6,
           color: '#333'
         }}>
-          {Math.ceil(cur)}/{mx}
+          {Math.ceil(displayCur)}/{mx}
         </div>
       )}
     </div>

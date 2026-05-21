@@ -50,6 +50,7 @@ export const ANIM_TYPES = {
   CAPTURE_SUCCESS: 'capture_success',
   CAPTURE_BREAKOUT: 'capture_breakout',
   HIDE_SPRITE: 'hide_sprite',
+  SLIDE_IN:    'slide_in',
   TYPE_FLASH: 'type_flash',       // colored full-screen tint matching move type
   CRITICAL_FLASH: 'critical_flash' // bright white flash for critical hits
 };
@@ -135,10 +136,31 @@ export const updateBattleAnimations = (anims, dt) => {
         }
         break;
       }
+      case ANIM_TYPES.SLIDE_IN: {
+        // Slide in from right and fade in
+        const easeCubic = 1 - Math.pow(1 - t, 3);
+        const startX = a.startX || 150;
+        const endX = a.endX || 0;
+        if (a.target === 'enemy') {
+          offsets.enemy.x = startX + (endX - startX) * easeCubic;
+          offsets.enemy.opacity = t;
+        } else {
+          offsets.player.x = startX + (endX - startX) * easeCubic;
+          offsets.player.opacity = t;
+        }
+        break;
+      }
       case ANIM_TYPES.FAINT: {
-        // Slide down + fade out + red tint
-        const drop = t * 80;
-        const alpha = 1 - t;
+        // Organic drop with a small bounce
+        let drop = 0;
+        if (t < 0.8) {
+          const ft = t / 0.8;
+          drop = (ft * ft) * 80; // accelerating fall
+        } else {
+          const bt = (t - 0.8) / 0.2;
+          drop = 80 - Math.sin(bt * Math.PI) * 10; // bounce up slightly
+        }
+        const alpha = Math.max(0, 1 - t * 1.2); // fade slightly faster than drop
         if (a.target === 'player') {
           offsets.player.y    += drop;
           offsets.player.opacity = alpha;
@@ -374,7 +396,8 @@ export const drawBattleAnimations = (ctx, anims, W, H) => {
         const steps = 4;
         const hStep = 50 / steps;
         for (let i = 1; i <= steps; i++) {
-          const targetX = (i === steps) ? a.x : a.x + (Math.random() - 0.5) * 24;
+          // Use a fixed pseudo-random based on delay and index so it doesn't flicker
+          const targetX = (i === steps) ? a.x : a.x + Math.sin((a.delay || 0) * 1.3 + i * 4.7) * 12;
           const targetY = (a.y - 50) + i * hStep;
           ctx.lineTo(targetX, targetY);
         }

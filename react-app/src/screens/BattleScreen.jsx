@@ -256,11 +256,24 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     const loop = (now) => {
       const dt = now - lastTime; lastTime = now;
       if (battleCanvasRef.current) {
-        const ctx = battleCanvasRef.current.getContext('2d');
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const canvas = battleCanvasRef.current;
+        if (canvas.width !== 300 * dpr) {
+          canvas.width = 300 * dpr;
+          canvas.height = 200 * dpr;
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, 300, 200);
         updateIntro(dt);
         const { nextAnims, offsets } = updateBattleAnimations(activeAnimsRef.current, dt);
         activeAnimsRef.current = nextAnims;
+        if (nextAnims.length === 0 && introRef.current.state === INTRO_STATES.READY) {
+          const breathe = Math.sin(now / 600) * 1.5;
+          offsets.player.y = breathe;
+          offsets.enemy.y = breathe * 0.8;
+        }
         playerOffsetRef.current = offsets.player;
         enemyOffsetRef.current = offsets.enemy;
         screenOffsetRef.current = offsets.screen || { x: 0, y: 0 };
@@ -270,6 +283,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         ctx.translate(screenOffsetRef.current.x, screenOffsetRef.current.y);
         drawIntro(ctx, 300, 200);
         drawBattleAnimations(ctx, activeAnimsRef.current, 300, 200);
+        ctx.restore();
         ctx.restore();
       }
       frameId = requestAnimationFrame(loop);
@@ -288,6 +302,12 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         const cycle = 240;
         const flashIdx = Math.floor(intro.timer / cycle);
         const withinCycle = intro.timer % cycle;
+        if (withinCycle < 120 && flashIdx < 3) {
+          if (!intro[`flash${flashIdx}Played`]) {
+            sfx.cursor();
+            intro[`flash${flashIdx}Played`] = true;
+          }
+        }
         intro.encounterFlashAlpha = (flashIdx < 3 && withinCycle < 120) ? 1 : 0;
         if (intro.timer > 720) {
           intro.encounterFlashAlpha = 0;
@@ -307,7 +327,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         
         intro.trainerX = -100 + easeCubic * (300 * 0.22 + 100);
         intro.enemyOpacity = Math.min(1, t);
-        intro.enemyOffsetX = 150 - easeBack * 150;
+        intro.enemyOffsetX = 150 - easeCubic * 150;
         if(intro.timer > 800) { intro.state = INTRO_STATES.TRAINER_THROW; intro.timer = 0; }
         break;
       }
@@ -372,9 +392,18 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     const intro = introRef.current;
     if (bgImgRef.current) safeDrawImage(ctx, bgImgRef.current, 0, 0, W, H);
     else { ctx.fillStyle = '#d8d0c0'; ctx.fillRect(0, 0, W, H); }
-    ctx.fillStyle = 'rgba(0,0,0,0.20)';
-    ctx.beginPath(); ctx.ellipse(W * 0.22 + playerOffsetRef.current.x, H * 0.83, 32, 7, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(W * 0.73 + enemyOffsetRef.current.x + (intro.enemyOffsetX || 0), H * 0.57, 28, 6, 0, 0, Math.PI * 2); ctx.fill();
+    const pShadowScale = Math.max(0, 1 - Math.max(0, -playerOffsetRef.current.y) / 40);
+    const pShadowAlpha = 0.20 * (playerOffsetRef.current.opacity ?? 1);
+    if (pShadowAlpha > 0 && pShadowScale > 0 && (playerOffsetRef.current.scale ?? 1) > 0.1) {
+      ctx.fillStyle = `rgba(0,0,0,${pShadowAlpha})`;
+      ctx.beginPath(); ctx.ellipse(W * 0.22 + playerOffsetRef.current.x, H * 0.83, 32 * pShadowScale, 7 * pShadowScale, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    const eShadowScale = Math.max(0, 1 - Math.max(0, -enemyOffsetRef.current.y) / 40);
+    const eShadowAlpha = 0.20 * (enemyOffsetRef.current.opacity ?? 1) * intro.enemyOpacity;
+    if (eShadowAlpha > 0 && eShadowScale > 0 && (enemyOffsetRef.current.scale ?? 1) > 0.1) {
+      ctx.fillStyle = `rgba(0,0,0,${eShadowAlpha})`;
+      ctx.beginPath(); ctx.ellipse(W * 0.73 + enemyOffsetRef.current.x + (intro.enemyOffsetX || 0), H * 0.57, 28 * eShadowScale, 6 * eShadowScale, 0, 0, Math.PI * 2); ctx.fill();
+    }
     
     if (intro.state !== INTRO_STATES.READY && trainerImgRef.current) {
       const img = trainerImgRef.current, frameW = img.width / 5, frame = intro.trainerFrame || 0;
@@ -506,9 +535,12 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       // 1. Attack message → player presses A → then animation plays
       await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
       activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
-      await new Promise(r => setTimeout(r, 600));
-
+      
       const result = processMove(attacker, defender, move);
+      
+      // Wait for the strike animation to hit before applying damage
+      const animDelay = move.category === 'Status' ? 400 : 550;
+      await new Promise(r => setTimeout(r, animDelay));
 
       // 2. Miss / unable to move
       if (result.unableToMove || result.missed) {
@@ -518,7 +550,11 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // 3. Damage
       if (result.damageDealt > 0) {
-        sfx.hit();
+        if (move.type === 'FIRE') sfx.fireHit();
+        else if (move.type === 'WATER' || move.type === 'ICE') sfx.waterHit();
+        else if (move.type === 'ELECTRIC') sfx.electricHit();
+        else if (move.category === 'Special') sfx.specialHit();
+        else sfx.hit();
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
         if (side === 'player') {
@@ -612,17 +648,25 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       createAnimation(ANIM_TYPES.SHAKE, { target: 'enemy', duration: 500, amount: 18 }),
       createAnimation(ANIM_TYPES.TEXT, { text: `-${damageDealt}`, x: endX, y: endY - 20, color: '#10b981', duration: 1000 })
     ];
+    const GYM_COLORS = {
+      'gym_1': ['#a8b820', '#10b981'], // bug/grass
+      'gym_2': ['#a8a878', '#f59e0b'], // normal
+      'gym_3': ['#f08030', '#f59e0b'], // fire
+      'gym_4': ['#f8d030', '#fff'],    // electric
+    };
+    const colors = GYM_COLORS[h.gym_id] || ['#10b981', '#f59e0b'];
+    
     for (let i = 0; i < 18; i++) {
       habitAnims.push(createAnimation(ANIM_TYPES.PARTICLE, {
         x: startX + (Math.random() - 0.5) * 15, y: startY + (Math.random() - 0.5) * 15,
         vx: (endX - startX) * (0.8 + Math.random() * 0.3) + (Math.random() - 0.5) * 35,
         vy: (endY - startY) * (0.8 + Math.random() * 0.3) + (Math.random() - 0.5) * 35,
-        duration: 400 + i * 25, color: i % 2 === 0 ? '#10b981' : '#f59e0b',
+        duration: 400 + i * 25, color: i % 2 === 0 ? colors[0] : colors[1],
         shape: 'star', size: 5 + Math.random() * 4, gravity: 0
       }));
     }
-    habitAnims.push(createAnimation(ANIM_TYPES.STRIKE, { x: endX, y: endY, duration: 400, color: '#10b981' }));
-    habitAnims.push(createAnimation(ANIM_TYPES.STRIKE, { x: endX + 10, y: endY - 8, duration: 450, delay: 100, color: '#f59e0b' }));
+    habitAnims.push(createAnimation(ANIM_TYPES.STRIKE, { x: endX, y: endY, duration: 400, color: colors[0] }));
+    habitAnims.push(createAnimation(ANIM_TYPES.STRIKE, { x: endX + 10, y: endY - 8, duration: 450, delay: 100, color: colors[1] }));
 
     await showMessage(`¡${playerPkmn.name.toUpperCase()} USÓ ${h.nombre.toUpperCase()}!`);
     activeAnimsRef.current = habitAnims;
@@ -645,12 +689,24 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       const nextPkmn = enemyTeam[nextIdx];
       const carry = damageDealt - currentHp;
       await showMessage(`¡${(enemyPkmnRef.current?.name ?? '').toUpperCase()} se debilitó!`);
+      
+      // Animate faint
+      sfx.faint();
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 1400 }));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'enemy', duration: 99999, delay: 1400 }));
+      await new Promise(r => setTimeout(r, 1500));
+      
       setTeamIndex(nextIdx);
       setEnemyPkmn({ ...nextPkmn, hp: Math.max(0, nextPkmn.maxHp - carry) });
       const img = new Image();
       img.src = getAssetPath(`Graphics/battlers/${String(nextPkmn.id).padStart(3, '0')}.png`);
       img.onload = () => { enemyImgRef.current = img; };
       await showMessage(`¡El líder envía a ${nextPkmn.name.toUpperCase()}!`);
+      
+      // Fade in new pokemon smoothly
+      activeAnimsRef.current = [createAnimation(ANIM_TYPES.SLIDE_IN, { target: 'enemy', duration: 800, startX: 150, endX: 0 })];
+      enemyOffsetRef.current = { x: 150, y: 0, visible: true, opacity: 0, scale: 1, tintColor: null, tintAlpha: 0 };
+      
       setPhase(BATTLE_PHASES.SELECT);
       setMessage('');
     } else {
@@ -753,9 +809,9 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       navigate('city');
     } else {
       sfx.faint();
-      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 2500 }));
-      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'enemy', duration: 99999, delay: 2500 }));
-      await new Promise(r => setTimeout(r, 2700));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 1400 }));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'enemy', duration: 99999, delay: 1400 }));
+      await new Promise(r => setTimeout(r, 1600));
       const gymReward = !isWild ? await completarGimnasio(gymId, starter.starter_id, starter.starter_nombre).catch(() => ({})) : {};
       const reward = await ganarBatalla().catch(() => ({}));
       const newLevel = gymReward?.nuevo_nivel || reward?.new_level || playerPkmn.level;

@@ -20,41 +20,46 @@ export const safeDrawImage = (ctx, img, ...args) => {
 };
 
 // Offscreen buffer cache for sprite tinting
-let tintCanvas = null;
-let tintCtx = null;
+let lastTintCache = new Map();
 
 /**
  * Draws an image tinted with a solid color on the canvas.
- * Highly performant offscreen composite method.
+ * Highly performant offscreen composite method with caching.
  */
 export const drawTintedImage = (ctx, img, sx, sy, sw, sh, dx, dy, dw, dh, color, alpha) => {
   if (!img || sw <= 0 || sh <= 0) return;
   
   if (img.complete && img.naturalWidth > 0) {
     try {
-      if (!tintCanvas) {
-        tintCanvas = document.createElement('canvas');
-        tintCtx = tintCanvas.getContext('2d');
+      const cacheKey = `${img.src}_${sx}_${sy}_${sw}_${sh}_${color}`;
+      let cacheCanvas = lastTintCache.get(cacheKey);
+      
+      if (!cacheCanvas) {
+        cacheCanvas = document.createElement('canvas');
+        cacheCanvas.width = sw;
+        cacheCanvas.height = sh;
+        const cCtx = cacheCanvas.getContext('2d');
+        cCtx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+        
+        // Source-in fills only the non-transparent pixels with the tint color
+        cCtx.save();
+        cCtx.globalCompositeOperation = 'source-in';
+        cCtx.fillStyle = color;
+        cCtx.fillRect(0, 0, sw, sh);
+        cCtx.restore();
+        
+        lastTintCache.set(cacheKey, cacheCanvas);
+        // Keep cache small to avoid memory leaks
+        if (lastTintCache.size > 20) {
+          const firstKey = lastTintCache.keys().next().value;
+          lastTintCache.delete(firstKey);
+        }
       }
-      
-      // Resize offscreen canvas if needed
-      if (tintCanvas.width < sw) tintCanvas.width = sw;
-      if (tintCanvas.height < sh) tintCanvas.height = sh;
-      
-      tintCtx.clearRect(0, 0, sw, sh);
-      tintCtx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
-      
-      // Source-in fills only the non-transparent pixels with the tint color
-      tintCtx.save();
-      tintCtx.globalCompositeOperation = 'source-in';
-      tintCtx.fillStyle = color;
-      tintCtx.fillRect(0, 0, sw, sh);
-      tintCtx.restore();
       
       // Draw onto the main canvas with specified opacity/alpha
       ctx.save();
       ctx.globalAlpha = alpha;
-      ctx.drawImage(tintCanvas, 0, 0, sw, sh, dx, dy, dw, dh);
+      ctx.drawImage(cacheCanvas, 0, 0, sw, sh, dx, dy, dw, dh);
       ctx.restore();
     } catch (e) {
       console.warn("drawTintedImage failed:", e);
