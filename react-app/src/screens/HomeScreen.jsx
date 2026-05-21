@@ -126,7 +126,7 @@ const HomeScreen = ({ navigate, direction, aPressed, screenData }) => {
   // Determinar NPCs dinámicamente
   const npcs = useMemo(() => {
     if (currentMapId === 'house_1') {
-      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 9, y: 5, direccion: 2 }];
+      return [{ id: 'madre', nombre: 'Dra. Mamá', sprite: 'char_ 00_b', x: 12, y: 4, direccion: 0 }];
     }
 
     const cfg = INTERIOR_CONFIGS[currentMapId];

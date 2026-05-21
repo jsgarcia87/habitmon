@@ -301,8 +301,8 @@ export const WORLD_DATA = {
       {
         nombre: 'Enfermera Joy',
         sprite: 'char_ 11_a',
-        posicion: { x: 10, y: 4 },
-        direccion: 2,
+        posicion: { x: 9, y: 5 },
+        direccion: 0,
         mensajes: ['¡Hola! Bienvenido al Centro Pokémon de Ganymaho.', '¿Estás cansado de tanto caminar?', '¡Tus hábitos están a salvo aquí con nosotros!']
       }
     ],
@@ -316,7 +316,7 @@ export const WORLD_DATA = {
       {
         nombre: 'Dependiente',
         sprite: 'char_ 02_a',
-        posicion: { x: 5, y: 5 },
+        posicion: { x: 7, y: 7 },
         direccion: 2,
         mensajes: ['¡Hola! Vendemos suministros especiales para deportistas activos.', '¡Mantente firme en tus tareas diarias para brillar en combate!']
       }
@@ -378,7 +378,7 @@ export const WORLD_DATA = {
       {
         nombre: 'Madre',
         sprite: 'char_ 11_a',
-        posicion: { x: 13, y: 6 },
+        posicion: { x: 13, y: 7 },
         direccion: 0,
         mensajes: ['¡Pórtate bien, hijo! Cumple tus hábitos para ganar medallas.', 'Recuerda que en el ORDENADOR de casa puedes ver tus LOGROS pulsando A.']
       }

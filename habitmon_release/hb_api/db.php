@@ -12,13 +12,8 @@ if (file_exists($_env_file)) {
 
 $db_host = getenv('HM_DB_HOST') ?: '127.0.0.1';
 $db_name = getenv('HM_DB_NAME') ?: 'habitmon_db';
-<<<<<<< Updated upstream
 $db_user = getenv('HM_DB_USER') ?: 'Sangar';
 $db_pass = getenv('HM_DB_PASS') ?: 'SangarBD';
-=======
-$db_user = getenv('HM_DB_USER') ?: '';
-$db_pass = getenv('HM_DB_PASS') ?: '';
->>>>>>> Stashed changes
 
 define('TOKEN_SECRET', getenv('HM_TOKEN_SECRET') ?: 'habitmon-token-dev-only-change-me');
 
@@ -84,7 +79,6 @@ try {
     } catch(Exception $ex) {}
     try { $pdo->exec("ALTER TABLE gimnasios_template MODIFY COLUMN `tiempo` ENUM('morning', 'midday', 'day', 'night') DEFAULT 'day'"); } catch(Exception $ex) {}
 
-<<<<<<< Updated upstream
     // ── Seed default gym/habit templates if all are inactive or missing ────────
     try {
         $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();
@@ -124,20 +118,6 @@ try {
         ? 'DB error: ' . $e->getMessage()
         : 'Database connection failed';
     echo json_encode(['success' => false, 'error' => $msg]);
-=======
-    // ── Migrate plaintext passwords → bcrypt (runs once per user) ────────────
-    try {
-        $rows = $pdo->query("SELECT id, password_hash FROM usuarios WHERE password_hash NOT LIKE '\$2y\$%' AND password_hash != ''")->fetchAll();
-        foreach ($rows as $row) {
-            $hashed = password_hash($row['password_hash'], PASSWORD_DEFAULT);
-            $pdo->prepare("UPDATE usuarios SET password_hash = ? WHERE id = ?")->execute([$hashed, $row['id']]);
-        }
-    } catch(Exception $ex) {}
-
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Database connection failed']);
->>>>>>> Stashed changes
     exit();
 }
 ?>

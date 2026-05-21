@@ -654,151 +654,69 @@ export const getMoveAnimation = (moveKey, isPlayer, W, H, moveType) => {
 
   switch (moveKey) {
     case 'TACKLE':
-      anims.push(createAnimation(ANIM_TYPES.LUNGE, { attacker, target, duration: 250, amount: 26 }));
       anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 250, color: '#f3f4f6' }));
-      for (let i = 0; i < 4; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: end.x, y: end.y,
-          vx: (Math.random() - 0.5) * 50, vy: (Math.random() - 0.5) * 50,
-          duration: 300, color: '#cbd5e1', size: 4, gravity: 0
-        }));
-      }
       break;
 
     case 'SCRATCH':
-      anims.push(createAnimation(ANIM_TYPES.LUNGE, { attacker, target, duration: 200, amount: 20 }));
       anims.push(createAnimation(ANIM_TYPES.SLASH, { x: end.x, y: end.y, duration: 350, color: '#f3f4f6' }));
       break;
 
     case 'PECK':
-      anims.push(createAnimation(ANIM_TYPES.LUNGE, { attacker, target, duration: 200, amount: 22 }));
-      // Triple peck hits with delay
-      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x - 8, y: end.y + 4, duration: 150, color: '#fff' }));
-      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x + 8, y: end.y - 4, duration: 150, delay: 90, color: '#fff' }));
-      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 150, delay: 180, color: '#f3f4f6' }));
+      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 250, color: '#ffffff' }));
       break;
 
     case 'QUICK_ATTACK':
-      anims.push(createAnimation(ANIM_TYPES.LUNGE, { attacker, target, duration: 150, amount: 35 }));
-      anims.push(createAnimation(ANIM_TYPES.FLASH, { duration: 150 }));
-      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 200, color: '#ffffff' }));
-      for (let i = 0; i < 6; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: start.x + (end.x - start.x) * (i / 6),
-          y: start.y + (end.y - start.y) * (i / 6),
-          vx: (Math.random() - 0.5) * 15, vy: (Math.random() - 0.5) * 15,
-          duration: 250, color: '#ffffff', size: 3, gravity: 0
-        }));
-      }
+      anims.push(createAnimation(ANIM_TYPES.SHAKE, { target: attacker, duration: 200, amount: 8 }));
+      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 200, delay: 200, color: '#ffffff' }));
       break;
 
     case 'EMBER':
-      for (let i = 0; i < 9; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: start.x + (Math.random() - 0.5) * 15,
-          y: start.y + (Math.random() - 0.5) * 15,
-          vx: (end.x - start.x) * (0.82 + Math.random() * 0.25) + (Math.random() - 0.5) * 30,
-          vy: (end.y - start.y) * (0.82 + Math.random() * 0.25) - 15 - Math.random() * 15,
-          duration: 450 + i * 40,
-          color: i % 2 === 0 ? '#ef4444' : '#fbbf24', // red/yellow sparks
-          shape: 'circle',
-          size: 5 + Math.random() * 5,
-          gravity: -6 // rising sparks!
-        }));
-      }
-      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 250, color: '#f97316' }));
-      break;
-
-    case 'WATER_GUN':
-      for (let i = 0; i < 12; i++) {
-        const offsetVal = (Math.random() - 0.5) * 14;
+      for (let i = 0; i < 4; i++) {
         anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
           x: start.x,
           y: start.y,
-          vx: (end.x - start.x) * (0.88 + i * 0.015),
-          vy: (end.y - start.y) + offsetVal,
-          duration: 350 + i * 25,
-          color: i % 3 === 0 ? '#38bdf8' : i % 3 === 1 ? '#0284c7' : '#ffffff',
+          vx: (end.x - start.x) * 1.1 + (i % 2 === 0 ? 15 : -15),
+          vy: (end.y - start.y) * 1.1 + (i < 2 ? 15 : -15),
+          duration: 350 + i * 20,
+          color: '#ef4444',
           shape: 'circle',
-          size: 6 + Math.random() * 4,
-          gravity: 4
-        }));
-      }
-      anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 300, color: '#3b82f6' }));
-      break;
-
-    case 'VINE_WHIP':
-      anims.push(createAnimation(ANIM_TYPES.CROSS_SLASH, { x: end.x, y: end.y, duration: 400, color: '#10b981' }));
-      for (let i = 0; i < 6; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: end.x + (Math.random() - 0.5) * 30,
-          y: end.y - 10 + (Math.random() - 0.5) * 20,
-          vx: (Math.random() - 0.5) * 20 - 10,
-          vy: 10 + Math.random() * 20,
-          duration: 500,
-          color: i % 2 === 0 ? '#059669' : '#34d399', // leaves
-          shape: 'star',
-          size: 5,
-          gravity: 12
-        }));
-      }
-      break;
-
-    case 'THUNDER_SHOCK':
-      anims.push(createAnimation(ANIM_TYPES.FLASH, { duration: 250 }));
-      for (let i = 0; i < 3; i++) {
-        anims.push(createAnimation(ANIM_TYPES.LIGHTNING, { x: end.x + (i - 1) * 12, y: end.y, duration: 300 + i * 50, color: '#facc15' }));
-      }
-      for (let i = 0; i < 8; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: end.x + (Math.random() - 0.5) * 35,
-          y: end.y + (Math.random() - 0.5) * 35,
-          vx: (Math.random() - 0.5) * 45,
-          vy: (Math.random() - 0.5) * 45,
-          duration: 300 + Math.random() * 200,
-          color: '#fbbf24',
-          shape: 'star',
-          size: 4 + Math.random() * 3,
+          size: 6,
           gravity: 0
         }));
       }
+      break;
+
+    case 'WATER_GUN':
+      for (let i = 0; i < 8; i++) {
+        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
+          x: start.x,
+          y: start.y,
+          vx: (end.x - start.x) * 1.1,
+          vy: (end.y - start.y) * 1.1 + (Math.random() - 0.5) * 12,
+          duration: 300 + i * 20,
+          color: '#38bdf8',
+          shape: 'circle',
+          size: 6,
+          gravity: 0
+        }));
+      }
+      break;
+
+    case 'VINE_WHIP':
+      anims.push(createAnimation(ANIM_TYPES.CROSS_SLASH, { x: end.x, y: end.y, duration: 300, color: '#059669' }));
+      break;
+
+    case 'THUNDER_SHOCK':
+      anims.push(createAnimation(ANIM_TYPES.FLASH, { duration: 150 }));
+      anims.push(createAnimation(ANIM_TYPES.LIGHTNING, { x: end.x, y: end.y, duration: 300, delay: 150, color: '#facc15' }));
       break;
 
     case 'THUNDER_WAVE':
       anims.push(createAnimation(ANIM_TYPES.SOUNDWAVE, { x: end.x, y: end.y, duration: 500, color: '#eab308' }));
-      for (let i = 0; i < 6; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: end.x + (Math.random() - 0.5) * 25,
-          y: end.y + (Math.random() - 0.5) * 25,
-          vx: (Math.random() - 0.5) * 15,
-          vy: (Math.random() - 0.5) * 15,
-          duration: 400,
-          color: '#fef08a',
-          shape: 'circle',
-          size: 4,
-          gravity: 0
-        }));
-      }
       break;
 
     case 'CONFUSION':
-      anims.push(createAnimation(ANIM_TYPES.FLASH, { duration: 400 }));
       anims.push(createAnimation(ANIM_TYPES.SOUNDWAVE, { x: end.x, y: end.y, duration: 600, color: '#a855f7' }));
-      for (let i = 0; i < 10; i++) {
-        const radius = 25 + Math.random() * 20;
-        const angle = Math.random() * Math.PI * 2;
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: end.x + Math.cos(angle) * radius,
-          y: end.y + Math.sin(angle) * radius,
-          vx: -Math.cos(angle) * 35,
-          vy: -Math.sin(angle) * 35,
-          duration: 500,
-          color: i % 2 === 0 ? '#c084fc' : '#e9d5ff',
-          shape: 'star',
-          size: 4,
-          gravity: 0
-        }));
-      }
       break;
 
     case 'GROWL':
@@ -830,19 +748,6 @@ export const getMoveAnimation = (moveKey, isPlayer, W, H, moveType) => {
 
     case 'GUST':
       anims.push(createAnimation(ANIM_TYPES.WIND_SWIRL, { x: end.x, y: end.y, duration: 700 }));
-      for (let i = 0; i < 8; i++) {
-        anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
-          x: end.x + (Math.random() - 0.5) * 40,
-          y: end.y + 20,
-          vx: (Math.random() - 0.5) * 10,
-          vy: -35 - Math.random() * 25,
-          duration: 500 + Math.random() * 200,
-          color: '#f1f5f9',
-          shape: 'circle',
-          size: 3 + Math.random() * 3,
-          gravity: -8
-        }));
-      }
       break;
 
     case 'SAND_ATTACK':
@@ -851,11 +756,11 @@ export const getMoveAnimation = (moveKey, isPlayer, W, H, moveType) => {
         anims.push(createAnimation(ANIM_TYPES.PARTICLE, {
           x: start.x,
           y: start.y + 10,
-          vx: (end.x - start.x) * (0.8 + Math.random() * 0.3) + (Math.random() - 0.5) * 25,
-          vy: (end.y - start.y) * (0.8 + Math.random() * 0.3) - 10 - Math.random() * 10,
+          vx: (end.x - start.x) * 0.9 + (Math.random() - 0.5) * 25,
+          vy: (end.y - start.y) * 0.9 - 10,
           duration: 400 + i * 20,
-          color: i % 2 === 0 ? '#b45309' : '#d97706', // sand dust
-          size: 3 + Math.random() * 3,
+          color: i % 2 === 0 ? '#b45309' : '#d97706',
+          size: 4,
           gravity: 25
         }));
       }
@@ -870,7 +775,7 @@ export const getMoveAnimation = (moveKey, isPlayer, W, H, moveType) => {
           vx: (Math.random() - 0.5) * 15,
           vy: 15 + Math.random() * 15,
           duration: 600 + Math.random() * 300,
-          color: i % 2 === 0 ? '#a855f7' : '#ec4899', // poison violet
+          color: i % 2 === 0 ? '#a855f7' : '#ec4899',
           shape: 'star',
           size: 4 + Math.random() * 3,
           gravity: 5
@@ -879,7 +784,6 @@ export const getMoveAnimation = (moveKey, isPlayer, W, H, moveType) => {
       break;
 
     default:
-      anims.push(createAnimation(ANIM_TYPES.LUNGE, { attacker, target, duration: 250, amount: 20 }));
       anims.push(createAnimation(ANIM_TYPES.STRIKE, { x: end.x, y: end.y, duration: 300, color: '#fff' }));
   }
 

@@ -54,6 +54,8 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const [message, setMessage] = useState('');
   const [introReady, setIntroReady] = useState(false);
   const [victoryData, setVictoryData] = useState(null);
+  // Clima global de batalla (Crystal: 5 turnos por defecto)
+  const [weather, setWeather] = useState({ type: 'none', turns: 0 });
   
   const [playerPkmn, setPlayerPkmn] = useState(null);
   const [enemyPkmn, setEnemyPkmn] = useState(null);
@@ -496,33 +498,55 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
     for (const side of order) {
       if (playerPkmn.hp <= 0 || enemyPkmn.hp <= 0) break;
-      const attacker = side === 'player' ? playerPkmn : enemyPkmn;
-      const defender = side === 'player' ? enemyPkmn : playerPkmn;
-      const move = side === 'player' ? pMove : eMove;
+      const attacker       = side === 'player' ? playerPkmn  : enemyPkmn;
+      const defender       = side === 'player' ? enemyPkmn   : playerPkmn;
+      const move           = side === 'player' ? pMove        : eMove;
+      const attackerSetter = side === 'player' ? setPlayerPkmn : setEnemyPkmn;
+      const defenderSetter = side === 'player' ? setEnemyPkmn  : setPlayerPkmn;
 
-      // 1. Attack message → player presses A → then animation plays
+      // 1. Mensaje de ataque + animación
       await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
       activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
       await new Promise(r => setTimeout(r, 600));
 
-      const result = processMove(attacker, defender, move);
+      const result = processMove(attacker, defender, move, { weather });
 
-      // 2. Miss / unable to move
+      // 2. Actualizar estado volátil derivado del resultado (antes de mostrar mensajes)
+      if (result.wakeUp)         attackerSetter(prev => ({ ...prev, status: null, sleepTurns: 0 }));
+      if (result.decrementSleep) attackerSetter(prev => ({ ...prev, sleepTurns: Math.max(0, (prev.sleepTurns || 1) - 1) }));
+      if (result.thawed)         attackerSetter(prev => ({ ...prev, status: null }));
+      if (result.confusionCleared) attackerSetter(prev => ({ ...prev, confused: false, confuseTurns: 0 }));
+      if (result.newConfuseTurns > 0) attackerSetter(prev => ({ ...prev, confuseTurns: result.newConfuseTurns }));
+
+      // 3. No puede moverse (sueño, congelación, parálisis) o falla
       if (result.unableToMove || result.missed) {
         await showMessage(result.unableToMove || `¡El ataque de ${attacker.name.toUpperCase()} falló!`);
         continue;
       }
 
-      // 3. Damage
+      // 4. Auto-golpe por confusión — reemplaza el movimiento normal
+      if (result.confusionSelfHit > 0) {
+        await showMessage(`¡${attacker.name.toUpperCase()} está confundido y se golpea a sí mismo!`);
+        sfx.hit();
+        isFlashingRef.current = true;
+        setTimeout(() => isFlashingRef.current = false, 100);
+        attackerSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.confusionSelfHit) }));
+        activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, {
+          text: `-${result.confusionSelfHit}`,
+          x: side === 'player' ? 300 * 0.25 : 300 * 0.75,
+          y: side === 'player' ? 200 * 0.7 - 20 : 200 * 0.35 - 20,
+          color: '#f00', duration: 800
+        }));
+        await new Promise(r => setTimeout(r, 500));
+        continue;
+      }
+
+      // 5. Daño
       if (result.damageDealt > 0) {
         sfx.hit();
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
-        if (side === 'player') {
-          setEnemyPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
-        } else {
-          setPlayerPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
-        }
+        defenderSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
         activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, {
           text: `-${result.damageDealt}`,
           x: side === 'enemy' ? 300 * 0.25 : 300 * 0.75,
@@ -531,53 +555,131 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         }));
         await new Promise(r => setTimeout(r, 400));
 
+        if (result.hitCount > 1) await showMessage(`¡Golpeó ${result.hitCount} veces!`);
         if (result.isCritical) {
           sfx.critical();
           activeAnimsRef.current.push(createAnimation(ANIM_TYPES.CRITICAL_FLASH, { duration: 500 }));
           activeAnimsRef.current.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 600, amount: 14 }));
           await showMessage('¡Un golpe crítico!');
         }
-        if (result.effectiveness > 1) await showMessage('¡Es muy eficaz!');
+        if (result.effectiveness > 1)                          await showMessage('¡Es muy eficaz!');
         else if (result.effectiveness < 1 && result.effectiveness > 0) await showMessage('No es muy eficaz...');
-        else if (result.effectiveness === 0) await showMessage('¡No afecta!');
+        else if (result.effectiveness === 0)                   await showMessage('¡No afecta!');
       }
 
-      // 4. Secondary effects
+      // 6. Retroceso (recoil)
+      if (result.recoilDamage > 0) {
+        attackerSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.recoilDamage) }));
+        await showMessage(`¡${attacker.name.toUpperCase()} sufrió daño por el retroceso!`);
+      }
+
+      // 7. Efectos secundarios
       if (result.effects) {
-        const { message: effectMsg, statChanges, statusApplied } = result.effects;
-        if (statusApplied || (statChanges && statChanges.length > 0)) {
-          if (statusApplied) {
-            if (side === 'player') setEnemyPkmn(prev => ({ ...prev, status: statusApplied }));
-            else setPlayerPkmn(prev => ({ ...prev, status: statusApplied }));
+        const {
+          message: effectMsg, statChanges,
+          statusApplied, sleepTurns: sleepTurnsVal,
+          toxicApplied, confused: targetConfused,
+          healAmount, weatherSet, screenSet, leechSeed,
+        } = result.effects;
+
+        if (statusApplied) {
+          if (statusApplied === 'sleep') {
+            defenderSetter(prev => ({ ...prev, status: 'sleep', sleepTurns: sleepTurnsVal || 3 }));
+          } else {
+            defenderSetter(prev => ({ ...prev, status: statusApplied }));
           }
-          if (statChanges && statChanges.length > 0) {
-            statChanges.forEach(sc => {
-              const ts = side === 'player'
-                ? (sc.target === 'defender' ? setEnemyPkmn : setPlayerPkmn)
-                : (sc.target === 'defender' ? setPlayerPkmn : setEnemyPkmn);
-              ts(prev => ({ ...prev, statStages: { ...prev.statStages, [sc.stat]: Math.max(-6, Math.min(6, (prev.statStages?.[sc.stat] || 0) + sc.stage)) } }));
-            });
-          }
-          if (effectMsg) await showMessage(effectMsg);
         }
+        if (toxicApplied) {
+          defenderSetter(prev => ({ ...prev, status: 'toxic', toxicCounter: 1 }));
+        }
+        if (targetConfused) {
+          const confuseTurns = 2 + Math.floor(Math.random() * 4);
+          defenderSetter(prev => ({ ...prev, confused: true, confuseTurns }));
+        }
+        if (statChanges && statChanges.length > 0) {
+          statChanges.forEach(sc => {
+            const ts = sc.target === 'attacker' ? attackerSetter : defenderSetter;
+            ts(prev => ({
+              ...prev,
+              statStages: {
+                ...prev.statStages,
+                [sc.stat]: Math.max(-6, Math.min(6, (prev.statStages?.[sc.stat] || 0) + sc.stage))
+              }
+            }));
+          });
+        }
+        if (healAmount > 0) {
+          attackerSetter(prev => ({ ...prev, hp: Math.min(prev.maxHp, prev.hp + healAmount) }));
+          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.STRIKE, {
+            x: side === 'player' ? 300 * 0.22 : 300 * 0.73,
+            y: side === 'player' ? 200 * 0.70 : 200 * 0.38,
+            duration: 500, color: '#10b981'
+          }));
+        }
+        if (weatherSet) setWeather(weatherSet);
+        if (screenSet) {
+          attackerSetter(prev => ({
+            ...prev,
+            screens: { ...prev.screens, [screenSet.type]: screenSet.turns }
+          }));
+        }
+        if (leechSeed) {
+          defenderSetter(prev => ({ ...prev, leeched: true }));
+        }
+        if (effectMsg) await showMessage(effectMsg);
       }
     }
 
-    // 5. End-turn effects (poison, etc.)
+    // 8. Efectos de fin de turno (veneno, quemadura, tóxico, látex, clima)
     for (const s of ['player', 'enemy']) {
-      const pkmn = s === 'player' ? playerPkmn : enemyPkmn;
-      const setter = s === 'player' ? setPlayerPkmn : setEnemyPkmn;
+      const pkmn           = s === 'player' ? playerPkmn   : enemyPkmn;
+      const setter         = s === 'player' ? setPlayerPkmn : setEnemyPkmn;
+      const opponentSetter = s === 'player' ? setEnemyPkmn  : setPlayerPkmn;
       if (pkmn.hp > 0) {
-        for (const eff of processEndTurnEffects(pkmn)) {
+        for (const eff of processEndTurnEffects(pkmn, weather)) {
           if (eff.damage) {
             setter(prev => ({ ...prev, hp: Math.max(0, prev.hp - eff.damage) }));
             isFlashingRef.current = true;
             setTimeout(() => isFlashingRef.current = false, 100);
           }
+          if (eff.leechHeal) {
+            opponentSetter(prev => ({ ...prev, hp: Math.min(prev.maxHp, prev.hp + eff.leechHeal) }));
+          }
+          if (eff.toxicCounter) {
+            setter(prev => ({ ...prev, toxicCounter: eff.toxicCounter }));
+          }
           await showMessage(eff.message);
         }
       }
     }
+
+    // 9. Decrementar clima
+    if (weather.type !== 'none' && weather.turns > 0) {
+      const newTurns = weather.turns - 1;
+      if (newTurns <= 0) {
+        setWeather({ type: 'none', turns: 0 });
+        const weatherNames = { rain: 'la lluvia', sun: 'el sol intenso', sandstorm: 'la tormenta de arena' };
+        await showMessage(`¡Terminó ${weatherNames[weather.type] || 'el clima especial'}!`);
+      } else {
+        setWeather(prev => ({ ...prev, turns: newTurns }));
+      }
+    }
+
+    // 10. Decrementar pantallas al final del turno
+    setPlayerPkmn(prev => ({
+      ...prev,
+      screens: {
+        reflect:     Math.max(0, (prev.screens?.reflect     || 0) - 1),
+        lightScreen: Math.max(0, (prev.screens?.lightScreen || 0) - 1),
+      }
+    }));
+    setEnemyPkmn(prev => ({
+      ...prev,
+      screens: {
+        reflect:     Math.max(0, (prev.screens?.reflect     || 0) - 1),
+        lightScreen: Math.max(0, (prev.screens?.lightScreen || 0) - 1),
+      }
+    }));
 
     if (playerPkmn.hp > 0 && enemyPkmn.hp > 0) {
       setPhase(BATTLE_PHASES.SELECT);
