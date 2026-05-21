@@ -105,8 +105,9 @@ try {
     }
     elseif (strpos($route, '/auth/login') === 0 && $method === 'POST') {
         $data = get_json_input();
-        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
-        $stmt->execute([$data['email']]);
+        $id = trim($data['identifier'] ?? $data['email'] ?? '');
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ? OR username = ?");
+        $stmt->execute([$id, $id]);
         $u = $stmt->fetch();
         if ($u && password_verify($data['password'], $u['password_hash'])) {
             $inv = json_decode($u['inventario'] ?? '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}', true);

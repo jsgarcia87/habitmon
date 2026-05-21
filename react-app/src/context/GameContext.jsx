@@ -69,8 +69,8 @@ export const GameProvider = ({children}) => {
     setStarter(null);
   };
 
-  const login = async (email, password) => {
-    const r = await api.login({email, password});
+  const login = async (identifier, password) => {
+    const r = await api.login({identifier, password});
     if(r.success) saveAuth(r.token, r.usuario);
     return r;
   };
