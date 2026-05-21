@@ -205,8 +205,11 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
     try {
       const bg = new Image(); bg.src = getAssetPath('Graphics/battlebacks/general_bg.png'); bg.onload = () => { bgImgRef.current = bg; };
-      const avatarNum = String(user?.avatar || 0).padStart(3,'0');
-      const tr = new Image(); tr.src = getAssetPath(`Graphics/trainers/trback${avatarNum === '000' ? '000' : '001'}.png`); tr.onload = () => { trainerImgRef.current = tr; };
+      // Map avatar id (0-3) to available trainer back sprites.
+      // trback000 = avatar 0; trback001 = avatar 1; trback044 = avatars 2/3 (alt look)
+      const avatarId = Number(user?.avatar || 0);
+      const trbackId = avatarId === 0 ? '000' : avatarId === 1 ? '001' : '044';
+      const tr = new Image(); tr.src = getAssetPath(`Graphics/trainers/trback${trbackId}.png`); tr.onload = () => { trainerImgRef.current = tr; };
       
       const pInst = createBattlePokemon(starter.starter_id, starter.starter_nivel);
       let eTeam = [];
