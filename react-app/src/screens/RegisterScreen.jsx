@@ -18,7 +18,7 @@ const RegisterScreen = ({ onLoginClick }) => {
     setError('');
     const res = await register(formData.username, formData.email, formData.password, formData.avatar);
     if (!res.success) {
-      setError(res.message || 'Error al registrarse');
+      setError(res.error || 'Error al registrarse');
     }
   };
 

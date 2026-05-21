@@ -69,8 +69,8 @@ export const GameProvider = ({children}) => {
     setStarter(null);
   };
 
-  const login = async (email, password) => {
-    const r = await api.login({email, password});
+  const login = async (identifier, password) => {
+    const r = await api.login({identifier, password});
     if(r.success) saveAuth(r.token, r.usuario);
     return r;
   };
@@ -115,24 +115,9 @@ export const GameProvider = ({children}) => {
         api.getStats()
       ]);
       
-      // Check for unauthorized access in any response
-      const results = [s, h, g, c];
-      const allUnauthorized = results.every(r => 
-        !r?.success && (
-          // Backend might return msg or error
-          [r?.msg, r?.error].some(m => 
-            m?.includes('Missing') || 
-            m?.includes('Expired') || 
-            m?.includes('Invalid') ||
-            m?.includes('expirado') ||
-            m?.includes('inválido')
-          )
-        )
-      );
-
-
-      if (allUnauthorized) {
-        console.warn('Sesión expirada');
+      // Si cualquier endpoint devuelve 401, el token es inválido → forzar re-login
+      if ([s, h, g, c].some(r => r?._unauthorized)) {
+        console.warn('Token inválido o expirado — cerrando sesión');
         logout();
         return;
       }
@@ -217,6 +202,7 @@ export const GameProvider = ({children}) => {
 
   const resetHabitos = async () => {
     const r = await api.resetHabitosHoy();
+    if (r?._unauthorized) { logout(); return r; }
     if(r.success) await cargarDatos();
     return r;
   };
@@ -244,6 +230,7 @@ export const GameProvider = ({children}) => {
   const saveCustomTemplate = async (newTemplate) => {
     try {
       const r = await api.saveAdminConfig(newTemplate);
+      if (r?._unauthorized) { logout(); return r; }
       if(r.success) {
         setTemplate(newTemplate);
         await cargarDatos(); // Refresh today's habits

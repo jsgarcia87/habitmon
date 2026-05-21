@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 
 const LoginScreen = ({ onRegisterClick }) => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useGame();
@@ -10,9 +10,9 @@ const LoginScreen = ({ onRegisterClick }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const res = await login(email, password);
+    const res = await login(identifier, password);
     if (!res.success) {
-      setError(res.message || 'Error al iniciar sesión');
+      setError(res.error || 'Error al iniciar sesión');
     }
   };
 
@@ -27,14 +27,15 @@ const LoginScreen = ({ onRegisterClick }) => {
         <h2>INICIAR SESIÓN</h2>
         <form onSubmit={handleSubmit}>
           <div className="gb-input-group">
-            <label className="gb-label">EMAIL</label>
-            <input 
-              className="gb-input" 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="prof.oak@kanto.com"
-              required 
+            <label className="gb-label">USUARIO / EMAIL</label>
+            <input
+              className="gb-input"
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="jugador o correo@kanto.com"
+              required
+              autoComplete="username"
             />
           </div>
 

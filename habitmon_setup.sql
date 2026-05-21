@@ -66,7 +66,6 @@ CREATE TABLE `gimnasios_template` (
     `gym_nombre` VARCHAR(100) NOT NULL,
     `tiempo` ENUM('morning', 'day', 'night') DEFAULT 'day',
     `battleback` VARCHAR(255) DEFAULT 'Graphics/battlebacks/outdoor.png',
-    `battleback` VARCHAR(255) DEFAULT 'Graphics/battlebacks/outdoor.png',
     `orden` INT DEFAULT 0,
     `activo` TINYINT(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -103,10 +102,10 @@ CREATE TABLE IF NOT EXISTS `habito_presets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Datos iniciales de ejemplo
-INSERT INTO `gimnasios_template` VALUES ('vestirse', 'Gimnasio Vestirse', 'morning', 'Graphics/battlebacks/room.png', 1);
-INSERT INTO `gimnasios_template` VALUES ('desayuno', 'Gimnasio Desayuno', 'morning', 'Graphics/battlebacks/indoor.png', 2);
-INSERT INTO `gimnasios_template` VALUES ('higiene', 'Gimnasio Higiene', 'day', 'Graphics/battlebacks/outdoor.png', 3);
-INSERT INTO `gimnasios_template` VALUES ('orden', 'Gimnasio Orden', 'night', 'Graphics/battlebacks/room.png', 4);
+INSERT INTO `gimnasios_template` (`gym_id`,`gym_nombre`,`tiempo`,`battleback`,`orden`) VALUES ('vestirse', 'Gimnasio Vestirse', 'morning', 'Graphics/battlebacks/room.png', 1);
+INSERT INTO `gimnasios_template` (`gym_id`,`gym_nombre`,`tiempo`,`battleback`,`orden`) VALUES ('desayuno', 'Gimnasio Desayuno', 'morning', 'Graphics/battlebacks/indoor.png', 2);
+INSERT INTO `gimnasios_template` (`gym_id`,`gym_nombre`,`tiempo`,`battleback`,`orden`) VALUES ('higiene', 'Gimnasio Higiene', 'day', 'Graphics/battlebacks/outdoor.png', 3);
+INSERT INTO `gimnasios_template` (`gym_id`,`gym_nombre`,`tiempo`,`battleback`,`orden`) VALUES ('orden', 'Gimnasio Orden', 'night', 'Graphics/battlebacks/room.png', 4);
 
 INSERT INTO `pokemon_template` (gym_id, pokemon_id, nombre, nivel, orden_en_gym) VALUES 
 ('vestirse', '052', 'Meowth', 5, 0),

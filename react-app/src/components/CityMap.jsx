@@ -8,6 +8,8 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
   const { user, gimnasiosHoy, habitosHoy, notify, timeOfDay } = useGame();
   const canvasRef = useRef(null);
   const worldOverlayRef = useRef(null);
+  const onEventRef = useRef(onEvent);
+  useEffect(() => { onEventRef.current = onEvent; });
   const [mapData, setMapData] = useState(null);
   const [tilesetMeta, setTilesetMeta] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -251,46 +253,44 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
   };
 
   useEffect(() => {
-    if (aPressed) {
-      const p = playerState.current;
-      let tx = p.x, ty = p.y;
-      if (p.facing === 'up') ty--;
-      if (p.facing === 'down') ty++;
-      if (p.facing === 'left') tx--;
-      if (p.facing === 'right') tx++;
+    if (!aPressed) return;
+    const p = playerState.current;
+    let tx = p.x, ty = p.y;
+    if (p.facing === 'up') ty--;
+    if (p.facing === 'down') ty++;
+    if (p.facing === 'left') tx--;
+    if (p.facing === 'right') tx++;
 
-      const friend = onlineFriends.find(f => f.posicion_x === tx && f.posicion_y === ty);
-      if (friend) {
-        onEvent({ type: 'friend_talk', friend });
-        return;
-      }
+    const friend = onlineFriends.find(f => f.posicion_x === tx && f.posicion_y === ty);
+    if (friend) {
+      onEventRef.current({ type: 'friend_talk', friend });
+      return;
+    }
 
-      const npc = npcs.find(n => n.posicion.x === tx && n.posicion.y === ty);
-      if (npc) {
-        onEvent({ type: 'npc_talk', npc });
-        return;
-      }
+    const npc = npcs.find(n => n.posicion.x === tx && n.posicion.y === ty);
+    if (npc) {
+      onEventRef.current({ type: 'npc_talk', npc });
+      return;
+    }
 
-      const clickedBuilding = buildings.find(b => tx === b.x && ty === b.y);
-      if (clickedBuilding) {
-        console.log('Interacting with structure:', clickedBuilding.type, 'at', tx, ty);
-        if (clickedBuilding.type === 'home') {
-          onEvent({ type: 'home_entry', building: clickedBuilding });
-        } else if (clickedBuilding.type === 'gym') {
-          onEvent({ 
-            type: 'gym_entry', 
-            gymId: clickedBuilding.gymId, 
-            building: clickedBuilding,
-            targetMapId: clickedBuilding.targetMapId,
-            spawn: clickedBuilding.spawn
-          });
-        } else {
-          // Generic interaction for computer, etc.
-          onEvent({ type: clickedBuilding.type, building: clickedBuilding });
-        }
+    const clickedBuilding = buildings.find(b => tx === b.x && ty === b.y);
+    if (clickedBuilding) {
+      console.log('Interacting with structure:', clickedBuilding.type, 'at', tx, ty);
+      if (clickedBuilding.type === 'home') {
+        onEventRef.current({ type: 'home_entry', building: clickedBuilding });
+      } else if (clickedBuilding.type === 'gym') {
+        onEventRef.current({
+          type: 'gym_entry',
+          gymId: clickedBuilding.gymId,
+          building: clickedBuilding,
+          targetMapId: clickedBuilding.targetMapId,
+          spawn: clickedBuilding.spawn
+        });
+      } else {
+        onEventRef.current({ type: clickedBuilding.type, building: clickedBuilding });
       }
     }
-  }, [aPressed, npcs, buildings, onEvent]);
+  }, [aPressed, npcs, buildings, onlineFriends]);
 
   useEffect(() => {
     if (!mapData || isLoading) return;
@@ -318,11 +318,11 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
           if (steppingOnBuilding) {
             console.log('Stepped into structure:', steppingOnBuilding.nombre);
             if (steppingOnBuilding.type === 'home') {
-              onEvent({ type: 'home_entry', building: steppingOnBuilding });
+              onEventRef.current({ type: 'home_entry', building: steppingOnBuilding });
             } else {
-              onEvent({ 
-                type: 'gym_entry', 
-                gymId: steppingOnBuilding.gymId, 
+              onEventRef.current({
+                type: 'gym_entry',
+                gymId: steppingOnBuilding.gymId,
                 building: steppingOnBuilding,
                 targetMapId: steppingOnBuilding.targetMapId,
                 spawn: steppingOnBuilding.spawn
@@ -334,39 +334,36 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
           // 2. CHEQUEAR WARPS DINÁMICOS (Puertas en el JSON)
           const warp = checkWarpEvents(p.x, p.y);
           if (warp) {
-             onEvent({
-               type: 'transfer',
-               targetMap: warp.targetMapId,
-               spawn: { x: warp.targetX, y: warp.targetY }
-             });
-             return;
+            onEventRef.current({
+              type: 'transfer',
+              targetMap: warp.targetMapId,
+              spawn: { x: warp.targetX, y: warp.targetY }
+            });
+            return;
           }
 
           // 3. CHEQUEAR BORDES DE MAPA
           const edge = (p.x <= 0) ? 'left' : (p.x >= mapData.width - 1) ? 'right' : (p.y <= 0) ? 'up' : (p.y >= mapData.height - 1) ? 'down' : null;
           if (edge) {
-            onEvent({ type: 'transfer', side: edge });
+            onEventRef.current({ type: 'transfer', side: edge });
           }
-          
-          // 3. ENCUENTROS SALVAJES (Solo en Ruta 29 por ahora)
+
+          // ENCUENTROS SALVAJES (Solo en Ruta 29 por ahora)
           if (mapId === 'Map008' && Math.random() < 0.05) {
-             const now = Date.now();
-             // 2 second cooldown after returning to map
-             if (now - lastEncounterRef.current > 2000) {
-               lastEncounterRef.current = now;
-               
-               const totalHabits = habitosHoy?.length || 0;
-               const completedAll = totalHabits > 0 && (habitosHoy || []).every(h => h.completado);
-               const encountersAllowed = user?.permitir_encuentros !== 0;
-               
-               if (!encountersAllowed) {
-                 console.log("Wild encounters disabled: deactivated by parent control.");
-               } else if (totalHabits > 0 && !completedAll) {
-                 console.log("Wild encounters disabled: daily habits not yet completed.");
-               } else {
-                 onEvent({ type: 'encounter' });
-               }
-             }
+            const nowTs = Date.now();
+            if (nowTs - lastEncounterRef.current > 2000) {
+              lastEncounterRef.current = nowTs;
+              const totalHabits = habitosHoy?.length || 0;
+              const completedAll = totalHabits > 0 && (habitosHoy || []).every(h => h.completado);
+              const encountersAllowed = user?.permitir_encuentros !== 0;
+              if (!encountersAllowed) {
+                console.log("Wild encounters disabled: deactivated by parent control.");
+              } else if (totalHabits > 0 && !completedAll) {
+                console.log("Wild encounters disabled: daily habits not yet completed.");
+              } else {
+                onEventRef.current({ type: 'encounter' });
+              }
+            }
           }
         } else p.walkFrame = Math.floor(p.progress * 4) % 4;
       } else if (direction) {
@@ -716,7 +713,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [mapData, isLoading, gimnasiosHoy, habitosHoy, npcs, buildings, direction, onEvent]);
+  }, [mapData, isLoading, gimnasiosHoy, habitosHoy, npcs, buildings, direction]);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000', overflow: 'hidden' }}>

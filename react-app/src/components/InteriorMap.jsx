@@ -5,21 +5,23 @@ import { TILE_PROPERTIES } from '../data/interiorData';
 
 const TILE_SIZE = 32;
 
-const InteriorMap = ({ 
-  map, 
-  tileset, 
-  tileConfig, 
-  initialPos, 
+const InteriorMap = ({
+  map,
+  tileset,
+  tileConfig,
+  initialPos,
   facing: initialFacing = 'down',
-  npcs = [], 
-  onEvent, 
+  npcs = [],
+  onEvent,
   onExit,
-  direction, 
+  direction,
   aPressed,
   currentMapId
 }) => {
   const { user } = useGame();
   const canvasRef = useRef(null);
+  const onEventRef = useRef(onEvent);
+  useEffect(() => { onEventRef.current = onEvent; });
   
   // Internal State
   const playerState = useRef({
@@ -193,11 +195,11 @@ const InteriorMap = ({
             const currentTileId = baseMap[p.y]?.[p.x];
             const tileProps = TILE_PROPERTIES[currentMapId]?.[currentTileId] || {};
             
-            if (tileProps.type === 'exit') onExit?.(); 
+            if (tileProps.type === 'exit') onExit?.();
             if (tileProps.type === 'stair') {
-              onEvent?.({ 
-                type: 'stair', 
-                x: p.x, 
+              onEventRef.current?.({
+                type: 'stair',
+                x: p.x,
                 y: p.y,
                 target: tileProps.target
               });
@@ -275,32 +277,31 @@ const InteriorMap = ({
     const lastTimeRef = { current: performance.now() };
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [isLoading, error, map, npcs, direction, onExit, onEvent, currentMapId]);
+  }, [isLoading, error, map, npcs, direction, onExit, currentMapId]);
 
   // Handle Interaction
   useEffect(() => {
-    if (aPressed && map) {
-      const p = playerState.current;
-      let tx = p.x, ty = p.y;
-      if (p.facing === 'up') ty--; else if (p.facing === 'down') ty++; else if (p.facing === 'left') tx--; else if (p.facing === 'right') tx++;
-      const currentLayers = map.layers || { base: map, deco: [], overlay: [] };
-      const baseMap = currentLayers.base;
-      if (!baseMap) return;
-      const mapW = baseMap[0]?.length || 20, mapH = baseMap.length || 15;
-      const npc = npcs.find(n => Math.round(n.x) === tx && Math.round(n.y) === ty);
-      if (npc) { onEvent?.({ type: 'npc_talk', npc }); return; }
-      if (ty >= 0 && ty < mapH && tx >= 0 && tx < mapW) {
-        const oTile = currentLayers.overlay?.[ty]?.[tx];
-        const dTile = currentLayers.deco?.[ty]?.[tx];
-        const bTile = currentLayers.base?.[ty]?.[tx];
-        let targetTile = -1;
-        if (oTile !== undefined && oTile !== -1) targetTile = oTile;
-        else if (dTile !== undefined && dTile !== -1) targetTile = dTile;
-        else if (bTile !== undefined && bTile !== -1) targetTile = bTile;
-        if (targetTile !== -1) { onEvent?.({ type: 'object_interact', tileType: targetTile }); }
-      }
+    if (!aPressed || !map) return;
+    const p = playerState.current;
+    let tx = p.x, ty = p.y;
+    if (p.facing === 'up') ty--; else if (p.facing === 'down') ty++; else if (p.facing === 'left') tx--; else if (p.facing === 'right') tx++;
+    const currentLayers = map.layers || { base: map, deco: [], overlay: [] };
+    const baseMap = currentLayers.base;
+    if (!baseMap) return;
+    const mapW = baseMap[0]?.length || 20, mapH = baseMap.length || 15;
+    const npc = npcs.find(n => Math.round(n.x) === tx && Math.round(n.y) === ty);
+    if (npc) { onEventRef.current?.({ type: 'npc_talk', npc }); return; }
+    if (ty >= 0 && ty < mapH && tx >= 0 && tx < mapW) {
+      const oTile = currentLayers.overlay?.[ty]?.[tx];
+      const dTile = currentLayers.deco?.[ty]?.[tx];
+      const bTile = currentLayers.base?.[ty]?.[tx];
+      let targetTile = -1;
+      if (oTile !== undefined && oTile !== -1) targetTile = oTile;
+      else if (dTile !== undefined && dTile !== -1) targetTile = dTile;
+      else if (bTile !== undefined && bTile !== -1) targetTile = bTile;
+      if (targetTile !== -1) { onEventRef.current?.({ type: 'object_interact', tileType: targetTile }); }
     }
-  }, [aPressed, npcs, map, onEvent]);
+  }, [aPressed, npcs, map]);
 
   if (error) {
     return (

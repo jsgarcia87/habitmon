@@ -27,6 +27,11 @@ const h = () => ({
 });
 
 const handleResponse = async (r) => {
+  if (r.status === 401) {
+    const text = await r.text().catch(() => '');
+    try { const json = JSON.parse(text); return { success: false, _unauthorized: true, error: json.error }; }
+    catch { return { success: false, _unauthorized: true }; }
+  }
   const text = await r.text();
   try {
     const json = JSON.parse(text);
