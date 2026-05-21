@@ -7,9 +7,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/data_json': 'http://localhost:8000',
-      '/api': 'http://localhost:8000',
-      '/hb_api': 'http://localhost:8000'
+      '/data_json': 'http://localhost:8080',
+      '/api': 'http://localhost:8080',
+      '/hb_api': 'http://localhost:8080'
     }
   }
 })
