@@ -26,6 +26,8 @@ import { useDebouncedInput } from './hooks/useDebouncedInput';
 import LandingPage from './screens/LandingPage';
 import WorldMapScreen from './screens/WorldMapScreen';
 import EvolutionScreen from './screens/EvolutionScreen';
+import PokemonCenterScreen from './screens/PokemonCenterScreen';
+import PokemonShopScreen from './screens/PokemonShopScreen';
 
 
 const LoadingScreen = () => (
@@ -137,6 +139,8 @@ function App() {
       case 'agenda': return <AgendaScreen onNavigate={navigate} />;
       case 'habitedit': return <HabitEditScreen onNavigate={navigate} />;
       case 'shop': return <ShopScreen navigate={navigate} />;
+      case 'pokemon_center': return <PokemonCenterScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
+      case 'pokemon_shop': return <PokemonShopScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
       case 'bag': return <BagScreen navigate={navigate} />;
       case 'friends': return <FriendsScreen onNavigate={navigate} />;
       case 'pokedex': return <PokedexScreen navigate={navigate} />;
