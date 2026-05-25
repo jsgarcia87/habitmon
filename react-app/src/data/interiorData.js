@@ -72,23 +72,31 @@ export const TILE_PROPERTIES = {
     [22]: { walkable: false }, [26]: { walkable: false }, [32]: { walkable: false }, [33]: { walkable: false }
   },
   // ---- Centro Pokémon (gsc pkmn center.png — 8 cols × 7 rows = IDs 0-55) ----
-  // ID 28 = suelo rosa claro con cuadros (verificado visualmente)
-  // ID 26 = tapete rojo salida, IDs 0-15 = mostrador/maquinaria (sólido)
-  // ID 40 = pared azul lateral izq, ID 41 = pared azul lateral der
   pokemon_center: {
-    [28]: { walkable: true },               // suelo rosa claro cuadros (principal)
-    [26]: { walkable: true, type: 'exit' }, // tapete rojo salida
+    // Floor tiles (walkable)
+    [36]: { walkable: true },
+    [37]: { walkable: true },
+    [44]: { walkable: true },
+    [45]: { walkable: true },
+    [52]: { walkable: true },
+    [53]: { walkable: true },
+    // Exit mat
+    [54]: { walkable: true, type: 'exit' },
+    [55]: { walkable: true, type: 'exit' },
+    // All others are walls / counter / furniture → non-walkable (default)
   },
   // ---- Tienda Pokémon (gsc pkmn mart.png — 8 cols × 7 rows = IDs 0-55) ----
-  // Auditado pixel a pixel:
-  // ID 36 = suelo beige limpio, ID 34 = tapete rojo salida
-  // IDs 0-15 = estanterías/mostrador (sólidos)
   pokemon_shop: {
-    [35]: { walkable: true },               // suelo beige
-    [36]: { walkable: true },               // suelo beige (principal)
-    [37]: { walkable: true },               // suelo beige
-    [38]: { walkable: true },               // suelo beige
-    [34]: { walkable: true, type: 'exit' }, // tapete rojo salida
+    // Floor tiles (walkable)
+    [36]: { walkable: true },
+    [37]: { walkable: true },
+    [44]: { walkable: true },
+    [45]: { walkable: true },
+    [52]: { walkable: true },
+    [53]: { walkable: true },
+    // Exit mat
+    [54]: { walkable: true, type: 'exit' },
+    [55]: { walkable: true, type: 'exit' },
   },
   ...GYM_TILE_PROPERTIES
 };
@@ -161,80 +169,110 @@ export function generateHouse2() {
 
 // ==========================================
 // 4. INTERIORES POKÉMON CENTER Y TIENDA
-//    Auditado pixel a pixel con Playwright — IDs verificados visualmente
-//
-//    gsc pkmn center.png (8×7=56 tiles):
-//      ID 24 = suelo rosa con cuadros (principal)
-//      ID 26 = tapete rojo salida
-//      IDs 0-7  = maquinaria trasera (fila 0 del tileset)
-//      IDs 8-15 = mostrador (fila 1 del tileset)
-//      ID 40,41 = paredes azules laterales (fila 5 col 0-1)
-//
-//    gsc pkmn mart.png (8×7=56 tiles):
-//      ID 36 = suelo beige limpio (principal)
-//      ID 34 = tapete rojo salida
-//      IDs 0-7  = estanterías/pared trasera (fila 0)
-//      IDs 8-15 = mostrador/estanterías bajas (fila 1)
-//      ID 16,24,32 = estanterías laterales izq (col 0, filas 2-4)
+//    Tilesets: gsc pkmn center.png / gsc pkmn mart.png
+//    Ambos: 256×224px → 8 cols × 7 rows = 56 tiles (IDs 0-55)
+//    Cols: 0=wall,1=wall,2=wall,3=window,4=window,5=heal,6=pc,7=wall
+//    Rows: 0-1=techo,2=mostrador,3=interior-mostrador,4-5=suelo,6=suelo+salida
 // ==========================================
 
 export function generatePokemonCenter() {
   const map = createMap(20, 15);
-  // Sala: x=5-14 (10 tiles de ancho), y=2-12
-  const X0 = 5, X1 = 14;
+  // Centro Pokémon Crystal-style:
+  // Fila 2: pared superior (tile 0)
+  // Fila 3: mostrador superior (tiles 8-15 dependiendo del col)
+  // Fila 4: mostrador inferior / área detrás (Joy en col 9)
+  // Filas 5-12: suelo libre
+  // Fila 13: suelo
+  // Fila 14: suelo + alfombra salida en centro
 
-  // Fila 2: maquinaria trasera — IDs 0-7 repartidos en 10 tiles
-  // Usamos los 8 tiles del tileset rellenando el ancho de 10
-  const topRow = [0, 0, 1, 2, 3, 4, 5, 6, 7, 7];
-  topRow.forEach((tile, i) => draw(map, 'base', X0 + i, 2, tile));
+  // Pared superior
+  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 2, 0);
+  draw(map, 'base', 2, 2, 0); draw(map, 'base', 17, 2, 0);
 
-  // Fila 3: mostrador — IDs 8-15 en 10 tiles
-  const counterRow = [8, 8, 9, 9, 9, 11, 12, 13, 14, 14];
-  counterRow.forEach((tile, i) => draw(map, 'base', X0 + i, 3, tile));
+  // Mostrador / zona Joy (Joy queda en y=3 del lado de atrás)
+  // Tiles: 8=counter-left, 9=counter-mid, 10=counter-right, 11=heal-machine, 12=pc
+  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 3, 9);
+  draw(map, 'base', 3, 3, 8);  // esquina izq mostrador
+  draw(map, 'base', 16, 3, 10); // esquina der mostrador
+  draw(map, 'base', 5, 3, 11);  // máquina curación izq
+  draw(map, 'base', 6, 3, 11);
+  draw(map, 'base', 13, 3, 12); // PC derecha
+  draw(map, 'base', 14, 3, 12);
 
-  // Suelo rosa claro (filas 4-11): ID 28
-  for (let y = 4; y <= 11; y++)
-    for (let x = X0; x <= X1; x++)
-      draw(map, 'base', x, y, 28);
+  // Frente del mostrador (primera fila caminable)
+  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 4, 36);
 
-  // Paredes azules laterales: ID 40 (izq) y 41 (der)
-  for (let y = 4; y <= 11; y++) {
-    draw(map, 'base', X0, y, 40);
-    draw(map, 'base', X1, y, 41);
+  // Suelo principal
+  for (let y = 4; y <= 13; y++) {
+    for (let x = 2; x <= 17; x++) draw(map, 'base', x, y, 36);
   }
 
-  // Fila 12: suelo + tapete rojo centrado (ID 26)
-  for (let x = X0; x <= X1; x++) draw(map, 'base', x, 12, 28);
-  draw(map, 'base', 9,  12, 26);
-  draw(map, 'base', 10, 12, 26);
+  // Variante de suelo para patrón visual
+  for (let y = 5; y <= 12; y += 2) {
+    for (let x = 3; x <= 16; x += 2) draw(map, 'base', x, y, 37);
+  }
+
+  // Sillas / bancos laterales
+  for (let y = 10; y <= 11; y++) {
+    draw(map, 'base', 4, y, 44); draw(map, 'base', 5, y, 44);
+    draw(map, 'base', 14, y, 44); draw(map, 'base', 15, y, 44);
+  }
+
+  // Paredes laterales
+  for (let y = 2; y <= 13; y++) {
+    draw(map, 'base', 2, y, 0);
+    draw(map, 'base', 17, y, 0);
+  }
+
+  // Fila inferior con salida
+  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 14, 36);
+  draw(map, 'base', 8, 14, 54);  // alfombra salida
+  draw(map, 'base', 9, 14, 55);
 
   return map;
 }
 
 export function generatePokemonShop() {
   const map = createMap(20, 15);
-  // Sala: x=5-14 (10 tiles de ancho), y=2-12
-  const X0 = 5, X1 = 14;
+  // Tienda Crystal-style:
+  // Fila 2: pared superior
+  // Fila 3: mostrador del dependiente
+  // Fila 4: zona mostrador
+  // Filas 5-13: suelo con estanterías en los laterales
+  // Fila 14: salida
 
-  // Fila 2: estanterías traseras — IDs 0-7 del mart en 10 tiles
-  const topRow = [0, 0, 1, 2, 3, 4, 5, 6, 7, 7];
-  topRow.forEach((tile, i) => draw(map, 'base', X0 + i, 2, tile));
+  // Pared superior
+  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 2, 0);
 
-  // Fila 3: mostrador — IDs 8-15 en 10 tiles
-  const counterRow = [8, 8, 9, 10, 11, 12, 13, 14, 15, 15];
-  counterRow.forEach((tile, i) => draw(map, 'base', X0 + i, 3, tile));
+  // Mostrador
+  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 3, 9);
+  draw(map, 'base', 3, 3, 8);
+  draw(map, 'base', 16, 3, 10);
 
-  // Suelo beige (filas 4-11): ID 36
-  for (let y = 4; y <= 11; y++)
-    for (let x = X0; x <= X1; x++)
-      draw(map, 'base', x, y, 36);
+  // Frente mostrador
+  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 4, 36);
 
-  // Sin estanterías laterales — el suelo beige llena toda la sala
+  // Suelo principal
+  for (let y = 4; y <= 13; y++) {
+    for (let x = 2; x <= 17; x++) draw(map, 'base', x, y, 36);
+  }
 
-  // Fila 12: suelo + tapete rojo centrado (ID 34)
-  for (let x = X0; x <= X1; x++) draw(map, 'base', x, 12, 36);
-  draw(map, 'base', 9,  12, 34);
-  draw(map, 'base', 10, 12, 34);
+  // Estanterías laterales (izq y der)
+  for (let y = 5; y <= 12; y++) {
+    draw(map, 'base', 4, y, 44); draw(map, 'base', 5, y, 44); // estantería izq
+    draw(map, 'base', 14, y, 44); draw(map, 'base', 15, y, 44); // estantería der
+  }
+
+  // Paredes laterales
+  for (let y = 2; y <= 13; y++) {
+    draw(map, 'base', 2, y, 0);
+    draw(map, 'base', 17, y, 0);
+  }
+
+  // Fila inferior con salida
+  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 14, 36);
+  draw(map, 'base', 8, 14, 54);
+  draw(map, 'base', 9, 14, 55);
 
   return map;
 }
@@ -265,14 +303,14 @@ export const INTERIOR_CONFIGS = {
   'pokemon_center': {
     tileset: `${BASE}Graphics/tilesets/gsc pkmn center.png`,
     nombre: 'CENTRO POKÉMON',
-    spawn: { x: 9, y: 8 },
-    tiles: { floor: 28, exit: 26 }
+    spawn: { x: 9, y: 10 },
+    tiles: { floor: 36, exit: 54 }
   },
   'pokemon_shop': {
     tileset: `${BASE}Graphics/tilesets/gsc pkmn mart.png`,
     nombre: 'TIENDA POKÉMON',
-    spawn: { x: 9, y: 8 },
-    tiles: { floor: 36, exit: 34 }
+    spawn: { x: 9, y: 10 },
+    tiles: { floor: 36, exit: 54 }
   },
   ...GYM_CONFIGS
 };
