@@ -121,25 +121,51 @@ Un mapa cobra vida con sus eventos:
   aparecen, con qué probabilidad y método (hierba, cueva, agua).
 - Ajusta especies y niveles al **punto de progresión** de ese mapa.
 - Mantén la coherencia bioma↔especie (Pokémon de agua cerca del agua, etc.).
-- Las especies deben existir en `pokemon_template`; si introduces una nueva, créala
-  primero (ver `pokemon-and-moves.md`).
+- Las especies deben existir en `POKEMON_SPECIES` (`pokemonData.js`); si introduces
+  una nueva, créala primero (ver `pokemon-and-moves.md`).
 
 ## 9. Cómo se construyen los mapas en Habitmon
 
-- El runtime es un **motor de canvas** propio (React + Canvas 2D). Un mapa es, en la
-  práctica, una **estructura de datos**: rejilla de índices de tile por capa, lista
-  de eventos/NPCs, warps y tabla de encuentros.
-- El arte de tiles proviene de RPG Maker XP (32 × 32 px). El flujo habitual para un
-  mapa es diseñarlo en RMXP y **exportarlo/convertirlo a JSON**, o construir
-  directamente el JSON de datos del mapa.
-- Nombra los mapas con la convención `MapXXX`, coherente con los existentes.
-- Los interiores usan el componente `InteriorMap`, también basado en canvas; los
-  pisos se conectan con escaleras.
-- Integra el mapa nuevo en el sistema de mapas (registro, conexiones de borde,
-  warps) y prueba las transiciones de iris.
+### Mapas exteriores
 
-Antes de producir, revisa el formato real de un mapa existente del proyecto y
-**replícalo**.
+Los mapas exteriores están definidos como objetos JS en
+`react-app/src/data/worldData.js`, en el objeto `WORLD_DATA`. **No se exportan desde
+RMXP** — se escriben directamente en ese archivo. Cada entrada tiene la forma:
+
+```js
+'MapXXX': {
+  nombre: 'Nombre visible',
+  npcs: [{ nombre, sprite, x, y, direccion, messages, isLeader? }],
+  buildings: [{ type: 'gym'|'home'|'center'|'shop', x, y, gymId?, targetMapId, spawn }],
+  exits: { up?, down?, left?, right? }  // { mapId, playerX, playerY }
+}
+```
+
+- El arte de tiles proviene de RMXP (32 × 32 px); los tilesets van en
+  `react-app/public/Graphics/tilesets/`.
+- Añade la conexión de vuelta en el mapa vecino correspondiente.
+
+### Mapas interiores — gimnasios
+
+Los interiores de gimnasios se generan **proceduralmente** en
+`react-app/src/data/gymData.js`. Cada uno tiene:
+- Una entrada en `GYM_CONFIGS` (tileset, líder, tiles de suelo/pared/alfombra).
+- Una función generadora (p. ej. `generateVestirse`) que devuelve la rejilla de
+  tiles (20 × 15, interior habitable 10 × 12 con origen en x=5, y=2).
+- La clave en `GENERATORS` para que `GYM_MAPS` se construya automáticamente.
+
+### Mapas interiores — casas y servicios
+
+Definidos en `react-app/src/data/interiorData.js` mediante funciones
+`generateHouse1()`, `generatePokemonCenter()`, etc., y exportados en
+`INTERIOR_CONFIGS` / `INTERIOR_MAPS`.
+
+El componente `InteriorMap` (`react-app/src/components/InteriorMap.jsx`) renderiza
+cualquier interior; los pisos se conectan con tiles de tipo `stair`.
+
+Nombra los mapas con la convención `MapXXX` coherente con los existentes. Antes de
+producir, lee el formato real de una entrada existente en `worldData.js` o `gymData.js`
+y **replícalo**.
 
 ## 10. Lista de comprobación de un mapa
 
@@ -150,6 +176,6 @@ Antes de producir, revisa el formato real de un mapa existente del proyecto y
 - ¿La paleta y los tiles encajan con los mapas vecinos?
 - ¿La exploración tiene alguna recompensa?
 - ¿La tabla de encuentros encaja con el bioma y la progresión, y sus especies
-  existen en `pokemon_template`?
+  existen en `POKEMON_SPECIES` (pokemonData.js)?
 - ¿Sigue la nomenclatura `MapXXX` y el formato de datos de los mapas existentes?
 - ¿Respeta la rejilla de 32 × 32 y la estética Cristal?

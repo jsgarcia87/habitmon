@@ -130,19 +130,67 @@ Un movimiento/ataque se define con:
 
 ## 9. Cómo se definen en Habitmon
 
-- Los Pokémon del juego viven en la tabla MySQL **`pokemon_template`** (especie,
-  tipo, estadísticas base, moveset, evolución...). Crear un Pokémon nuevo es **añadir
-  una fila** a esa tabla y aportar sus sprites de 32 × 32.
-- Si la criatura es recompensa de un gimnasio, enlázala al gimnasio correspondiente.
-- Los **movimientos** los consume el motor de combate (React/Canvas): revisa cómo
-  están definidos los movimientos actuales —típicamente una estructura de datos /
-  JSON con los campos de la sección 7— y añade los nuevos con ese mismo formato.
-- Comprueba siempre la **versión real de las tablas y estructuras** del proyecto
-  antes de escribir datos: replica el esquema existente, no inventes campos.
-- Nota: definiciones tipo PBS de Pokémon Essentials pueden servir como **referencia
-  conceptual** de qué campos necesita una especie o un movimiento, pero el
-  almacenamiento real de Habitmon es la base de datos MySQL y las estructuras del
-  motor de combate, no archivos PBS.
+El contenido de Pokémon está **repartido entre el frontend JS y la BD MySQL**:
+
+### Especie (datos biológicos)
+
+Vive en **`react-app/src/data/pokemonData.js`**, objeto `POKEMON_SPECIES`:
+
+```js
+'NNN': { name: 'Nombre', types: ['TIPO1'], baseStats: { hp, atk, def, spa, spd, spe } }
+```
+
+- La clave es un string de 3 dígitos con cero (`'016'`, `'025'`).
+- `types` usa los nombres en mayúsculas del tipo chart de `damageCalculator.js`
+  (NORMAL, FIRE, WATER, GRASS, ELECTRIC, ICE, FIGHTING, POISON, GROUND, FLYING,
+  PSYCHIC, BUG, ROCK, GHOST, DRAGON, DARK, STEEL).
+- Los sprites van en `react-app/public/Graphics/battlers/NNN.png` (frontal) y
+  `NNN_back.png` (trasero).
+
+### Moveset
+
+En `POKEMON_MOVES` del mismo archivo, con **clave entera sin cero** (`16`, `25`):
+
+```js
+16: ['TACKLE', 'SAND_ATTACK', 'GUST', 'WING_ATTACK']
+```
+
+### Evoluciones
+
+En `react-app/src/data/evolutionData.js`, objeto `EVOLUTION_DATA`:
+
+```js
+'NNN': { next: 'MMM', level: 18 }
+```
+
+### Asignación a gimnasio (qué Pokémon usa el líder)
+
+Dos pasos:
+1. **`GYM_LEADER_POKEMON`** en `pokemonData.js` — puede ser un objeto `{id, level}`
+   para un solo Pokémon, o un **array** para un equipo de varios:
+   ```js
+   'vestirse': [{ id: '052', level: 5, name: 'Quitar Ropa' }, { id: '053', level: 8 }]
+   'higiene':  { id: '088', level: 8 }
+   ```
+2. **`pokemon_template`** en la BD — fila con `gym_id, pokemon_id, nombre, nivel,
+   orden_en_gym`. Si el líder tiene equipo, añade una fila por Pokémon con
+   `orden_en_gym` 1, 2, etc.
+
+### Movimientos
+
+Viven en **`react-app/src/data/moveData.js`**, objeto `MOVE_DATA`. Añade el nuevo
+movimiento con:
+
+```js
+'MOVE_ID': { id, nombre, power, accuracy, type, category, priority,
+             effect?, effectChance?, recoil?, critBoost? }
+```
+
+`category`: `'physical'`, `'special'` o `'status'`. Si el efecto es nuevo,
+impleméntalo en `moveEffects.js` (función `executeMoveEffect`).
+
+Comprueba siempre la **versión real de las estructuras** antes de escribir: replica
+el formato exacto de los elementos existentes.
 
 ## 10. Listas de comprobación
 
@@ -155,7 +203,9 @@ Un movimiento/ataque se define con:
 - Sus evoluciones tienen especie destino y método definidos.
 - Tiene sprites frontal y trasero de 32 × 32 en estilo Cristal.
 - El diseño es amable y apropiado para público infantil.
-- Encaja en el esquema de `pokemon_template` del proyecto.
+- Tiene entrada en `POKEMON_SPECIES` (pokemonData.js) con las 6 estadísticas base.
+- Si es recompensa de gimnasio, tiene entrada en `GYM_LEADER_POKEMON` (pokemonData.js)
+  y en `pokemon_template` (BD).
 
 **Un movimiento está bien definido si:**
 
