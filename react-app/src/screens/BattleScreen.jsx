@@ -968,11 +968,12 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       if (isWild) {
         await showMessage(`¡${enemyPkmn.name.toUpperCase()} salvaje ataca!`);
         const enemyDmg = 8 + Math.floor(Math.random() * 8);
-        setPlayerPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - enemyDmg) }));
+        const newPlayerHp = Math.max(0, playerPkmn.hp - enemyDmg);
+        setPlayerPkmn(prev => ({ ...prev, hp: newPlayerHp }));
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 150);
         await new Promise(r => setTimeout(r, 600));
-        if (playerPkmn.hp - enemyDmg <= 0) { endBattle(false); return; }
+        if (newPlayerHp <= 0) { endBattle(false); return; }
       }
 
       setPhase(BATTLE_PHASES.SELECT);
