@@ -113,7 +113,7 @@ const BattleActionMenu = ({
     }}>
       {habitsForStage.map(h => {
         const hId = h.habito_id || h.id;
-        const done = localCompleted[hId];
+        const done = localCompleted[hId] || h.completado;
         return (
           <button key={hId}
             disabled={done || !isSelectPhase}
