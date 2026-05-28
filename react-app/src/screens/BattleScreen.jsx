@@ -68,11 +68,9 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     return habitosHoy.filter(h => {
       const isOfGym = gymId ? String(h.gym_id || '').toLowerCase() === normalizedGymId : true;
       const isActive = h.activo !== false && h.activo !== 0 && h.activo !== '0';
-      const hId = h.habito_id || h.id;
-      const isAlreadyCompleted = h.completado && !localCompleted[hId];
-      return isOfGym && isActive && !isAlreadyCompleted;
+      return isOfGym && isActive;
     });
-  }, [habitosHoy, gymId, localCompleted]);
+  }, [habitosHoy, gymId]);
 
   const activeAnimsRef = useRef([]);
   const playerOffsetRef = useRef({ x: 0, y: 0, visible: true, opacity: 1, scale: 1, tintColor: null, tintAlpha: 0 });
@@ -627,15 +625,20 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   };
 
   const handleHabitAttack = async (h) => {
-    if (phase !== BATTLE_PHASES.SELECT || localCompleted[h.habito_id || h.id]) return;
-    setPhase(BATTLE_PHASES.RESOLVING);
     const hId = h.habito_id || h.id;
+    if (phase !== BATTLE_PHASES.SELECT || localCompleted[hId] || h.completado) return;
+    setPhase(BATTLE_PHASES.RESOLVING);
     setLocalCompleted(prev => ({...prev, [hId]: true}));
 
     const totalInBattle = habitsForStage.length || 1;
     const totalTeamMaxHp = enemyTeam.reduce((sum, p) => sum + (Number(p.maxHp) || 50), 0);
     let damageDealt = Math.ceil(totalTeamMaxHp / totalInBattle);
-    if (Object.keys(localCompleted).length + 1 === habitsForStage.length) {
+    const alreadyDoneBeforeSession = habitsForStage.filter(h2 => {
+      const hId2 = h2.habito_id || h2.id;
+      return h2.completado && !localCompleted[hId2];
+    }).length;
+    const completableCount = habitsForStage.length - alreadyDoneBeforeSession;
+    if (Object.keys(localCompleted).length + 1 === completableCount) {
       damageDealt = Number(enemyPkmnRef.current?.hp ?? enemyPkmn.hp) + 10;
     }
 
