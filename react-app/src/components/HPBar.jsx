@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useEffect, useRef, useState } from 'react';
+>>>>>>> Stashed changes
 import { getAssetPath } from '../api/assets';
 import { sfx } from '../utils/audioEngine';
 
@@ -6,6 +10,7 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
   // Ensure we have numbers. Fallback to 1/1 if data is missing to avoid NaN.
   const cur = Number(current) || 0;
   const mx = Number(max) || 100;
+<<<<<<< Updated upstream
   
   const [displayCur, setDisplayCur] = useState(cur);
 
@@ -43,6 +48,32 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
   }, [cur]);
 
   const pct = Math.max(0, Math.min(100, (displayCur / mx) * 100));
+=======
+
+  // Tween del número mostrado para que coincida con la animación CSS de la barra
+  // (width: 0.6s). Sin esto, la barra se vacía suavemente pero el "27/40" salta.
+  const [displayHp, setDisplayHp] = useState(cur);
+  const animRef = useRef(null);
+  useEffect(() => {
+    if (cur === displayHp) return;
+    const startVal = displayHp;
+    const delta = cur - startVal;
+    const duration = 600;
+    const t0 = performance.now();
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / duration);
+      // ease-out cuadrática para que el tick "frene" al final
+      const eased = 1 - (1 - k) * (1 - k);
+      setDisplayHp(startVal + delta * eased);
+      if (k < 1) animRef.current = requestAnimationFrame(step);
+    };
+    animRef.current = requestAnimationFrame(step);
+    return () => animRef.current && cancelAnimationFrame(animRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cur]);
+
+  const pct = Math.max(0, Math.min(100, (cur / mx) * 100));
+>>>>>>> Stashed changes
 
   // Status colors/text
   const STATUS_MAP = {
@@ -143,7 +174,11 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
           fontSize: 6,
           color: '#333'
         }}>
+<<<<<<< Updated upstream
           {Math.ceil(displayCur)}/{mx}
+=======
+          {Math.ceil(displayHp)}/{mx}
+>>>>>>> Stashed changes
         </div>
       )}
     </div>

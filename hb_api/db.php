@@ -79,6 +79,40 @@ try {
     } catch(Exception $ex) {}
     try { $pdo->exec("ALTER TABLE gimnasios_template MODIFY COLUMN `tiempo` ENUM('morning', 'midday', 'day', 'night') DEFAULT 'day'"); } catch(Exception $ex) {}
 
+    // ── Modo Profesor (Sprint 1) ──────────────────────────────────────────────
+    try { $pdo->exec("ALTER TABLE usuarios ADD COLUMN tipo_cuenta ENUM('child','professor','admin') NOT NULL DEFAULT 'child' AFTER username"); } catch(Exception $ex) {}
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `relaciones_familiares` (
+            `id`                 INT AUTO_INCREMENT PRIMARY KEY,
+            `professor_id`       INT NOT NULL,
+            `child_id`           INT NULL,
+            `rol_display`        VARCHAR(20) NOT NULL DEFAULT 'PROFESOR',
+            `avatar_npc`         TINYINT NOT NULL DEFAULT 0,
+            `estado`             ENUM('pendiente','activo','revocado') NOT NULL DEFAULT 'pendiente',
+            `codigo_invitacion`  VARCHAR(8) UNIQUE,
+            `creado_en`          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `activado_en`        TIMESTAMP NULL DEFAULT NULL,
+            `expira_en`          TIMESTAMP NULL DEFAULT NULL,
+            FOREIGN KEY (`professor_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE,
+            FOREIGN KEY (`child_id`)     REFERENCES `usuarios`(`id`) ON DELETE CASCADE,
+            INDEX idx_codigo (`codigo_invitacion`),
+            INDEX idx_professor_estado (`professor_id`, `estado`),
+            INDEX idx_child_estado     (`child_id`,     `estado`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch(Exception $ex) {}
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `profesor_mensajes` (
+            `id`               INT AUTO_INCREMENT PRIMARY KEY,
+            `relacion_id`      INT NOT NULL,
+            `texto`            VARCHAR(280) NOT NULL,
+            `programado_para`  DATE NOT NULL,
+            `visto_en`         TIMESTAMP NULL DEFAULT NULL,
+            `creado_en`        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (`relacion_id`) REFERENCES `relaciones_familiares`(`id`) ON DELETE CASCADE,
+            INDEX idx_pendientes (`relacion_id`, `programado_para`, `visto_en`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch(Exception $ex) {}
+
     // ── Seed default gym/habit templates if all are inactive or missing ────────
     try {
         $activeGyms = (int)$pdo->query("SELECT COUNT(*) FROM gimnasios_template WHERE activo = 1")->fetchColumn();

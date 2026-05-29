@@ -52,6 +52,41 @@ function require_uid(): int {
     return $uid;
 }
 
+/**
+ * Igual que require_uid pero además exige que el usuario sea de tipo 'professor'.
+ * Devuelve 403 si no lo es.
+ */
+function require_uid_profesor(): int {
+    global $pdo;
+    $uid = require_uid();
+    $stmt = $pdo->prepare("SELECT tipo_cuenta FROM usuarios WHERE id = ?");
+    $stmt->execute([$uid]);
+    $tipo = $stmt->fetchColumn();
+    if ($tipo !== 'professor') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Esta acción requiere una cuenta de Profesor.']);
+        exit();
+    }
+    return $uid;
+}
+
+/**
+ * Genera un código de invitación legible: 6 chars de A-Z+2-9 evitando
+ * caracteres ambiguos (0/O, 1/I/L). Comprueba unicidad contra la tabla.
+ */
+function generate_invitation_code(): string {
+    global $pdo;
+    $alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // sin 0, O, 1, I, L
+    for ($try = 0; $try < 8; $try++) {
+        $code = '';
+        for ($i = 0; $i < 6; $i++) $code .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        $stmt = $pdo->prepare("SELECT 1 FROM relaciones_familiares WHERE codigo_invitacion = ?");
+        $stmt->execute([$code]);
+        if (!$stmt->fetch()) return $code;
+    }
+    throw new RuntimeException('No se pudo generar un código único tras 8 intentos');
+}
+
 function get_user_id() {
     $headers = [];
     if (function_exists('getallheaders')) {
@@ -118,6 +153,7 @@ try {
             echo json_encode(["success" => true, "token" => $token, "usuario" => [
                 "id" => $u['id'],
                 "username" => $u['username'],
+                "tipo_cuenta" => $u['tipo_cuenta'] ?? 'child',
                 "avatar" => $u['avatar'],
                 "starter_id" => $u['pokemon_inicial_id'],
                 "starter_nombre" => $u['pokemon_inicial_nombre'],
@@ -129,6 +165,253 @@ try {
             http_response_code(401);
             echo json_encode(["success" => false, "error" => "Credenciales inválidas"]);
         }
+    }
+    // ─── MODO PROFESOR (Sprint 1: vínculo padre-hijo) ─────────────────────────
+    elseif (strpos($route, '/auth/register-profesor') === 0 && $method === 'POST') {
+        // Registro de cuenta tipo professor — sin starter, sin inventario de juego.
+        $data = get_json_input();
+        if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Faltan campos obligatorios']);
+            exit();
+        }
+        $dupStmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ? OR username = ? LIMIT 1");
+        $dupStmt->execute([$data['email'], $data['username']]);
+        if ($dupStmt->fetch()) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'error' => 'El email o nombre de usuario ya está registrado']);
+            exit();
+        }
+        $hashed = password_hash($data['password'], PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare(
+            "INSERT INTO usuarios (username, tipo_cuenta, email, password_hash, avatar, monedas, inventario)
+             VALUES (?, 'professor', ?, ?, 0, 0, '{}')"
+        );
+        $stmt->execute([$data['username'], $data['email'], $hashed]);
+        $id = (int)$pdo->lastInsertId();
+        $token = generate_token($id);
+        echo json_encode(['success' => true, 'token' => $token, 'usuario' => [
+            'id' => $id,
+            'username' => $data['username'],
+            'tipo_cuenta' => 'professor'
+        ]]);
+    }
+    elseif (strpos($route, '/profesor/me') === 0 && $method === 'GET') {
+        // Perfil del profesor autenticado (útil para verificar sesión).
+        $uid = require_uid_profesor();
+        $stmt = $pdo->prepare("SELECT id, username, email, created_at FROM usuarios WHERE id = ?");
+        $stmt->execute([$uid]);
+        echo json_encode(['success' => true, 'usuario' => $stmt->fetch()]);
+    }
+    elseif (strpos($route, '/profesor/invitar') === 0 && $method === 'POST') {
+        // Genera un código de invitación pendiente. El padre lo dicta al niño.
+        $uid = require_uid_profesor();
+        $data = get_json_input() ?: [];
+        $rol_display = strtoupper(substr($data['rol_display'] ?? 'PROFESOR', 0, 20));
+        $avatar_npc = max(0, min(3, (int)($data['avatar_npc'] ?? 0)));
+
+        $code = generate_invitation_code();
+        // El código caduca en 7 días si nadie lo usa.
+        $stmt = $pdo->prepare(
+            "INSERT INTO relaciones_familiares
+                (professor_id, rol_display, avatar_npc, codigo_invitacion, expira_en)
+             VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))"
+        );
+        $stmt->execute([$uid, $rol_display, $avatar_npc, $code]);
+        echo json_encode([
+            'success' => true,
+            'codigo'  => $code,
+            'caduca_en' => 'en 7 días',
+            'rol_display' => $rol_display,
+            'avatar_npc'  => $avatar_npc
+        ]);
+    }
+    elseif (strpos($route, '/profesor/hijos') === 0 && $method === 'GET') {
+        // Lista de hijos vinculados al profesor — junto a las invitaciones pendientes.
+        $uid = require_uid_profesor();
+        $stmt = $pdo->prepare("
+            SELECT r.id, r.estado, r.codigo_invitacion, r.rol_display, r.avatar_npc,
+                   r.creado_en, r.activado_en, r.expira_en,
+                   u.id AS child_id, u.username AS child_username, u.avatar AS child_avatar,
+                   u.pokemon_inicial_nombre AS partner_nombre, u.pokemon_inicial_id AS partner_id
+            FROM relaciones_familiares r
+            LEFT JOIN usuarios u ON u.id = r.child_id
+            WHERE r.professor_id = ? AND r.estado != 'revocado'
+            ORDER BY r.estado ASC, r.creado_en DESC
+        ");
+        $stmt->execute([$uid]);
+        echo json_encode(['success' => true, 'hijos' => $stmt->fetchAll()]);
+    }
+    elseif (strpos($route, '/usuarios/vincular-profesor') === 0 && $method === 'POST') {
+        // El niño introduce el código del padre y activa la relación.
+        $uid = require_uid();
+        $data = get_json_input();
+        $code = strtoupper(trim($data['codigo'] ?? ''));
+        if (strlen($code) !== 6) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'El código debe tener 6 caracteres.']);
+            exit();
+        }
+        // Buscamos relación pendiente, no caducada, sin niño asignado todavía.
+        $stmt = $pdo->prepare("
+            SELECT * FROM relaciones_familiares
+            WHERE codigo_invitacion = ? AND estado = 'pendiente'
+              AND (expira_en IS NULL OR expira_en > NOW())
+              AND child_id IS NULL
+            LIMIT 1
+        ");
+        $stmt->execute([$code]);
+        $rel = $stmt->fetch();
+        if (!$rel) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'error' => 'Código inválido o caducado.']);
+            exit();
+        }
+        if ((int)$rel['professor_id'] === $uid) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'No puedes vincularte contigo mismo.']);
+            exit();
+        }
+        // Evitar duplicados: el mismo profesor-niño solo una vez.
+        $dup = $pdo->prepare("SELECT id FROM relaciones_familiares
+                              WHERE professor_id = ? AND child_id = ? AND estado = 'activo'");
+        $dup->execute([$rel['professor_id'], $uid]);
+        if ($dup->fetch()) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'error' => 'Ya estás vinculado con este Profesor.']);
+            exit();
+        }
+        $upd = $pdo->prepare("
+            UPDATE relaciones_familiares
+               SET child_id = ?, estado = 'activo', activado_en = NOW()
+             WHERE id = ?
+        ");
+        $upd->execute([$uid, $rel['id']]);
+
+        // Devolvemos info del profesor para que el niño vea quién le ha vinculado.
+        $info = $pdo->prepare("SELECT username FROM usuarios WHERE id = ?");
+        $info->execute([$rel['professor_id']]);
+        $prof = $info->fetch();
+        echo json_encode([
+            'success' => true,
+            'profesor_username' => $prof['username'] ?? null,
+            'rol_display' => $rel['rol_display']
+        ]);
+    }
+    elseif (strpos($route, '/usuarios/profesores') === 0 && $method === 'GET') {
+        // Lista de profesores vinculados a este niño (para mostrar en perfil).
+        $uid = require_uid();
+        $stmt = $pdo->prepare("
+            SELECT r.id, r.rol_display, r.avatar_npc, r.activado_en,
+                   u.username AS profesor_username
+            FROM relaciones_familiares r
+            JOIN usuarios u ON u.id = r.professor_id
+            WHERE r.child_id = ? AND r.estado = 'activo'
+        ");
+        $stmt->execute([$uid]);
+        echo json_encode(['success' => true, 'profesores' => $stmt->fetchAll()]);
+    }
+    // ─── MENSAJES-NPC del Profesor (Sprint 2) ─────────────────────────────────
+    elseif (strpos($route, '/profesor/mensajes') === 0 && $method === 'POST') {
+        // Programar un mensaje-NPC. El padre escribe texto + fecha.
+        $uid = require_uid_profesor();
+        $data = get_json_input();
+        $rel_id = (int)($data['relacion_id'] ?? 0);
+        $texto = trim($data['texto'] ?? '');
+        $fecha = $data['programado_para'] ?? null;
+        if ($rel_id <= 0 || $texto === '') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Faltan campos obligatorios (relacion_id, texto).']);
+            exit();
+        }
+        if (mb_strlen($texto) > 280) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'El mensaje no puede superar los 280 caracteres.']);
+            exit();
+        }
+        // Verificar que la relación es de este profesor y está activa.
+        $chk = $pdo->prepare("SELECT id FROM relaciones_familiares
+                              WHERE id = ? AND professor_id = ? AND estado = 'activo'");
+        $chk->execute([$rel_id, $uid]);
+        if (!$chk->fetch()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Relación no encontrada o no autorizada.']);
+            exit();
+        }
+        // Fecha por defecto: mañana. Mínimo: hoy.
+        if (!$fecha) $fecha = date('Y-m-d', strtotime('+1 day'));
+        if ($fecha < date('Y-m-d')) $fecha = date('Y-m-d');
+
+        $ins = $pdo->prepare("INSERT INTO profesor_mensajes
+            (relacion_id, texto, programado_para) VALUES (?, ?, ?)");
+        $ins->execute([$rel_id, $texto, $fecha]);
+        echo json_encode([
+            'success' => true,
+            'id' => (int)$pdo->lastInsertId(),
+            'programado_para' => $fecha
+        ]);
+    }
+    elseif (strpos($route, '/profesor/mensajes') === 0 && $method === 'GET') {
+        // Histórico de mensajes que ha programado este profesor.
+        // Opcional ?relacion_id=N para filtrar por un hijo concreto.
+        $uid = require_uid_profesor();
+        $rel_id = isset($_GET['relacion_id']) ? (int)$_GET['relacion_id'] : null;
+        $sql = "SELECT m.id, m.relacion_id, m.texto, m.programado_para, m.visto_en, m.creado_en,
+                       r.rol_display, u.username AS child_username
+                FROM profesor_mensajes m
+                JOIN relaciones_familiares r ON r.id = m.relacion_id
+                LEFT JOIN usuarios u ON u.id = r.child_id
+                WHERE r.professor_id = ?";
+        $params = [$uid];
+        if ($rel_id) { $sql .= " AND m.relacion_id = ?"; $params[] = $rel_id; }
+        $sql .= " ORDER BY m.programado_para DESC, m.id DESC LIMIT 50";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        echo json_encode(['success' => true, 'mensajes' => $stmt->fetchAll()]);
+    }
+    elseif (preg_match('#^/profesor/mensajes/(\d+)$#', $route, $m) && $method === 'DELETE') {
+        // Cancelar un mensaje programado (solo si aún no ha sido visto).
+        $uid = require_uid_profesor();
+        $mid = (int)$m[1];
+        $stmt = $pdo->prepare("
+            DELETE m FROM profesor_mensajes m
+            JOIN relaciones_familiares r ON r.id = m.relacion_id
+            WHERE m.id = ? AND r.professor_id = ? AND m.visto_en IS NULL
+        ");
+        $stmt->execute([$mid, $uid]);
+        echo json_encode(['success' => $stmt->rowCount() > 0]);
+    }
+    elseif (strpos($route, '/usuarios/mensajes-pendientes') === 0 && $method === 'GET') {
+        // El niño consulta sus mensajes-NPC para HOY (no vistos, programados ≤ hoy).
+        $uid = require_uid();
+        $stmt = $pdo->prepare("
+            SELECT m.id, m.texto, m.programado_para,
+                   r.rol_display, r.avatar_npc,
+                   u.username AS profesor_username
+            FROM profesor_mensajes m
+            JOIN relaciones_familiares r ON r.id = m.relacion_id
+            JOIN usuarios u ON u.id = r.professor_id
+            WHERE r.child_id = ? AND r.estado = 'activo'
+              AND m.visto_en IS NULL
+              AND m.programado_para <= CURDATE()
+            ORDER BY m.programado_para ASC, m.id ASC
+            LIMIT 5
+        ");
+        $stmt->execute([$uid]);
+        echo json_encode(['success' => true, 'mensajes' => $stmt->fetchAll()]);
+    }
+    elseif (preg_match('#^/usuarios/mensajes/(\d+)/visto$#', $route, $m) && $method === 'POST') {
+        // El niño habló con el NPC → marcamos visto y el NPC desaparece.
+        $uid = require_uid();
+        $mid = (int)$m[1];
+        $stmt = $pdo->prepare("
+            UPDATE profesor_mensajes m
+            JOIN relaciones_familiares r ON r.id = m.relacion_id
+            SET m.visto_en = NOW()
+            WHERE m.id = ? AND r.child_id = ? AND m.visto_en IS NULL
+        ");
+        $stmt->execute([$mid, $uid]);
+        echo json_encode(['success' => $stmt->rowCount() > 0]);
     }
     // ─── STARTER ───────────────────────────────────────────────────────────────
     elseif (strpos($route, '/starter/info') === 0) {

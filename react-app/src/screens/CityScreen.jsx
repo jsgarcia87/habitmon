@@ -16,6 +16,24 @@ const GYM_LIST = [
   { id: 'fitness', icon: '💪', name: 'FITNESS'  },
 ];
 
+// Mapeo del avatar_npc (0-3 según elija el padre) al sprite real del mapa.
+// Los 4 sprites son figuras adultas de los assets de RPG Maker XP.
+const PROFESOR_AVATAR_SPRITES = [
+  'char_ 07_b',   // 0 — adulto figura clásica
+  'char_ 04_b',   // 1 — figura femenina
+  'char_ 09_b',   // 2 — anciano / abuelo
+  'char_ 03_b',   // 3 — anciana / abuela
+];
+
+// Posiciones reservadas en Map002 (Pueblo Primavera) para los NPCs-mensaje
+// del Profesor. Hasta 3 mensajes pendientes se distribuyen entre estos
+// puntos visibles desde el spawn del jugador.
+const PROFESOR_NPC_POSITIONS_MAP002 = [
+  { x: 12, y: 9 },
+  { x: 10, y: 9 },
+  { x: 8,  y: 9 },
+];
+
 const CityScreen = ({
   navigate, direction, aPressed, pPos, setPPos,
   currentMapId, setCurrentMapId, 
@@ -77,6 +95,13 @@ const CityScreen = ({
   // MMO — amigos online en el mapa actual
   const [amigosEnMapa, setAmigosEnMapa] = useState([]);
   const [activeFriend, setActiveFriend] = useState(null); // amigo seleccionado (A-press)
+
+  // Modo Profesor — mensajes-NPC pendientes para HOY.
+  // Cada entrada se convierte en un NPC dinámico en Pueblo Primavera.
+  const [profesorMensajes, setProfesorMensajes] = useState([]);
+  // Mensaje actualmente en diálogo: cuando el niño habla con su NPC del
+  // Profesor, guardamos aquí su id para marcar visto al cerrar la caja.
+  const [activeMensajeId, setActiveMensajeId] = useState(null);
   const lastFacingRef = useRef(0);   // 0=down 1=left 2=right 3=up
   const posRef = useRef(pPos);
   useEffect(() => { posRef.current = pPos; }, [pPos]);
@@ -99,6 +124,23 @@ const CityScreen = ({
     sync();
     const id = setInterval(sync, 4000);
     return () => clearInterval(id);
+  }, [token, currentMapId]);
+
+  // Modo Profesor — al entrar a Pueblo Primavera (Map002), consultamos los
+  // mensajes pendientes. Aparecerán como NPCs dinámicos a los que el niño
+  // puede acercarse y hablar. Al volver de un interior se vuelve a consultar.
+  useEffect(() => {
+    if (!token) return;
+    if (currentMapId !== 'Map002') {
+      setProfesorMensajes([]);
+      return;
+    }
+    let cancelled = false;
+    api.getMensajesPendientes().then(r => {
+      if (cancelled) return;
+      setProfesorMensajes(Array.isArray(r?.mensajes) ? r.mensajes : []);
+    });
+    return () => { cancelled = true; };
   }, [token, currentMapId]);
 
   // Backward compatibility helper
@@ -258,6 +300,28 @@ const CityScreen = ({
     return [...currentMap.buildings];
   }, [currentMapId, currentMap.buildings]);
 
+  // Lista de NPCs combinada: los del worldData + los mensajes-NPC del Profesor
+  // pendientes para hoy. Solo aparecen en Map002 y en posiciones reservadas.
+  const npcsConProfesor = useMemo(() => {
+    if (currentMapId !== 'Map002' || profesorMensajes.length === 0) {
+      return currentMap.npcs;
+    }
+    const profesorNpcs = profesorMensajes.slice(0, PROFESOR_NPC_POSITIONS_MAP002.length)
+      .map((msg, i) => ({
+        // Estructura compatible con el resto de NPCs del worldData:
+        nombre: msg.rol_display || 'PROFESOR',
+        sprite: PROFESOR_AVATAR_SPRITES[msg.avatar_npc] || PROFESOR_AVATAR_SPRITES[0],
+        posicion: PROFESOR_NPC_POSITIONS_MAP002[i],
+        direccion: 0, // mirando abajo (al jugador)
+        mensajes: [msg.texto],
+        // Marcadores propios para distinguirlos en el handler:
+        _isProfesor: true,
+        _mensajeId: msg.id,
+        _profesorUsername: msg.profesor_username
+      }));
+    return [...currentMap.npcs, ...profesorNpcs];
+  }, [currentMapId, currentMap.npcs, profesorMensajes]);
+
   // Transition helper with smooth fades
   const transitionToMap = (mapId, spawnPos) => {
     setIrisPhase('closing');
@@ -307,9 +371,25 @@ const CityScreen = ({
         const safePos = { x: b.x, y: b.y + 1 };
         setLastExtPos(safePos);
         if (setPPos) setPPos(safePos);
-        
+
+        // Antes: Trigal/Malva/etc. tenían el Centro Pokémon como un building
+        // worldData (targetMapId Map011/Map079...). Eso cargaba un interior
+        // mínimo, y al hablar con Joy navegaba a 'pokemon_center' (la pantalla
+        // pulida) — el jugador veía dos layouts y la npc del worldData no
+        // hacía nada útil. Ahora cualquier edificio cuyo nombre identifique un
+        // Centro Pokémon o una Tienda salta DIRECTAMENTE a la pantalla pulida.
+        const nombre = (b.nombre || '').toUpperCase();
+        if (!currentMap.isInterior) setLastExtMap(currentMapId);
+        if (nombre.includes('CENTRO POKÉMON') || nombre.includes('CENTRO POKEMON')) {
+          navigate('pokemon_center');
+          return;
+        }
+        if (nombre.includes('TIENDA') || nombre.includes('POKÉMART') || nombre.includes('MART')) {
+          navigate('pokemon_shop');
+          return;
+        }
+
         if (b.targetMapId.startsWith('Map')) {
-          if (!currentMap.isInterior) setLastExtMap(currentMapId);
           transitionToMap(b.targetMapId, b.spawn);
         } else {
           navigate('home', { targetMapId: b.targetMapId, spawn: b.spawn });
@@ -326,6 +406,20 @@ const CityScreen = ({
         navigate('pokemon_shop');
       } else if (event.npc.nombre === 'Recepcionista') {
         navigate('pokemon_shop');
+      } else if (event.npc._isProfesor) {
+        // NPC dinámico del Profesor: mostramos su mensaje y al cerrar el
+        // diálogo marcamos visto + lo retiramos del mapa.
+        const tag = event.npc._profesorUsername
+          ? `${event.npc.nombre} · ${event.npc._profesorUsername}`
+          : event.npc.nombre;
+        setEventNpcName(tag);
+        // Partir el texto en dos páginas si supera 140 chars (compatibilidad
+        // con la caja de diálogo existente).
+        const t = event.npc.mensajes[0] || '';
+        const paginas = t.length <= 140 ? [t] : [t.slice(0, 140), t.slice(140, 280)];
+        setDialogs(paginas);
+        setDialogIndex(0);
+        setActiveMensajeId(event.npc._mensajeId);
       } else {
         setEventNpcName(event.npc.nombre);
         const dynamicMsg = getDynamicNpcMessage(event.npc);
@@ -387,7 +481,8 @@ const CityScreen = ({
           onEvent={handleEvent}
           playerPos={pPos || {x:12,y:13}}
           setPlayerPos={setPPos}
-          npcs={currentMap.npcs}
+          npcs={npcsConProfesor}
+          isInterior={!!currentMap.isInterior}
           buildings={activeBuildings}
           onlineFriends={amigosEnMapa}
         />
@@ -463,12 +558,21 @@ const CityScreen = ({
 
         {/* DYNAMIC DIALOGUE BOX */}
         {dialogs && dialogs.length > 0 && (
-          <div 
+          <div
             onClick={() => {
               if (dialogIndex < dialogs.length - 1) {
                 setDialogIndex(prev => prev + 1);
               } else {
                 setDialogs([]);
+                // Si estábamos viendo un mensaje del Profesor, marcarlo como
+                // visto en backend y quitarlo de la lista local para que el
+                // NPC desaparezca del mapa.
+                if (activeMensajeId) {
+                  const id = activeMensajeId;
+                  setActiveMensajeId(null);
+                  setProfesorMensajes(prev => prev.filter(m => m.id !== id));
+                  api.marcarMensajeVisto(id).catch(() => {});
+                }
               }
             }}
             className="gb-dialog animate-fade-in-up"

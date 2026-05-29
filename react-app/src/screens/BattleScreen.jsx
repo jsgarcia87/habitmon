@@ -240,13 +240,37 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // Load enemy trainer sprite for VS screen (gym battles only)
       if (!isWild && gymId) {
-        // Find the gym config by matching gymId against the GYM_CONFIGS map values
         const gymCfg = Object.values(GYM_CONFIGS).find(cfg => cfg.id === gymId) ||
                        GYM_CONFIGS[gymId];
-        if (gymCfg?.sprite) {
+
+        // Preferimos el battle_sprite (un single-frame de batalla) — los hay
+        // en Graphics/trainers/trainerNNN.png. Si no existe o falla la carga,
+        // fallback al char overworld (4×4 grid en Graphics/characters/).
+        if (gymCfg?.battle_sprite) {
+          const bs = new Image();
+          bs.onload = () => {
+            enemyTrainerImgRef.current = bs;
+            enemyTrainerImgRef.isBattleSprite = true;
+          };
+          bs.onerror = () => {
+            // Cae al overworld si el battle sprite no carga.
+            if (gymCfg?.sprite) {
+              const et = new Image();
+              et.src = getAssetPath(`Graphics/characters/${gymCfg.sprite}.png`);
+              et.onload = () => {
+                enemyTrainerImgRef.current = et;
+                enemyTrainerImgRef.isBattleSprite = false;
+              };
+            }
+          };
+          bs.src = getAssetPath(`Graphics/trainers/${gymCfg.battle_sprite}.png`);
+        } else if (gymCfg?.sprite) {
           const et = new Image();
           et.src = getAssetPath(`Graphics/characters/${gymCfg.sprite}.png`);
-          et.onload = () => { enemyTrainerImgRef.current = et; };
+          et.onload = () => {
+            enemyTrainerImgRef.current = et;
+            enemyTrainerImgRef.isBattleSprite = false;
+          };
         }
       }
     } catch (err) {
@@ -392,27 +416,47 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           const pkName = playerPkmn?.name?.toUpperCase() || 'POKÉMON';
           setMessage(`¡Vamos, ${pkName}!`);
         }
-        if(intro.timer > 500) { intro.ballVisible = true; intro.ballX = intro.trainerX + 40; intro.ballY = 200 * 0.65; intro.state = INTRO_STATES.BALL_FLY; intro.timer = 0; }
-        break;
-      case INTRO_STATES.BALL_FLY:
-        const t = Math.min(1, intro.timer / 600);
-        const bStartX = intro.trainerX + 50, bStartY = 200 * 0.52;
-        intro.ballX = bStartX + (300 * 0.22 - bStartX) * t;
-        intro.ballY = bStartY + (200 * 0.70 - bStartY) * t - Math.sin(t * Math.PI) * 55;
-        intro.ballAngle += 0.28;
-        intro.trainerX -= 4.5;
-        if(intro.timer > 600) { 
-          intro.ballVisible = false; 
-          intro.state = INTRO_STATES.BALL_FLASH; 
-          intro.timer = 0; 
-          // Decelerating sparkle particle spread
-          intro.sparkles = Array.from({length: 10}, (_, i) => ({ 
-            angle: (i / 10) * Math.PI * 2, 
-            dist: 0, 
-            speed: 5 + Math.random() * 4 
-          })); 
+        if (intro.timer > 500) {
+          intro.ballVisible = true;
+          // Capturar posición inicial de la pokéball UNA SOLA VEZ al iniciar el
+          // arco, no cada frame. Si se recalculaba en BALL_FLY usando un
+          // trainerX que también se movía, la bola "se pegaba" al entrenador.
+          intro.ballStartX = intro.trainerX + 40;
+          intro.ballStartY = 200 * 0.52;
+          intro.ballX = intro.ballStartX;
+          intro.ballY = intro.ballStartY;
+          intro.state = INTRO_STATES.BALL_FLY;
+          intro.timer = 0;
         }
         break;
+      case INTRO_STATES.BALL_FLY: {
+        const t = Math.min(1, intro.timer / 600);
+        const bStartX = intro.ballStartX;
+        const bStartY = intro.ballStartY;
+        const bEndX = 300 * 0.22;
+        const bEndY = 200 * 0.70;
+        intro.ballX = bStartX + (bEndX - bStartX) * t;
+        intro.ballY = bStartY + (bEndY - bStartY) * t - Math.sin(t * Math.PI) * 55;
+        intro.ballAngle += 0.28;
+        // Entrenador sale rápido por la izquierda (en Crystal se va antes de
+        // que la bola aterrice).
+        intro.trainerX -= 7;
+        if (intro.timer > 600) {
+          intro.ballVisible = false;
+          intro.state = INTRO_STATES.BALL_FLASH;
+          intro.timer = 0;
+          // Fuerza el entrenador fuera de pantalla para que no se solape con
+          // el flash ni con el sprite del Pokémon emergiendo.
+          intro.trainerOffScreen = true;
+          // Decelerating sparkle particle spread
+          intro.sparkles = Array.from({length: 10}, (_, i) => ({
+            angle: (i / 10) * Math.PI * 2,
+            dist: 0,
+            speed: 5 + Math.random() * 4
+          }));
+        }
+        break;
+      }
       case INTRO_STATES.BALL_FLASH:
         intro.flashAlpha = Math.max(0, 1 - intro.timer / 300);
         if (intro.sparkles) {
@@ -480,13 +524,24 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         ctx.restore();
       }
 
-      // Enemy trainer (right side) — uses overworld character sprite
+      // Enemy trainer (right side). Si es un battle sprite (single image)
+      // lo dibujamos completo. Si es un overworld sprite (4×4 grid), tomamos
+      // sólo el frame "down idle".
       if (enemyTrainerImgRef.current) {
         const img = enemyTrainerImgRef.current;
-        // Character sprites are 4-frame strips (down/left/right/up directions, 2 walk frames each = 8 cols × 4 rows)
-        const sprW = Math.floor(img.width / 4);
-        const sprH = Math.floor(img.height / 4);
-        const destW = 56, destH = Math.round(56 * sprH / sprW);
+        const isBattle = enemyTrainerImgRef.isBattleSprite;
+        let sprW, sprH;
+        if (isBattle) {
+          sprW = img.width;
+          sprH = img.height;
+        } else {
+          // Character sprite: 4 columnas (frames) × 4 filas (direcciones).
+          sprW = Math.floor(img.width / 4);
+          sprH = Math.floor(img.height / 4);
+        }
+        // Escalamos manteniendo proporción para sprites de batalla altos.
+        const destH = isBattle ? 80 : Math.round(56 * sprH / sprW);
+        const destW = isBattle ? Math.round(destH * sprW / sprH) : 56;
         ctx.save();
         ctx.translate(intro.vsEnemyX - destW, H * 0.5 - destH * 0.5);
         safeDrawImage(ctx, img, 0, 0, sprW, sprH, 0, 0, destW, destH);
@@ -533,7 +588,15 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       ctx.beginPath(); ctx.ellipse(W * 0.73 + enemyOffsetRef.current.x + (intro.enemyOffsetX || 0), H * 0.57, 28 * eShadowScale, 6 * eShadowScale, 0, 0, Math.PI * 2); ctx.fill();
     }
     
-    if (intro.state !== INTRO_STATES.READY && trainerImgRef.current) {
+    // Dibuja al entrenador SÓLO mientras está en pantalla (antes/durante el
+    // lanzamiento). Una vez se entra en BALL_FLASH ya está fuera de campo y
+    // dibujarlo creaba un solape con la bola y con el sprite del Pokémon.
+    const trainerStillVisible = (
+      intro.state === INTRO_STATES.TRAINER_ENTER ||
+      intro.state === INTRO_STATES.TRAINER_THROW ||
+      intro.state === INTRO_STATES.BALL_FLY
+    );
+    if (trainerStillVisible && trainerImgRef.current) {
       const img = trainerImgRef.current, frameW = img.width / 5, frame = intro.trainerFrame || 0;
       safeDrawImage(ctx, img, frame * frameW, 0, frameW, img.height, intro.trainerX, H * 0.38, 80, 108);
     }
@@ -672,7 +735,14 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // 1. Mensaje de ataque + animación
       await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
+<<<<<<< Updated upstream
       activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
+=======
+      const moveAnim = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
+      activeAnimsRef.current = moveAnim.anims;
+      const impactDelay = moveAnim.impactDelay || 280;
+      const totalDuration = moveAnim.totalDuration || (impactDelay + 400);
+>>>>>>> Stashed changes
 
       const result = processMove(attacker, defender, move, { weather });
 
@@ -687,13 +757,23 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       if (result.confusionCleared) attackerSetter(prev => ({ ...prev, confused: false, confuseTurns: 0 }));
       if (result.newConfuseTurns > 0) attackerSetter(prev => ({ ...prev, confuseTurns: result.newConfuseTurns }));
 
-      // 3. No puede moverse (sueño, congelación, parálisis) o falla
+      // 3. Para movimientos sin impacto (status/buff/heal) sólo dejamos que se
+      //    reproduzca la animación completa antes de mostrar el mensaje.
+      if (!moveAnim.hasImpact) {
+        await new Promise(r => setTimeout(r, totalDuration));
+      } else {
+        // Esperar hasta el momento del impacto.
+        await new Promise(r => setTimeout(r, impactDelay));
+      }
+
+      // 4. No puede moverse (sueño, congelación, parálisis) o falla
       if (result.unableToMove || result.missed) {
+        if (result.missed) sfx.cancel?.();
         await showMessage(result.unableToMove || `¡El ataque de ${attacker.name.toUpperCase()} falló!`);
         continue;
       }
 
-      // 4. Auto-golpe por confusión — reemplaza el movimiento normal
+      // 5. Auto-golpe por confusión — reemplaza el movimiento normal
       if (result.confusionSelfHit > 0) {
         await showMessage(`¡${attacker.name.toUpperCase()} está confundido y se golpea a sí mismo!`);
         sfx.hit();
@@ -710,34 +790,50 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         continue;
       }
 
-      // 5. Daño
+      // 6. Daño — ahora sincronizado con el impacto visual
       if (result.damageDealt > 0) {
+<<<<<<< Updated upstream
         if (move.type === 'FIRE') sfx.fireHit();
         else if (move.type === 'WATER' || move.type === 'ICE') sfx.waterHit();
         else if (move.type === 'ELECTRIC') sfx.electricHit();
         else if (move.category === 'Special') sfx.specialHit();
         else sfx.hit();
+=======
+        // Si es crítico, el flash blanco se pinta JUSTO ANTES del golpe
+        // (Crystal feel: el destello aparece y luego viene el shake del defensor).
+        if (result.isCritical) {
+          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.CRITICAL_FLASH, { duration: 350 }));
+          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 500, amount: 12 }));
+          sfx.critical();
+        } else {
+          sfx.hit();
+        }
+
+>>>>>>> Stashed changes
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
+
+        // Pequeña pausa antes de mostrar el número de daño y vaciar PS
+        // — da espacio para que el sprite del defensor parpadee.
         defenderSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
         activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, {
           text: `-${result.damageDealt}`,
           x: side === 'enemy' ? 300 * 0.25 : 300 * 0.75,
           y: side === 'enemy' ? 200 * 0.7 - 20 : 200 * 0.35 - 20,
-          color: '#f00', duration: 800
+          color: '#f00', duration: 900
         }));
-        await new Promise(r => setTimeout(r, 400));
+
+        // Espera la animación de la barra de PS (HPBar tiene 600ms de transition)
+        await new Promise(r => setTimeout(r, 650));
 
         if (result.hitCount > 1) await showMessage(`¡Golpeó ${result.hitCount} veces!`);
-        if (result.isCritical) {
-          sfx.critical();
-          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.CRITICAL_FLASH, { duration: 500 }));
-          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 600, amount: 14 }));
-          await showMessage('¡Un golpe crítico!');
-        }
-        if (result.effectiveness > 1)                          await showMessage('¡Es muy eficaz!');
+        if (result.isCritical)                                  await showMessage('¡Un golpe crítico!');
+        if (result.effectiveness > 1)                           await showMessage('¡Es muy eficaz!');
         else if (result.effectiveness < 1 && result.effectiveness > 0) await showMessage('No es muy eficaz...');
-        else if (result.effectiveness === 0)                   await showMessage('¡No afecta!');
+        else if (result.effectiveness === 0)                    await showMessage('¡No afecta!');
+      } else if (moveAnim.hasImpact) {
+        // Damage 0 pero el move tenía impacto previsto (raro): sólo el sonido.
+        sfx.hit();
       }
 
       // 6. Retroceso (recoil)
@@ -1044,13 +1140,15 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
     setPhase(BATTLE_PHASES.FINISHED);
     if (!win) {
       sfx.faint();
-      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'player', duration: 1000 }));
-      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'player', duration: 99999, delay: 1000 }));
-      await new Promise(r => setTimeout(r, 1200));
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, {
+        target: 'player', duration: 1000, persist: true
+      }));
+      await new Promise(r => setTimeout(r, 1100));
       await showMessage(`¡${playerPkmn.name.toUpperCase()} se debilitó!`);
       navigate('city');
     } else {
       sfx.faint();
+<<<<<<< Updated upstream
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 1400 }));
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'enemy', duration: 99999, delay: 1400 }));
       await new Promise(r => setTimeout(r, 1600));
@@ -1058,14 +1156,56 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       const reward = await ganarBatalla().catch(() => ({}));
       const newLevel = gymReward?.nuevo_nivel || reward?.new_level || playerPkmn.level;
       const leveledUp = gymReward?.subio_nivel || reward?.subio_nivel;
+=======
+      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, {
+        target: 'enemy', duration: 1200, persist: true
+      }));
+
+      // OPTIMIZACIÓN clave: lanzamos las peticiones HTTP de recompensa AL
+      // MISMO TIEMPO que arranca la animación de faint. Antes se hacían
+      // SECUENCIALMENTE después de esperar 1400 ms → en redes lentas el
+      // jugador veía la pantalla "congelada" 3-5 segundos.
+      //
+      // Además: race con timeout de 5s para garantizar que setVictoryData
+      // se dispara SIEMPRE, aunque la API no responda. Sin esto, una
+      // petición que nunca resuelve dejaba la pantalla en FINISHED para
+      // siempre, sin overlay → el bug que reporta el usuario.
+      const TIMEOUT_MS = 5000;
+      const apiPromise = Promise.all([
+        !isWild
+          ? completarGimnasio(gymId, starter.starter_id, starter.starter_nombre).catch(() => ({}))
+          : Promise.resolve({}),
+        ganarBatalla().catch(() => ({}))
+      ]);
+      const timeoutPromise = new Promise(resolve =>
+        setTimeout(() => resolve([{}, {}]), TIMEOUT_MS)
+      );
+
+      // Esperamos en paralelo: la animación mínima (~1100ms) y las APIs.
+      // Cuando ambos terminan (lo que ocurra DESPUÉS), mostramos el overlay.
+      const [_, [gymReward, reward]] = await Promise.all([
+        new Promise(r => setTimeout(r, 1100)),
+        Promise.race([apiPromise, timeoutPromise])
+      ]);
+
+      const safeGym = gymReward || {};
+      const safeReward = reward || {};
+      const newLevel = safeGym.nuevo_nivel || safeReward.new_level || playerPkmn.level;
+      const leveledUp = safeGym.subio_nivel || safeReward.subio_nivel;
+
+>>>>>>> Stashed changes
       setVictoryData({
-        type: isWild ? 'wild' : 'gym', enemyName: enemyPkmn.name, gymName: battleData?.gymName || 'GIMNASIO',
-        xpGained: (gymReward?.exp_ganada || 0) + (reward?.xp_ganada || 20),
-        newXp: gymReward?.new_xp || reward?.new_xp || 0,
-        newLevel, levelUp: leveledUp,
-        monedas: (gymReward?.monedas_ganadas || 0) + (reward?.monedas_ganadas || 0),
-        medallaUrl: gymReward?.medalla_imagen || null,
+        type: isWild ? 'wild' : 'gym',
+        enemyName: enemyPkmn.name,
+        gymName: battleData?.gymName || 'GIMNASIO',
+        xpGained: (safeGym.exp_ganada || 0) + (safeReward.xp_ganada || 20),
+        newXp: safeGym.new_xp || safeReward.new_xp || 0,
+        newLevel,
+        levelUp: leveledUp,
+        monedas: (safeGym.monedas_ganadas || 0) + (safeReward.monedas_ganadas || 0),
+        medallaUrl: safeGym.medalla_imagen || null,
       });
+
       if (leveledUp) {
         const currentId = String(starter.starter_id || starter.pokemon_id || '').padStart(3, '0');
         const evoId = getEvolution(currentId, newLevel);

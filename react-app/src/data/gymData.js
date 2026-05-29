@@ -5,6 +5,7 @@ export const GYM_CONFIGS = {
     id: 'vestirse',
     nombre: 'LÍDER DE VESTIMENTA',
     sprite: 'char_ 31_a',
+    battle_sprite: 'trainer020', // sprite de batalla (uniforme)
     tileset: `${BASE}Graphics/tilesets/gsc gym 2b.png`,
     dialogo: ['¡Hogar, dulce hogar! Pero solo si está ordenado.', '¿Has recogido ya toda tu ropa hoy?'],
     tiles: { floor: 15, wall: 11, carpet: 37 },
@@ -14,6 +15,7 @@ export const GYM_CONFIGS = {
     id: 'higiene',
     nombre: 'LÍDER DE HIGIENE',
     sprite: 'char_ 16_a',
+    battle_sprite: 'trainer010', // CLAIR (líder dragón canónico)
     tileset: `${BASE}Graphics/tilesets/gsc gym 2a.png`,
     dialogo: ['¡La limpieza es salud!', '¿Te has lavado ya los dientes?'],
     tiles: { floor: 15, wall: 1, carpet: 37 },
@@ -23,6 +25,7 @@ export const GYM_CONFIGS = {
     id: 'orden',
     nombre: 'LÍDER DE ORDEN',
     sprite: 'char_ 34_a',
+    battle_sprite: 'trainer040', // figura determinada
     tileset: `${BASE}Graphics/tilesets/gsc cave-gym d.png`,
     dialogo: ['¡El caos es mi enemigo!', '¿Has ordenado tu habitación hoy?'],
     tiles: { floor: 10, wall: 4, carpet: 26 },
@@ -32,6 +35,7 @@ export const GYM_CONFIGS = {
     id: 'comida',
     nombre: 'LÍDER DE COMIDA',
     sprite: 'char_ 24_a',
+    battle_sprite: 'trainer060', // cocinero
     tileset: `${BASE}Graphics/tilesets/gsc gym 1b.png`,
     dialogo: ['¡Eres lo que comes!', '¿Has comido ya algo saludable?'],
     tiles: { floor: 28, wall: 17, carpet: 21 },
@@ -41,6 +45,7 @@ export const GYM_CONFIGS = {
     id: 'desayuno',
     nombre: 'LÍDER DE DESAYUNO',
     sprite: 'char_ 09_a',
+    battle_sprite: 'trainer050', // entrenadora amable
     tileset: `${BASE}Graphics/tilesets/gsc gym 1a.png`,
     dialogo: ['¡El desayuno es lo más importante!', '¿Has desayunado ya hoy?'],
     tiles: { floor: 28, wall: 17, carpet: 21 },
@@ -50,6 +55,7 @@ export const GYM_CONFIGS = {
     id: 'fitness',
     nombre: 'LÍDER DE FITNESS',
     sprite: 'char_ 29_a',
+    battle_sprite: 'trainer055', // luchador
     tileset: `${BASE}Graphics/tilesets/gsc cave-gym d.png`,
     dialogo: ['¡Sin dolor no hay gloria!', '¿Has hecho ya tu ejercicio hoy?'],
     tiles: { floor: 10, wall: 4, carpet: 26 },

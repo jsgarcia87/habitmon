@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 
-const LoginScreen = ({ onRegisterClick }) => {
+const LoginScreen = ({ onRegisterClick, onProfesorClick }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -68,6 +68,19 @@ const LoginScreen = ({ onRegisterClick }) => {
           ¿NUEVO ENTRENADOR? REGÍSTRATE
         </button>
       </div>
+
+      {/* Modo Profesor: enlace discreto para que los padres/tutores creen su
+          cuenta sin confundir a los niños con el flow normal. */}
+      {onProfesorClick && (
+        <div style={{ textAlign: 'center', marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <p style={{ fontSize: '7px', color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>
+            ¿Eres padre o madre?
+          </p>
+          <button onClick={onProfesorClick} className="gb-button" style={{ fontSize: '7px' }}>
+            CREAR CUENTA DE PROFESOR
+          </button>
+        </div>
+      )}
     </div>
   );
 };

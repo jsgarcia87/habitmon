@@ -13,6 +13,7 @@ const StartMenu = ({ isOpen, onClose, onNavigate, user }) => {
     { label: 'AGENDA', icon: '📋', id: 'agenda' },
     { label: user?.username?.toUpperCase() || 'FICHA', icon: '🆔', id: 'profile' },
     { label: 'AMIGOS', icon: '👥', id: 'friends' },
+    { label: 'FAMILIA', icon: '🏠', id: 'vincular_profesor' },
     { label: 'GUARDAR', icon: '💾', id: 'save' },
     { label: 'OPCIONES', icon: '⚙️', id: 'admin' },
     { label: 'SALIR', icon: '❌', id: 'exit' },

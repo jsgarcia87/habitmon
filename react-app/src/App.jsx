@@ -28,6 +28,10 @@ import WorldMapScreen from './screens/WorldMapScreen';
 import EvolutionScreen from './screens/EvolutionScreen';
 import PokemonCenterScreen from './screens/PokemonCenterScreen';
 import PokemonShopScreen from './screens/PokemonShopScreen';
+import VincularProfesorScreen from './screens/VincularProfesorScreen';
+import ProfesorRegister from './screens/profesor/ProfesorRegister';
+import ProfesorDashboard from './screens/profesor/ProfesorDashboard';
+import ProfesorMensaje from './screens/profesor/ProfesorMensaje';
 
 
 const LoadingScreen = () => (
@@ -51,7 +55,7 @@ const LoadingScreen = () => (
 );
 
 function App() {
-  const { token, user, loading, notification, starter } = useGame();
+  const { token, user, loading, notification, starter, timeOfDay } = useGame();
   const [screen, setScreen] = useState('login');
   const [screenData, setScreenData] = useState(null);
   const [fadeOut, setFadeOut] = useState(false);
@@ -90,10 +94,21 @@ function App() {
   useEffect(() => {
     if (loading) return;
     if (!token) {
-      setScreen(showRegister ? 'register' : 'login');
+      // Sin sesión: permitir las pantallas públicas (login, register, profesor_register).
+      if (!['login', 'register', 'profesor_register'].includes(screen)) {
+        setScreen(showRegister ? 'register' : 'login');
+      }
+    } else if (user?.tipo_cuenta === 'professor') {
+      // Cuentas de Profesor: viven en su propio set de pantallas.
+      if (!screen.startsWith('profesor_')) {
+        setScreen('profesor_dashboard');
+      }
     } else if (user && !user.starter_id) {
-      setScreen('starter'); 
-    } else if (user && user.starter_id && (screen === 'login' || screen === 'register' || screen === 'starter')) {
+      setScreen('starter');
+    } else if (user && user.starter_id && (
+      screen === 'login' || screen === 'register' || screen === 'starter' ||
+      screen.startsWith('profesor_')
+    )) {
       setScreen('city');
     }
   }, [token, user, loading, showRegister, screen]);
@@ -104,8 +119,12 @@ function App() {
     if (loading && token && (!user || (user.starter_id && !starter))) return <LoadingScreen />;
 
     switch (screen) {
-      case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} />;
+      case 'login': return <LoginScreen onRegisterClick={() => setShowRegister(true)} onProfesorClick={() => navigate('profesor_register')} />;
       case 'register': return <RegisterScreen onLoginClick={() => setShowRegister(false)} />;
+      case 'profesor_register': return <ProfesorRegister navigate={navigate} />;
+      case 'profesor_dashboard': return <ProfesorDashboard navigate={navigate} />;
+      case 'profesor_mensaje': return <ProfesorMensaje navigate={navigate} screenData={screenData} />;
+      case 'vincular_profesor': return <VincularProfesorScreen navigate={navigate} />;
       case 'starter': return <StarterScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
       case 'city': return (
         <CityScreen
@@ -139,8 +158,8 @@ function App() {
       case 'agenda': return <AgendaScreen onNavigate={navigate} />;
       case 'habitedit': return <HabitEditScreen onNavigate={navigate} />;
       case 'shop': return <ShopScreen navigate={navigate} />;
-      case 'pokemon_center': return <PokemonCenterScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
-      case 'pokemon_shop': return <PokemonShopScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} />;
+      case 'pokemon_center': return <PokemonCenterScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} bPressed={debouncedBPressed} />;
+      case 'pokemon_shop': return <PokemonShopScreen navigate={navigate} direction={debouncedDirection} aPressed={debouncedAPressed} bPressed={debouncedBPressed} />;
       case 'bag': return <BagScreen navigate={navigate} />;
       case 'friends': return <FriendsScreen onNavigate={navigate} />;
       case 'pokedex': return <PokedexScreen navigate={navigate} />;
@@ -149,9 +168,17 @@ function App() {
         <WorldMapScreen
           navigate={navigate}
           currentMapId={globalMapId}
+          lastExtMap={lastExtMap}
+          direction={debouncedDirection}
+          aPressed={debouncedAPressed}
+          bPressed={debouncedBPressed}
           onFastTravel={(mapId, spawn) => {
             setGlobalMapId(mapId);
             setGlobalPlayerPos(spawn);
+            // Tras teletransportar, el mapa nuevo se convierte en el último
+            // exterior conocido (a no ser que sea interior, lo que no debería
+            // pasar porque sólo se vuela a ciudades/pueblos).
+            setLastExtMap(mapId);
             navigate('city');
           }}
         />
@@ -295,14 +322,19 @@ function App() {
         {renderScreen()}
       </div>
 
-      {user && (
+      {user && user.tipo_cuenta !== 'professor' && (
         <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.8)', color: '#00FF00', border: '2px solid #555', padding: '6px 16px', fontFamily: '"Press Start 2P"', fontSize: 8, zIndex: 10, borderRadius: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Indicador de momento del día — refleja la hora real del jugador */}
+          <span title={`Es ${timeOfDay}`} style={{ fontSize: 11 }}>
+            {timeOfDay === 'morning' ? '🌅' : timeOfDay === 'night' ? '🌙' : '☀️'}
+          </span>
+          <span style={{ color: '#555' }}>|</span>
           <span style={{color:'#FFD700'}}>$</span> {user.monedas || 0}
         </div>
       )}
 
       {/* Global Controls (Only visible in game screens) */}
-      {token && ['city', 'gym', 'starter', 'home'].includes(screen) && (
+      {token && ['city', 'gym', 'starter', 'home', 'worldmap', 'pokemon_center', 'pokemon_shop'].includes(screen) && (
         <Controls
           onDirectionChange={(dir) => {
             console.log('Direction changed:', dir);

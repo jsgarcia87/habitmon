@@ -21,11 +21,18 @@ export const GameProvider = ({children}) => {
   const [notification, setNotification] = useState(null); 
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('hm_theme') === 'dark');
   const [racha, setRacha] = useState(() => parseInt(localStorage.getItem('hm_racha') || '0'));
+  // Franjas alineadas con Pokémon Crystal:
+  //   MORN 04:00-09:59  → tileset/suffix "morning"
+  //   DAY  10:00-17:59  → tileset/suffix "day"   (incluye "midday" interno
+  //                       para la lógica de gimnasios de Habitmon)
+  //   NITE 18:00-03:59  → tileset/suffix "nite"
+  // El "midday" se mantiene como sub-franja DE día (11-15) para no romper
+  // los gimnasios cuya tabla `tiempo` distingue mañana/tarde.
   const [timeOfDay, setTimeOfDay] = useState(() => {
     const hour = new Date().getHours();
-    if (hour >= 6 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 15) return 'midday';
-    if (hour >= 15 && hour < 20) return 'day';
+    if (hour >= 4  && hour < 10) return 'morning';
+    if (hour >= 11 && hour < 15) return 'midday';
+    if (hour >= 10 && hour < 18) return 'day';
     return 'night';
   });
 
@@ -38,9 +45,9 @@ export const GameProvider = ({children}) => {
   useEffect(() => {
     const getTimeOfDay = () => {
       const hour = new Date().getHours();
-      if (hour >= 6 && hour < 12) return 'morning';
-      if (hour >= 12 && hour < 15) return 'midday';
-      if (hour >= 15 && hour < 20) return 'day';
+      if (hour >= 4  && hour < 10) return 'morning';
+      if (hour >= 11 && hour < 15) return 'midday';
+      if (hour >= 10 && hour < 18) return 'day';
       return 'night';
     };
     const id = setInterval(() => setTimeOfDay(getTimeOfDay()), 60_000);
@@ -79,6 +86,15 @@ export const GameProvider = ({children}) => {
     const r = await api.register(
       {username, email, password, avatar});
     if(r.success) saveAuth(r.token, r.usuario);
+    return r;
+  };
+
+  // Registro de cuenta tipo Profesor (Modo Profesor). Tras crearla queda
+  // logueado automáticamente. Devuelve la respuesta cruda para que la UI
+  // pueda mostrar errores específicos.
+  const registerProfesor = async (username, email, password) => {
+    const r = await api.registerProfesor({ username, email, password });
+    if (r.success) saveAuth(r.token, r.usuario);
     return r;
   };
 
@@ -386,7 +402,7 @@ export const GameProvider = ({children}) => {
       user, token, starter, habitosHoy, racha,
       template, fetchTemplate, saveCustomTemplate, fetchPresets, createPreset,
       gimnasiosHoy, coleccion, loading, notification, darkMode, timeOfDay, setTimeOfDay,
-      login, register, logout, notify, toggleDarkMode,
+      login, register, registerProfesor, logout, notify, toggleDarkMode,
       elegirStarter, completarHabito, resetHabitos, setupDay, deletePreset,
       completarGimnasio, cargarDatos, capturarPokemon, ganarBatalla,
       comprarObjeto, usarObjeto, configurarEncuentros, evolucionar

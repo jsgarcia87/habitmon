@@ -4,7 +4,7 @@ import { getAssetPath } from '../api/assets';
 import { TILE_SIZE, parseRMXPTable, parseRMXPPassages, parseRMXPPriorities, checkPassage } from '../utils/TilesetManager';
 import { safeDrawImage } from '../utils/gfxUtils';
 
-const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [], buildings = [], onlineFriends = [], children }) => {
+const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos, npcs = [], buildings = [], onlineFriends = [], isInterior = false, children }) => {
   const { user, gimnasiosHoy, habitosHoy, notify, timeOfDay } = useGame();
   const canvasRef = useRef(null);
   const worldOverlayRef = useRef(null);
@@ -37,8 +37,28 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
   const lastEncounterRef = useRef(0);
 
-  // Map GameContext timeOfDay → tileset suffix
-  const tileTimeOfDay = timeOfDay === 'morning' ? 'morning' : timeOfDay === 'night' ? 'nite' : 'day';
+  // Map GameContext timeOfDay → suffix de los assets de tileset:
+  //   morning → 'morning'
+  //   day / midday → 'day'
+  //   night → 'nite'
+  const tileTimeOfDay = timeOfDay === 'morning' ? 'morning'
+                      : timeOfDay === 'night'   ? 'nite'
+                      : 'day';
+
+  /**
+   * Reescribe el nombre del tileset para apuntar a la variante del tiempo
+   * actual. Solo aplica si el nombre original incluye 'morning', 'day' o
+   * 'nite' como sufijo de variante. Tilesets de interior o estáticos pasan
+   * intactos.
+   *   "gsc overworld johto day" → según tileTimeOfDay:
+   *     morning  → "gsc overworld johto morning"
+   *     day      → "gsc overworld johto day"
+   *     nite     → "gsc overworld johto nite"
+   */
+  const applyTimeSuffix = (name) => {
+    if (!name) return name;
+    return name.replace(/\b(morning|day|nite)\b/i, tileTimeOfDay);
+  };
 
   // Responsive canvas size adjustment
   useEffect(() => {
@@ -82,11 +102,12 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
         
         setMapData({ ...mData, table });
         
-        // Load Tileset Image
+        // Load Tileset Image (con variante según hora del día si procede)
         if (meta) {
-          const tilesetPath = encodeURI(getAssetPath(`Graphics/tilesets/${meta.tileset_name.toLowerCase()}.png`));
+          const tsName = applyTimeSuffix(meta.tileset_name).toLowerCase();
+          const tilesetPath = encodeURI(getAssetPath(`Graphics/tilesets/${tsName}.png`));
           tilesetImg.current.onerror = () => console.error("FAILED to load tileset:", tilesetPath);
-          tilesetImg.current.onload = () => console.log("Tileset loaded successfully:", meta.tileset_name);
+          tilesetImg.current.onload = () => console.log("Tileset loaded:", tsName);
           tilesetImg.current.src = tilesetPath;
           
           // Load Autotiles
@@ -134,7 +155,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
       }
     };
     loadMap();
-  }, [mapId, user?.avatar]);
+  }, [mapId, user?.avatar, tileTimeOfDay]);
 
   // NPC Image Cache y Proximidad
   const [nearNpc, setNearNpc] = useState(null);
@@ -222,25 +243,50 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
     return false;
   };
 
-  // Detect warp points (doors) from JSON events (Code 201 = Transfer Player)
+  // Detect warp points (doors) from JSON events (Code 201 = Transfer Player).
+  //
+  // Las salidas de ruta/ciudad en los mapas originales son "size(W,H)" — el
+  // evento está colocado en (ev.x, ev.y) pero la zona caminable cubre W×H
+  // tiles a partir de ese punto, con N comandos Code 201 (uno por tile),
+  // mapeando cada tile fuente a su tile destino para mantener la posición
+  // relativa del jugador (típico Pokémon Crystal: si entras a la ciudad por
+  // el carril izquierdo del camino, sales por el carril izquierdo).
+  //
+  // Antes sólo se matcheaba (ev.x === playerX && ev.y === playerY), por lo
+  // que entrar por cualquier tile menos el de la esquina caía al fallback
+  // de borde y soltaba al jugador en una tile no caminable → bloqueado.
   const checkWarpEvents = (playerX, playerY) => {
     if (!mapData || !mapData.events) return null;
-    
-    // Find event at current coordinates
-    const event = Object.values(mapData.events).find(ev => 
-      ev.x === playerX && ev.y === playerY
-    );
-    if (!event) return null;
-    
-    // Si este evento coincide con un edificio manual, dejamos que el sistema de edificios lo maneje
-    // para evitar conflictos entre checkWarpEvents y onEvent('gym_entry')
-    if (buildings.some(b => b.x === playerX && b.y === playerY)) return null;
 
-    const pages = event.pages || [];
-    for (const page of pages) {
-      const cmds = page.list || [];
-      const transferCmd = cmds.find(c => c.code === 201);
-      if (transferCmd) {
+    for (const ev of Object.values(mapData.events)) {
+      const pages = ev.pages || [];
+      for (const page of pages) {
+        const cmds = page.list || [];
+        const transfers = cmds.filter(c => c.code === 201);
+        if (transfers.length === 0) continue;
+
+        // Si el nombre describe el tamaño ("size(4,1)"), lo usamos; si no,
+        // asumimos zona horizontal de N tiles (uno por transfer).
+        const sizeMatch = (ev.name || '').match(/size\((\d+)\s*,\s*(\d+)\)/i);
+        let zoneW = sizeMatch ? parseInt(sizeMatch[1], 10) : transfers.length;
+        let zoneH = sizeMatch ? parseInt(sizeMatch[2], 10) : 1;
+        if (zoneW <= 0 || zoneH <= 0) continue;
+        // Si el tamaño declarado supera los transfers disponibles, recortar.
+        if (zoneW * zoneH > transfers.length) {
+          zoneW = transfers.length;
+          zoneH = 1;
+        }
+
+        const dx = playerX - ev.x;
+        const dy = playerY - ev.y;
+        if (dx < 0 || dy < 0 || dx >= zoneW || dy >= zoneH) continue;
+
+        // Si un edificio "manual" coincide con este tile, lo dejamos al
+        // sistema de edificios (evita doble disparo).
+        if (buildings.some(b => b.x === playerX && b.y === playerY)) return null;
+
+        const idx = dy * zoneW + dx;
+        const transferCmd = transfers[Math.min(idx, transfers.length - 1)];
         const params = transferCmd.parameters || [];
         return {
           targetMapId: `Map${String(params[1]).padStart(3, '0')}`,
@@ -704,6 +750,22 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
         });
       }
 
+      // Tinte ambiental según la hora real (Crystal-style):
+      //   - night: azul oscuro denso (incluso si el tileset ya es noche,
+      //     refuerza la atmósfera y aporta profundidad).
+      //   - morning: rosa-dorado cálido muy sutil.
+      //   - day/midday: sin tinte (color natural del tileset).
+      // Sólo en exteriores; los interiores tienen iluminación constante.
+      if (!isInterior) {
+        if (timeOfDay === 'night') {
+          ctx.fillStyle = 'rgba(20, 30, 80, 0.32)';
+          ctx.fillRect(0, 0, cw, ch);
+        } else if (timeOfDay === 'morning') {
+          ctx.fillStyle = 'rgba(255, 180, 130, 0.10)';
+          ctx.fillRect(0, 0, cw, ch);
+        }
+      }
+
       // Final Fade Overlay
       if (fadeAlpha.current > 0) {
         ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha.current})`;
@@ -713,7 +775,7 @@ const CityMap = ({ mapId, direction, aPressed, onEvent, playerPos, setPlayerPos,
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [mapData, isLoading, gimnasiosHoy, habitosHoy, npcs, buildings, direction]);
+  }, [mapData, isLoading, gimnasiosHoy, habitosHoy, npcs, buildings, direction, timeOfDay, isInterior]);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000', overflow: 'hidden' }}>

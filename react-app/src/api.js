@@ -150,4 +150,45 @@ export const api = {
 
   getAmigosGimnasios: (friendId) => fetch(buildUrl(`/amigos/${friendId}/gimnasios`),
     {headers:h()}).then(handleResponse).catch(e => { console.error("Friend Gyms Error:", e); throw e; }),
+
+  // ── Modo Profesor ────────────────────────────────────────────────────────
+  registerProfesor: (data) => fetch(buildUrl('/auth/register-profesor'),
+    {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(handleResponse).catch(e => { console.error("Register Profesor Error:", e); throw e; }),
+
+  profesorMe: () => fetch(buildUrl('/profesor/me'),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Profesor Me Error:", e); throw e; }),
+
+  profesorInvitar: (data) => fetch(buildUrl('/profesor/invitar'),
+    {method:'POST',headers:h(),body:JSON.stringify(data || {})})
+    .then(handleResponse).catch(e => { console.error("Profesor Invitar Error:", e); throw e; }),
+
+  profesorHijos: () => fetch(buildUrl('/profesor/hijos'),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Profesor Hijos Error:", e); throw e; }),
+
+  vincularProfesor: (data) => fetch(buildUrl('/usuarios/vincular-profesor'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)})
+    .then(handleResponse).catch(e => { console.error("Vincular Profesor Error:", e); throw e; }),
+
+  misProfesores: () => fetch(buildUrl('/usuarios/profesores'),
+    {headers:h()}).then(handleResponse).catch(e => ({ success: false, profesores: [] })),
+
+  // Mensajes-NPC del Profesor
+  profesorEnviarMensaje: (data) => fetch(buildUrl('/profesor/mensajes'),
+    {method:'POST',headers:h(),body:JSON.stringify(data)})
+    .then(handleResponse).catch(e => { console.error("Enviar Mensaje Error:", e); throw e; }),
+
+  profesorListarMensajes: (relacion_id) => fetch(
+    buildUrl('/profesor/mensajes' + (relacion_id ? `?relacion_id=${relacion_id}` : '')),
+    {headers:h()}).then(handleResponse).catch(e => { console.error("Listar Mensajes Error:", e); throw e; }),
+
+  profesorBorrarMensaje: (id) => fetch(buildUrl(`/profesor/mensajes/${id}`),
+    {method:'DELETE',headers:h()}).then(handleResponse).catch(e => { console.error("Borrar Mensaje Error:", e); throw e; }),
+
+  // El niño consulta y marca visto
+  getMensajesPendientes: () => fetch(buildUrl('/usuarios/mensajes-pendientes'),
+    {headers:h()}).then(handleResponse).catch(() => ({ success: false, mensajes: [] })),
+
+  marcarMensajeVisto: (id) => fetch(buildUrl(`/usuarios/mensajes/${id}/visto`),
+    {method:'POST',headers:h()}).then(handleResponse).catch(e => { console.error("Marcar Visto Error:", e); throw e; }),
 };

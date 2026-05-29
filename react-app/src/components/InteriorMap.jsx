@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { safeDrawImage } from '../utils/gfxUtils';
 import { useGame } from '../context/GameContext';
 import { TILE_PROPERTIES } from '../data/interiorData';
@@ -12,6 +12,8 @@ const InteriorMap = ({
   initialPos,
   facing: initialFacing = 'down',
   npcs = [],
+  exitPositions = [], // [{x, y}, ...] — posiciones que disparan onExit al pisarlas
+  backgroundColor = null, // color para rellenar el canvas (suelo virtual)
   onEvent,
   onExit,
   direction,
@@ -22,6 +24,23 @@ const InteriorMap = ({
   const canvasRef = useRef(null);
   const onEventRef = useRef(onEvent);
   useEffect(() => { onEventRef.current = onEvent; });
+
+  // Stable signature for NPC sprite list. Only changes when an NPC is added/
+  // removed or its sprite path changes — NOT when direccion/x/y change.
+  const npcSpritesKey = useMemo(
+    () => npcs.map(n => `${n.id}:${n.sprite}`).join('|'),
+    [npcs]
+  );
+
+  // Latest NPC array kept in a ref so the render loop reads current direccion
+  // without needing to re-create the loop on every turn.
+  const npcsRef = useRef(npcs);
+  useEffect(() => { npcsRef.current = npcs; });
+
+  // Exit positions también vía ref para evitar recargar el loop si el caller
+  // pasa un array nuevo cada render.
+  const exitPositionsRef = useRef(exitPositions);
+  useEffect(() => { exitPositionsRef.current = exitPositions; });
   
   // Internal State
   const playerState = useRef({
@@ -92,33 +111,34 @@ const InteriorMap = ({
       const tsPromise = loadImage(fixedTilesetUrl);
       const playerUrl = `${BASE}Graphics/characters/trchar${String(user?.avatar || 0).padStart(3, '0')}.png`;
       const pPromise = loadImage(playerUrl);
-      const npcPromises = npcs.map(npc => {
+      const npcList = npcsRef.current;
+      const npcPromises = npcList.map(npc => {
         if (!npc.sprite) return Promise.resolve(null);
         const url = npc.sprite.startsWith('http') ? npc.sprite : `${BASE}Graphics/characters/${npc.sprite}.png`.replace(/ /g, '%20');
         return loadImage(url);
       });
-      
+
       const [tsImg, pImg, ...nImgs] = await Promise.all([tsPromise, pPromise, ...npcPromises]);
-      
+
       if (!isMounted) return;
-      
+
       if (!tsImg) {
         setError(`Error cargando el tileset: ${tileset}`);
       } else {
         tilesetImg.current = tsImg;
       }
-      
+
       if (pImg) playerImg.current = pImg;
       const npcMap = {};
-      npcs.forEach((npc, idx) => { if (nImgs[idx]) npcMap[npc.id] = nImgs[idx]; });
+      npcList.forEach((npc, idx) => { if (nImgs[idx]) npcMap[npc.id] = nImgs[idx]; });
       npcImgs.current = npcMap;
-      
+
       setIsLoading(false);
     };
 
     loadAll();
     return () => { isMounted = false; };
-  }, [tileset, user?.avatar, npcs, currentMapId]);
+  }, [tileset, user?.avatar, npcSpritesKey, currentMapId]);
 
   // Main Loop
   useEffect(() => {
@@ -194,8 +214,14 @@ const InteriorMap = ({
 
             const currentTileId = baseMap[p.y]?.[p.x];
             const tileProps = TILE_PROPERTIES[currentMapId]?.[currentTileId] || {};
-            
-            if (tileProps.type === 'exit') onExit?.();
+
+            // Exit por tile (interiores antiguos con tile de alfombra) o por
+            // posición (interiores donde el "exit" es un tile de suelo común
+            // y sólo unas casillas concretas disparan la salida).
+            const isExitByPosition = exitPositionsRef.current.some(
+              (e) => e.x === p.x && e.y === p.y
+            );
+            if (tileProps.type === 'exit' || isExitByPosition) onExit?.();
             if (tileProps.type === 'stair') {
               onEventRef.current?.({
                 type: 'stair',
@@ -218,7 +244,7 @@ const InteriorMap = ({
           if (ny >= 0 && ny < mapH && nx >= 0 && nx < mapW) {
             const baseId = baseMap[ny]?.[nx];
             const decoId = currentLayers.deco?.[ny]?.[nx];
-            const isBlockedByNpc = npcs.some(n => Math.round(n.x) === nx && Math.round(n.y) === ny);
+            const isBlockedByNpc = npcsRef.current.some(n => Math.round(n.x) === nx && Math.round(n.y) === ny);
 
             const tileProps = TILE_PROPERTIES[currentMapId]?.[baseId] || {};
             const isWalkableTile = tileProps.walkable === true;
@@ -245,10 +271,18 @@ const InteriorMap = ({
 
         // 3. Render Sequence
         ctx.clearRect(0, 0, cw, ch);
+        // Fondo sólido (suelo virtual) si el caller lo pidió. Permite usar
+        // tiles -1 (transparentes) sobre un color uniforme sin que se vea
+        // negro detrás. Útil para interiores cuyo atlas no tiene un tile
+        // de suelo plano puro (ej.: Tienda Pokémon).
+        if (backgroundColor) {
+          ctx.fillStyle = backgroundColor;
+          ctx.fillRect(0, 0, cw, ch);
+        }
         drawLayer(currentLayers.base);
         drawLayer(currentLayers.deco);
         
-        npcs.forEach(npc => {
+        npcsRef.current.forEach(npc => {
           const img = npcImgs.current[npc.id];
           if (img?.complete) {
             const dx = Math.floor(npc.x * TILE_SIZE - camX);
@@ -277,7 +311,7 @@ const InteriorMap = ({
     const lastTimeRef = { current: performance.now() };
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [isLoading, error, map, npcs, direction, onExit, currentMapId]);
+  }, [isLoading, error, map, direction, onExit, currentMapId, backgroundColor]);
 
   // Handle Interaction
   useEffect(() => {
@@ -289,7 +323,7 @@ const InteriorMap = ({
     const baseMap = currentLayers.base;
     if (!baseMap) return;
     const mapW = baseMap[0]?.length || 20, mapH = baseMap.length || 15;
-    const npc = npcs.find(n => Math.round(n.x) === tx && Math.round(n.y) === ty);
+    const npc = npcsRef.current.find(n => Math.round(n.x) === tx && Math.round(n.y) === ty);
     if (npc) { onEventRef.current?.({ type: 'npc_talk', npc }); return; }
     if (ty >= 0 && ty < mapH && tx >= 0 && tx < mapW) {
       const oTile = currentLayers.overlay?.[ty]?.[tx];
@@ -299,9 +333,12 @@ const InteriorMap = ({
       if (oTile !== undefined && oTile !== -1) targetTile = oTile;
       else if (dTile !== undefined && dTile !== -1) targetTile = dTile;
       else if (bTile !== undefined && bTile !== -1) targetTile = bTile;
-      if (targetTile !== -1) { onEventRef.current?.({ type: 'object_interact', tileType: targetTile }); }
+      if (targetTile !== -1) {
+        const props = TILE_PROPERTIES[currentMapId]?.[targetTile] || {};
+        onEventRef.current?.({ type: 'object_interact', tileType: targetTile, objectType: props.type });
+      }
     }
-  }, [aPressed, npcs, map]);
+  }, [aPressed, map, currentMapId]);
 
   if (error) {
     return (

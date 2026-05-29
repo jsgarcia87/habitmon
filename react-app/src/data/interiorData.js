@@ -71,32 +71,58 @@ export const TILE_PROPERTIES = {
     [0]: { walkable: false }, [8]: { walkable: false }, [13]: { walkable: false }, [14]: { walkable: false },
     [22]: { walkable: false }, [26]: { walkable: false }, [32]: { walkable: false }, [33]: { walkable: false }
   },
-  // ---- Centro Pokémon (gsc pkmn center.png — 8 cols × 7 rows = IDs 0-55) ----
+  // ---- Centro Pokémon (gsc pkmn center.png) — IDs verificados por extracción ----
+  //   0  + 1   heal machine TOP  (panel verde + counter top con Pokéballs visibles)
+  //   8  + 9   heal machine BOT  (counter front con 2 Pokéballs rosas, lado L y R)
+  //   2        PC TOP            (cabina azul vertical)
+  //  10        PC BOT             (monitor con franja diagonal)
+  //   3        pared cornisa     (rayas horizontales = decoración alta)
+  //  11        mostrador TOP     (rojo con diamantes — vista cenital del mostrador)
+  //  24        mostrador FRONT   (mitad superior rojo + mitad inferior rosa floor)
+  //  26        mostrador FRONT solid (rojo plano, esquinas)
+  //   6, 7     estantería TOP    (con items: cajas, dispenser)
+  //  15        estantería MID    (con baldas y artículos)
+  //   5, 13, 14  corners y decoración de pared
+  //  19        display PC (icono amarillo)
+  //  50        display de pastel/sandwich (vending decorativo)
+  //  28        SUELO ROSA con diamantes (el icónico floor del PC) ★
   pokemon_center: {
-    // Floor tiles (walkable)
-    [36]: { walkable: true },
-    [37]: { walkable: true },
-    [44]: { walkable: true },
-    [45]: { walkable: true },
-    [52]: { walkable: true },
-    [53]: { walkable: true },
-    // Exit mat
-    [54]: { walkable: true, type: 'exit' },
-    [55]: { walkable: true, type: 'exit' },
-    // All others are walls / counter / furniture → non-walkable (default)
+    // Suelo caminable
+    [28]: { walkable: true },
+    // Heal machine (interactuable como objeto decorativo) — 4 tiles 2×2
+    [0]: { walkable: false, type: 'heal_machine' },
+    [1]: { walkable: false, type: 'heal_machine' },
+    [8]: { walkable: false, type: 'heal_machine' },
+    [9]: { walkable: false, type: 'heal_machine' },
+    // PC del entrenador — 2 tiles verticales
+    [2]:  { walkable: false, type: 'pc' },
+    [10]: { walkable: false, type: 'pc' },
+    // Mostrador, paredes y resto — non-walkable por default
   },
-  // ---- Tienda Pokémon (gsc pkmn mart.png — 8 cols × 7 rows = IDs 0-55) ----
+  // ---- Tienda Pokémon (gsc pkmn mart.png) — IDs verificados ----
+  //   0     estantería TOP con cajas
+  //   2     estantería TOP con etiquetas
+  //   5     estantería TOP con pokéball
+  //   3     mostrador TOP (rojo con curva)
+  //   4     pared trasera con barras verticales (display)
+  //   8     estantería MID con items
+  //  11/14  mostrador FRONT (rojo con banda amarilla)
+  //  22     estantería con baldas
+  //  12     SUELO crema (con bordes laterales — uniforme cream)
+  //  29     wall→floor transition
+  //  37/38  esquinas de pared cream
   pokemon_shop: {
-    // Floor tiles (walkable)
-    [36]: { walkable: true },
-    [37]: { walkable: true },
-    [44]: { walkable: true },
-    [45]: { walkable: true },
-    [52]: { walkable: true },
-    [53]: { walkable: true },
-    // Exit mat
-    [54]: { walkable: true, type: 'exit' },
-    [55]: { walkable: true, type: 'exit' },
+    // El atlas del Mart no tiene un tile cream plano puro. Solución:
+    // el suelo se pinta como color de fondo sólido sobre el canvas (via
+    // backgroundColor en INTERIOR_CONFIGS) y las casillas de suelo se
+    // marcan con -1 (sin tile), dejando ver el cream uniforme detrás.
+    [-1]: { walkable: true },
+    // Estanterías (decorativas)
+    [0]:  { walkable: false, type: 'shelf' },
+    [2]:  { walkable: false, type: 'shelf' },
+    [5]:  { walkable: false, type: 'shelf' },
+    [8]:  { walkable: false, type: 'shelf' },
+    [22]: { walkable: false, type: 'shelf' },
   },
   ...GYM_TILE_PROPERTIES
 };
@@ -177,102 +203,89 @@ export function generateHouse2() {
 
 export function generatePokemonCenter() {
   const map = createMap(20, 15);
-  // Centro Pokémon Crystal-style:
-  // Fila 2: pared superior (tile 0)
-  // Fila 3: mostrador superior (tiles 8-15 dependiendo del col)
-  // Fila 4: mostrador inferior / área detrás (Joy en col 9)
-  // Filas 5-12: suelo libre
-  // Fila 13: suelo
-  // Fila 14: suelo + alfombra salida en centro
+  // Interior 10×8 al estilo Crystal Cherrygrove PC. El mostrador es UNA
+  // sola fila (no hay separación counter top + counter front); Joy y demás
+  // se dibujan sobre el tile del mostrador y el jugador habla con ellos
+  // desde la fila de suelo inmediatamente debajo — lo mismo que en Crystal.
 
-  // Pared superior
-  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 2, 0);
-  draw(map, 'base', 2, 2, 0); draw(map, 'base', 17, 2, 0);
+  const W     = 3;   // pared cornisa (rayas horizontales) — encima del mostrador
+  const HM_TL = 0;   // heal machine top-left
+  const HM_TR = 1;   // heal machine top-right
+  const HM_BL = 8;   // heal machine bottom-left (Pokéballs)
+  const HM_BR = 9;   // heal machine bottom-right
+  const PC_T  = 2;   // PC top
+  const PC_B  = 10;  // PC monitor
+  const CT    = 11;  // mostrador (rojo diamantes)
+  const SHL   = 6;   // estantería items izq
+  const SHR   = 7;   // estantería items der
+  const F     = 28;  // suelo rosa con diamantes ★
 
-  // Mostrador / zona Joy (Joy queda en y=3 del lado de atrás)
-  // Tiles: 8=counter-left, 9=counter-mid, 10=counter-right, 11=heal-machine, 12=pc
-  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 3, 9);
-  draw(map, 'base', 3, 3, 8);  // esquina izq mostrador
-  draw(map, 'base', 16, 3, 10); // esquina der mostrador
-  draw(map, 'base', 5, 3, 11);  // máquina curación izq
-  draw(map, 'base', 6, 3, 11);
-  draw(map, 'base', 13, 3, 12); // PC derecha
-  draw(map, 'base', 14, 3, 12);
+  const OX = 5, OY = 3;
 
-  // Frente del mostrador (primera fila caminable)
-  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 4, 36);
+  // Layout 10 cols × 8 rows:
+  //   row 0 (y=3): pared cornisa
+  //   row 1 (y=4): items detrás del mostrador (heal machine top + PC top + shelves)
+  //   row 2 (y=5): MOSTRADOR (Joy y otros NPCs aquí — interactúa el jugador desde y=6)
+  //   row 3..6 (y=6..9): suelo rosa
+  //   row 7 (y=10): suelo (2 casillas centrales son la salida)
+  const layout = [
+    [W,    W,     W,     W,    W,    W,    W,    W,    W,     W   ],
+    [SHL,  SHR,   HM_TL, HM_TR,W,    W,    W,    PC_T, SHL,   SHR ],
+    [CT,   CT,    HM_BL, HM_BR,CT,   CT,   CT,   PC_B, CT,    CT  ],
+    [F,    F,     F,     F,    F,    F,    F,    F,    F,     F   ],
+    [F,    F,     F,     F,    F,    F,    F,    F,    F,     F   ],
+    [F,    F,     F,     F,    F,    F,    F,    F,    F,     F   ],
+    [F,    F,     F,     F,    F,    F,    F,    F,    F,     F   ],
+    [F,    F,     F,     F,    F,    F,    F,    F,    F,     F   ],
+  ];
 
-  // Suelo principal
-  for (let y = 4; y <= 13; y++) {
-    for (let x = 2; x <= 17; x++) draw(map, 'base', x, y, 36);
-  }
-
-  // Variante de suelo para patrón visual
-  for (let y = 5; y <= 12; y += 2) {
-    for (let x = 3; x <= 16; x += 2) draw(map, 'base', x, y, 37);
-  }
-
-  // Sillas / bancos laterales
-  for (let y = 10; y <= 11; y++) {
-    draw(map, 'base', 4, y, 44); draw(map, 'base', 5, y, 44);
-    draw(map, 'base', 14, y, 44); draw(map, 'base', 15, y, 44);
-  }
-
-  // Paredes laterales
-  for (let y = 2; y <= 13; y++) {
-    draw(map, 'base', 2, y, 0);
-    draw(map, 'base', 17, y, 0);
-  }
-
-  // Fila inferior con salida
-  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 14, 36);
-  draw(map, 'base', 8, 14, 54);  // alfombra salida
-  draw(map, 'base', 9, 14, 55);
+  layout.forEach((row, dy) => {
+    row.forEach((tile, dx) => {
+      draw(map, 'base', OX + dx, OY + dy, tile);
+    });
+  });
 
   return map;
 }
 
 export function generatePokemonShop() {
   const map = createMap(20, 15);
-  // Tienda Crystal-style:
-  // Fila 2: pared superior
-  // Fila 3: mostrador del dependiente
-  // Fila 4: zona mostrador
-  // Filas 5-13: suelo con estanterías en los laterales
-  // Fila 14: salida
+  // Tienda estilo Cherrygrove Mart: una sola fila de mostrador donde está el
+  // dependiente (no full-width). El resto del muro superior son estanterías
+  // con items. Suelo cream uniforme renderizado con backgroundColor.
 
-  // Pared superior
-  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 2, 0);
+  const SH_BOX = 0;   // estantería con cajas (top)
+  const SH_LBL = 2;   // estantería con etiquetas (top)
+  const SH_PB  = 5;   // estantería con pokéball (top)
+  const SH_M   = 8;   // estantería MID con items
+  const SH_M2  = 22;  // estantería MID con baldas
+  const CT     = 3;   // mostrador (rojo)
+  const F      = -1;  // suelo transparente (cream sólido del canvas detrás)
 
-  // Mostrador
-  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 3, 9);
-  draw(map, 'base', 3, 3, 8);
-  draw(map, 'base', 16, 3, 10);
+  const OX = 5, OY = 3;
 
-  // Frente mostrador
-  for (let x = 3; x <= 16; x++) draw(map, 'base', x, 4, 36);
+  // Layout 10×8:
+  //   row 0 (y=3): estanterías top
+  //   row 1 (y=4): MOSTRADOR (1 tile en el centro) + resto estantería mid
+  //                el clerk se dibuja sobre el CT y el jugador habla desde y=5
+  //   row 2..6 (y=5..9): suelo cream uniforme
+  //   row 7 (y=10): suelo (cols 4-5 son la salida invisible)
+  const layout = [
+    [SH_BOX, SH_LBL, SH_PB,  SH_BOX, SH_LBL, SH_PB,  SH_BOX, SH_LBL, SH_PB,  SH_BOX],
+    [SH_M,   SH_M2,  SH_M,   SH_M2,  CT,     SH_M2,  SH_M2,  SH_M,   SH_M2,  SH_M  ],
+    [F,      F,      F,      F,      F,      F,      F,      F,      F,      F     ],
+    [F,      F,      F,      F,      F,      F,      F,      F,      F,      F     ],
+    [F,      F,      F,      F,      F,      F,      F,      F,      F,      F     ],
+    [F,      F,      F,      F,      F,      F,      F,      F,      F,      F     ],
+    [F,      F,      F,      F,      F,      F,      F,      F,      F,      F     ],
+    [F,      F,      F,      F,      F,      F,      F,      F,      F,      F     ],
+  ];
 
-  // Suelo principal
-  for (let y = 4; y <= 13; y++) {
-    for (let x = 2; x <= 17; x++) draw(map, 'base', x, y, 36);
-  }
-
-  // Estanterías laterales (izq y der)
-  for (let y = 5; y <= 12; y++) {
-    draw(map, 'base', 4, y, 44); draw(map, 'base', 5, y, 44); // estantería izq
-    draw(map, 'base', 14, y, 44); draw(map, 'base', 15, y, 44); // estantería der
-  }
-
-  // Paredes laterales
-  for (let y = 2; y <= 13; y++) {
-    draw(map, 'base', 2, y, 0);
-    draw(map, 'base', 17, y, 0);
-  }
-
-  // Fila inferior con salida
-  for (let x = 2; x <= 17; x++) draw(map, 'base', x, 14, 36);
-  draw(map, 'base', 8, 14, 54);
-  draw(map, 'base', 9, 14, 55);
+  layout.forEach((row, dy) => {
+    row.forEach((tile, dx) => {
+      draw(map, 'base', OX + dx, OY + dy, tile);
+    });
+  });
 
   return map;
 }
@@ -303,14 +316,21 @@ export const INTERIOR_CONFIGS = {
   'pokemon_center': {
     tileset: `${BASE}Graphics/tilesets/gsc pkmn center.png`,
     nombre: 'CENTRO POKÉMON',
-    spawn: { x: 9, y: 10 },
-    tiles: { floor: 36, exit: 54 }
+    // Interior 10×8 con offset (5, 3) → ocupa cols 5-14, filas 3-10.
+    // Mostrador en y=5 (Joy aquí); suelo desde y=6. Salida en (9,10)/(10,10).
+    spawn: { x: 9, y: 9 },
+    exitPositions: [{ x: 9, y: 10 }, { x: 10, y: 10 }],
+    tiles: { floor: 28 }
   },
   'pokemon_shop': {
     tileset: `${BASE}Graphics/tilesets/gsc pkmn mart.png`,
     nombre: 'TIENDA POKÉMON',
-    spawn: { x: 9, y: 10 },
-    tiles: { floor: 36, exit: 54 }
+    // Interior 10×8 con offset (5, 3). Mostrador en y=4 (clerk aquí);
+    // suelo desde y=5. Salida en (9,10)/(10,10).
+    spawn: { x: 9, y: 9 },
+    exitPositions: [{ x: 9, y: 10 }, { x: 10, y: 10 }],
+    backgroundColor: '#F0E0D0',
+    tiles: { floor: -1 }
   },
   ...GYM_CONFIGS
 };

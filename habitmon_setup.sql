@@ -8,6 +8,7 @@ USE `habitmon_db`;
 CREATE TABLE IF NOT EXISTS `usuarios` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `username` VARCHAR(50) NOT NULL UNIQUE,
+    `tipo_cuenta` ENUM('child','professor','admin') NOT NULL DEFAULT 'child',
     `email` VARCHAR(100) NOT NULL UNIQUE,
     `password_hash` VARCHAR(255) NOT NULL,
     `avatar` INT DEFAULT 0,
@@ -16,6 +17,37 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
     `monedas` INT DEFAULT 300,
     `inventario` TEXT DEFAULT NULL, -- '{"pokeball":5,"superball":0,"potion":2,"superpotion":0}'
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Modo Profesor: vínculo padre-hijo
+CREATE TABLE IF NOT EXISTS `relaciones_familiares` (
+    `id`                 INT AUTO_INCREMENT PRIMARY KEY,
+    `professor_id`       INT NOT NULL,
+    `child_id`           INT NULL,
+    `rol_display`        VARCHAR(20) NOT NULL DEFAULT 'PROFESOR',
+    `avatar_npc`         TINYINT NOT NULL DEFAULT 0,
+    `estado`             ENUM('pendiente','activo','revocado') NOT NULL DEFAULT 'pendiente',
+    `codigo_invitacion`  VARCHAR(8) UNIQUE,
+    `creado_en`          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `activado_en`        TIMESTAMP NULL DEFAULT NULL,
+    `expira_en`          TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (`professor_id`) REFERENCES `usuarios`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`child_id`)     REFERENCES `usuarios`(`id`) ON DELETE CASCADE,
+    INDEX idx_codigo (`codigo_invitacion`),
+    INDEX idx_professor_estado (`professor_id`, `estado`),
+    INDEX idx_child_estado     (`child_id`,     `estado`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Mensajes-NPC del Profesor al niño (Sprint 2)
+CREATE TABLE IF NOT EXISTS `profesor_mensajes` (
+    `id`               INT AUTO_INCREMENT PRIMARY KEY,
+    `relacion_id`      INT NOT NULL,
+    `texto`            VARCHAR(280) NOT NULL,
+    `programado_para`  DATE NOT NULL,
+    `visto_en`         TIMESTAMP NULL DEFAULT NULL,
+    `creado_en`        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`relacion_id`) REFERENCES `relaciones_familiares`(`id`) ON DELETE CASCADE,
+    INDEX idx_pendientes (`relacion_id`, `programado_para`, `visto_en`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3. Tabla de Hábitos/Tareas Diarias
