@@ -71,20 +71,22 @@ export const TILE_PROPERTIES = {
     [0]: { walkable: false }, [8]: { walkable: false }, [13]: { walkable: false }, [14]: { walkable: false },
     [22]: { walkable: false }, [26]: { walkable: false }, [32]: { walkable: false }, [33]: { walkable: false }
   },
-  // ---- Centro Pokémon (gsc pkmn center.png — 8 cols × 7 rows) ----
-  // Tiles 36-55 son transparentes en este tileset → NO usarlos
-  // Suelo rosa: 24 y 28 | Transición entrada: 41 | Salida: 50
+  // ---- Centro Pokémon (gsc pkmn center.png — 8 cols × 7 rows, 56 tiles) ----
+  // Walkable: suelo rosa (24, 28) y decoración de suelo (26, 27)
+  // Salida: tile 50 (r6c2 = alfombra entrada, opaco)
   pokemon_center: {
     [24]: { walkable: true },
     [28]: { walkable: true },
-    [41]: { walkable: true },
+    [26]: { walkable: true },
+    [27]: { walkable: true },
     [50]: { walkable: true, type: 'exit' },
   },
-  // ---- Tienda Pokémon (gsc pkmn mart.png — 8 cols × 7 rows) ----
-  // Suelo verde: 6 y 16 | Salida: 49
+  // ---- Tienda Pokémon (gsc pkmn mart.png — 8 cols × 7 rows, 56 tiles) ----
+  // Walkable: suelo verde (6) y alfombra-mat (14)
+  // Salida: tile 49 (r6c1)
   pokemon_shop: {
     [6]:  { walkable: true },
-    [16]: { walkable: true },
+    [14]: { walkable: true },
     [49]: { walkable: true, type: 'exit' },
   },
   ...GYM_TILE_PROPERTIES
@@ -167,40 +169,38 @@ export function generateHouse2() {
 export function generatePokemonCenter() {
   const map = createMap(20, 15);
 
-  // gsc pkmn center.png — tiles identificados por muestreo de píxeles:
-  // 12=negro sólido (pared), 11=mostrador (rosa/negro), 25=máquina heal izq (rojo),
-  // 26=máquina heal der (rojo), 24=suelo rosa A, 28=suelo rosa B, 41=transición entrada, 50=salida
-  const WALL = 12, COUNTER = 11, HEAL_L = 25, HEAL_R = 26;
-  const FLOOR_A = 24, FLOOR_B = 28, TRANS = 41, EXIT = 50;
+  // Rellenar todo con pared (tile 12 = negro sólido en gsc pkmn center.png)
+  for (let y = 0; y < 15; y++)
+    for (let x = 0; x < 20; x++)
+      draw(map, 'base', x, y, 12);
 
-  const x0 = 4, x1 = 15, y0 = 2, y1 = 13;
+  // Distribución fiel a Map031.json (RMXP original, 22x16):
+  // Interior 10 tiles de ancho (cols 6-15 → xOff=5), 8 filas de contenido (rows 4-11 → yOff=3)
+  // Tile IDs = map_id_RMXP - 384 (offset de autotiles RMXP)
+  const xOff = 5, yOff = 3;
 
-  // Paredes superior y laterales
-  for (let x = x0; x <= x1; x++) draw(map, 'base', x, y0, WALL);
-  for (let y = y0; y <= y1; y++) {
-    draw(map, 'base', x0, y, WALL);
-    draw(map, 'base', x1, y, WALL);
-  }
+  const layout = [
+    // y=3: fila de techo/cornisa (decoración arquitectónica superior)
+    [ 0, 1, 2, 3, 3, 5, 3, 3, 3, 4],
+    // y=4: fila de mostrador (Enfermera Joy aquí; tile 9 sustituye a 24 para bloquear paso)
+    [ 8, 9,10, 9, 9,13, 9, 9, 9,19],
+    // y=5: fila de transición entre mostrador y suelo
+    [16,16,18,16,20,21,28,28,28,24],
+    // y=6..10: suelo rosa (tiles 24 y 28, distribución exacta del mapa original)
+    [24,24,24,24,24,24,28,28,28,28],
+    [28,28,28,28,28,28,28,28,28,28],
+    [28,28,28,28,28,28,28,27,27,28],
+    [28,28,28,28,28,28,28,28,28,28],
+    [28,28,28,26,26,28,28,27,27,28],
+  ];
 
-  // Mostrador (fila y0+1)
-  for (let x = x0 + 1; x <= x1 - 1; x++) draw(map, 'base', x, y0 + 1, COUNTER);
-  draw(map, 'base', x0 + 4, y0 + 1, HEAL_L);
-  draw(map, 'base', x0 + 5, y0 + 1, HEAL_R);
+  layout.forEach((row, ri) => {
+    row.forEach((t, ci) => draw(map, 'base', xOff + ci, yOff + ri, t));
+  });
 
-  // Suelo con patrón alternado rosa
-  for (let y = y0 + 2; y <= y1 - 2; y++) {
-    for (let x = x0 + 1; x <= x1 - 1; x++) {
-      draw(map, 'base', x, y, (x + y) % 2 === 0 ? FLOOR_A : FLOOR_B);
-    }
-  }
-
-  // Fila de transición antes de la salida
-  for (let x = x0 + 1; x <= x1 - 1; x++) draw(map, 'base', x, y1 - 1, TRANS);
-
-  // Pared inferior con alfombra de salida en el centro
-  for (let x = x0; x <= x1; x++) draw(map, 'base', x, y1, WALL);
-  draw(map, 'base', 9,  y1, EXIT);
-  draw(map, 'base', 10, y1, EXIT);
+  // Alfombra de salida (tile 50 = r6c2, opaco) en el centro de la pared inferior
+  draw(map, 'base', 9,  11, 50);
+  draw(map, 'base', 10, 11, 50);
 
   return map;
 }
@@ -208,49 +208,42 @@ export function generatePokemonCenter() {
 export function generatePokemonShop() {
   const map = createMap(20, 15);
 
-  // gsc pkmn mart.png — tiles identificados por muestreo de píxeles:
-  // 39=negro sólido (pared), 0=estantería gris, 36=mostrador gris oscuro,
-  // 37=mostrador gris claro, 6=suelo verde A, 16=suelo verde B (ligeramente más oscuro),
-  // 34=expositor rojo (producto), 41=base expositor naranja/rojo, 49=alfombra salida (roja)
-  const WALL = 39, SHELF = 0, COUNTER = 36, COUNTER2 = 37;
-  const FLOOR_A = 6, FLOOR_B = 16, DISP = 34, DISP_B = 41, EXIT = 49;
+  // Rellenar todo con pared (tile 39 = negro sólido en gsc pkmn mart.png)
+  for (let y = 0; y < 15; y++)
+    for (let x = 0; x < 20; x++)
+      draw(map, 'base', x, y, 39);
 
-  const x0 = 4, x1 = 15, y0 = 2, y1 = 13;
+  // Distribución fiel a Map054.json (RMXP original, 24x16):
+  // Interior 12 tiles de ancho (cols 6-17 → xOff=4), 8 filas de contenido (rows 4-11 → yOff=3)
+  // Tile IDs = map_id_RMXP - 384
+  const xOff = 4, yOff = 3;
 
-  // Paredes superior y laterales
-  for (let x = x0; x <= x1; x++) draw(map, 'base', x, y0, WALL);
-  for (let y = y0; y <= y1; y++) {
-    draw(map, 'base', x0, y, WALL);
-    draw(map, 'base', x1, y, WALL);
-  }
+  const layout = [
+    // y=3: fila de mostrador superior (tiles 1=mostrador, 4=esquina, 0=estantería, 2/3=balda)
+    [ 1, 1, 4, 0, 1, 1, 2, 3, 2, 3, 2, 3],
+    // y=4: fila de mostrador inferior (9=mostrador base, 12=divisor, 8=esquina, 10/11=balda base)
+    [ 9, 9,12, 8, 9, 9,10,11,10,11,10,11],
+    // y=5: suelo + divisor vertical (5=divisor superior) + pared derecha
+    [ 6, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+    // y=6: suelo + divisor (12) + pared derecha
+    [ 6, 6,12, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+    // y=7: estanterías izq (0) + divisor (13) + suelo + expositores (2/3) + pared der (7)
+    [ 0, 0,13, 6, 2, 3, 2, 3, 2, 3, 6, 7],
+    // y=8: base estanterías (8) + suelo + base expositores (10/11) + pared der (15)
+    [ 8, 8, 6, 6,10,11,10,11,10,11, 6,15],
+    // y=9: suelo + pared der (7)
+    [ 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7],
+    // y=10: suelo + alfombra-mat (14) + pared der (15)
+    [ 6, 6, 6,14,14, 6, 6, 6, 6, 6, 6,15],
+  ];
 
-  // Mostrador del dependiente (esquina superior derecha)
-  for (let x = x0 + 1; x <= x1 - 1; x++) draw(map, 'base', x, y0 + 1, COUNTER2);
+  layout.forEach((row, ri) => {
+    row.forEach((t, ci) => draw(map, 'base', xOff + ci, yOff + ri, t));
+  });
 
-  // Estanterías izquierda (2 columnas de ancho, toda la altura)
-  for (let y = y0 + 1; y <= y1 - 1; y++) {
-    draw(map, 'base', x0 + 1, y, SHELF);
-    draw(map, 'base', x0 + 2, y, SHELF);
-  }
-
-  // Suelo central con patrón verde alternado
-  for (let y = y0 + 2; y <= y1 - 1; y++) {
-    for (let x = x0 + 3; x <= x1 - 1; x++) {
-      draw(map, 'base', x, y, (x + y) % 2 === 0 ? FLOOR_A : FLOOR_B);
-    }
-  }
-
-  // Expositores de productos (3 en fila, con base)
-  const dY = y0 + 4;
-  for (const dX of [x0 + 4, x0 + 6, x0 + 8]) {
-    draw(map, 'base', dX, dY,     DISP);
-    draw(map, 'base', dX, dY + 1, DISP_B);
-  }
-
-  // Pared inferior con alfombra de salida en el centro
-  for (let x = x0; x <= x1; x++) draw(map, 'base', x, y1, WALL);
-  draw(map, 'base', 9,  y1, EXIT);
-  draw(map, 'base', 10, y1, EXIT);
+  // Alfombra de salida (tile 49 = r6c1) en el centro de la pared inferior
+  draw(map, 'base', 9,  11, 49);
+  draw(map, 'base', 10, 11, 49);
 
   return map;
 }
@@ -281,13 +274,13 @@ export const INTERIOR_CONFIGS = {
   'pokemon_center': {
     tileset: `${BASE}Graphics/tilesets/gsc pkmn center.png`,
     nombre: 'CENTRO POKÉMON',
-    spawn: { x: 9, y: 11 },
-    tiles: { floor: 24, exit: 50 }
+    spawn: { x: 9, y: 9 },
+    tiles: { floor: 28, exit: 50 }
   },
   'pokemon_shop': {
     tileset: `${BASE}Graphics/tilesets/gsc pkmn mart.png`,
     nombre: 'TIENDA POKÉMON',
-    spawn: { x: 9, y: 11 },
+    spawn: { x: 9, y: 9 },
     tiles: { floor: 6, exit: 49 }
   },
   ...GYM_CONFIGS
