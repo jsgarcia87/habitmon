@@ -1,44 +1,53 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { getAssetPath } from '../api/assets';
+import { useGame } from '../context/GameContext';
 
 const LOCATIONS = [
-  { id: 'Map002', name: 'Pueblo Primavera', shortName: 'PRIMAVERA', type: 'town',  x: 82, y: 40, mapId: 'Map002', spawn: { x: 12, y: 12 } },
-  { id: 'Map010', name: 'Ciudad Trigal',    shortName: 'TRIGAL',    type: 'city',  x: 62, y: 20, mapId: 'Map010', spawn: { x: 21, y: 18 } },
-  { id: 'Map008', name: 'Ruta 29',          shortName: 'RUTA 29',   type: 'route', x: 62, y: 40, mapId: 'Map008', spawn: { x: 21, y: 12 } },
-  { id: 'Map070', name: 'Ciudad Fronsaf',   shortName: 'FRONSAF',   type: 'city',  x: 42, y: 40, mapId: 'Map070', spawn: { x: 18, y: 13 } },
-  { id: 'Map029', name: 'Pueblo Ganymaho',  shortName: 'GANYMAHO',  type: 'town',  x: 62, y: 57, mapId: 'Map029', spawn: { x: 10, y: 16 } },
-  { id: 'Map038', name: 'Ruta 30',          shortName: 'RUTA 30',   type: 'route', x: 62, y: 68, mapId: 'Map038', spawn: { x: 32, y: 13 } },
-  { id: 'Map040', name: 'Ruta 31',          shortName: 'RUTA 31',   type: 'route', x: 62, y: 78, mapId: 'Map040', spawn: { x: 14, y: 21 } },
-  { id: 'Map078', name: 'Ciudad Malva',     shortName: 'MALVA',     type: 'city',  x: 50, y: 87, mapId: 'Map078', spawn: { x: 14, y: 14 } },
-  { id: 'Map013', name: 'Ruta 32',          shortName: 'RUTA 32',   type: 'route', x: 30, y: 87, mapId: 'Map013', spawn: { x: 10, y: 8  } },
+  { id: 'Map002', name: 'Pueblo Primavera', shortName: 'PRIMAVERA', type: 'town',  x: 82, y: 70, mapId: 'Map002', spawn: { x: 12, y: 12 }, desc: 'El pueblo donde soplan vientos de un nuevo comienzo.' },
+  { id: 'Map008', name: 'Ruta 29',          shortName: 'RUTA 29',   type: 'route', x: 72, y: 70, mapId: 'Map008', spawn: { x: 21, y: 12 }, desc: 'Un camino tranquilo ideal para entrenadores novatos.' },
+  { id: 'Map070', name: 'Ciudad Fronsaf',   shortName: 'FRONSAF',   type: 'city',  x: 62, y: 70, mapId: 'Map070', spawn: { x: 18, y: 13 }, desc: 'Una pequeña ciudad rodeada de naturaleza.' },
+  { id: 'Map038', name: 'Ruta 30',          shortName: 'RUTA 30',   type: 'route', x: 62, y: 55, mapId: 'Map038', spawn: { x: 32, y: 13 }, desc: 'Una ruta frondosa con entrenadores ocultos.' },
+  { id: 'Map029', name: 'Pueblo Ganymaho',  shortName: 'GANYMAHO',  type: 'town',  x: 52, y: 55, mapId: 'Map029', spawn: { x: 10, y: 16 }, desc: 'Pueblo rural conocido por sus plantaciones.' },
+  { id: 'Map040', name: 'Ruta 31',          shortName: 'RUTA 31',   type: 'route', x: 52, y: 40, mapId: 'Map040', spawn: { x: 14, y: 21 }, desc: 'Camino montañoso cercano a cuevas oscuras.' },
+  { id: 'Map078', name: 'Ciudad Malva',     shortName: 'MALVA',     type: 'city',  x: 52, y: 25, mapId: 'Map078', spawn: { x: 14, y: 14 }, desc: 'Hogar del primer gimnasio. ¡Cuidado con los pájaros!' },
+  { id: 'Map013', name: 'Ruta 32',          shortName: 'RUTA 32',   type: 'route', x: 42, y: 25, mapId: 'Map013', spawn: { x: 10, y: 8  }, desc: 'Una ruta larga que cruza puentes de madera.' },
+  { id: 'Map010', name: 'Ciudad Trigal',    shortName: 'TRIGAL',    type: 'city',  x: 42, y: 55, mapId: 'Map010', spawn: { x: 21, y: 18 }, desc: 'La gran metrópolis con infinitas oportunidades.' },
 ];
-
-const CONNECTIONS = [
-  ['Map002', 'Map008'],
-  ['Map008', 'Map010'],
-  ['Map008', 'Map070'],
-  ['Map008', 'Map029'],
-  ['Map029', 'Map038'],
-  ['Map038', 'Map040'],
-  ['Map040', 'Map078'],
-  ['Map078', 'Map013'],
-];
-
-const TYPE_COLOR = { city: '#FFD700', town: '#5af', route: '#888' };
-const TYPE_SIZE  = { city: 12, town: 10, route: 7 };
 
 export default function WorldMapScreen({ navigate, onFastTravel, currentMapId }) {
+  const { user } = useGame();
+  
   const [sel, setSel] = useState(() => {
     const i = LOCATIONS.findIndex(l => l.id === currentMapId);
     return i >= 0 ? i : 0;
   });
   const [confirm, setConfirm] = useState(false);
+  const [isTraveling, setIsTraveling] = useState(false);
+  const [playerOffset, setPlayerOffset] = useState(0);
+
+  // Bouncing player animation
+  useEffect(() => {
+    let frame;
+    let start = Date.now();
+    const loop = () => {
+      const t = Date.now() - start;
+      setPlayerOffset(Math.sin(t / 150) * 3);
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const travel = useCallback((loc) => {
-    if (onFastTravel) onFastTravel(loc.mapId, loc.spawn);
-    else navigate('city');
+    setIsTraveling(true);
+    setTimeout(() => {
+      if (onFastTravel) onFastTravel(loc.mapId, loc.spawn);
+      else navigate('city');
+    }, 600);
   }, [onFastTravel, navigate]);
 
   useEffect(() => {
+    if (isTraveling) return;
     const onKey = (e) => {
       if (e.key === 'Escape') { navigate('city'); return; }
       if (e.key === 'ArrowUp')    setSel(s => Math.max(s - 1, 0));
@@ -54,170 +63,189 @@ export default function WorldMapScreen({ navigate, onFastTravel, currentMapId })
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sel, travel, navigate]);
+  }, [sel, travel, navigate, isTraveling]);
 
   const selectedLoc = LOCATIONS[sel];
+  const currentLoc = LOCATIONS.find(l => l.id === currentMapId);
+  const avatarNum = String(user?.avatar || 0).padStart(3, '0');
 
   return (
     <div style={{
       width: '100%', height: '100%',
-      background: '#2d5a1b',
+      backgroundColor: '#2b5a6c',
       display: 'flex', flexDirection: 'column',
       fontFamily: '"Press Start 2P"',
       position: 'relative',
       overflow: 'hidden',
       userSelect: 'none',
+      imageRendering: 'pixelated',
     }}>
-      {/* Pixel grid overlay */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)',
-        backgroundSize: '16px 16px',
-      }} />
-
+      
       {/* Header */}
       <div style={{
-        padding: '6px 10px', borderBottom: '3px solid #1a3a0a',
-        background: '#1f4012', zIndex: 2,
+        padding: '8px 12px',
+        background: 'linear-gradient(180deg, #1e3a47 0%, #152b36 100%)',
+        borderBottom: '2px solid #0f1c24',
+        zIndex: 10,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
       }}>
-        <span style={{ fontSize: 7, color: '#a8d878', letterSpacing: 1 }}>MAPA MUNDIAL</span>
-        <span style={{ fontSize: 6, color: '#5a8a3a' }}>JOHTO</span>
+        <span style={{ fontSize: 8, color: '#f8f8f8', textShadow: '1px 1px 0 #000' }}>MAPA JOHTO</span>
+        <span style={{ fontSize: 6, color: '#689bb5' }}>V 1.0</span>
       </div>
 
-      {/* Map area */}
-      <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-        {/* SVG route connections */}
-        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-          <defs>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="blur" />
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          {CONNECTIONS.map(([aId, bId]) => {
-            const a = LOCATIONS.find(l => l.id === aId);
-            const b = LOCATIONS.find(l => l.id === bId);
-            if (!a || !b) return null;
-            const selA = LOCATIONS[sel]?.id === aId;
-            const selB = LOCATIONS[sel]?.id === bId;
-            const active = selA || selB;
+      {/* Main Map Area */}
+      <div style={{ flex: 1, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        
+        {/* Map Background Image */}
+        <div style={{
+          position: 'relative',
+          width: 320, height: 213, // Aspect ratio of mapregion0 (480x320 scaled down)
+          backgroundImage: `url(${getAssetPath('Graphics/Pictures/mapregion0.png')})`,
+          backgroundSize: '100% 100%',
+          border: '2px solid #111',
+          boxShadow: '0 0 0 4px #4a7588, 0 4px 10px rgba(0,0,0,0.5)',
+          overflow: 'hidden',
+          backgroundColor: '#8cbcd2', // water color fallback
+        }}>
+          
+          {/* Invisible click targets & dots (optional visual anchors) */}
+          {LOCATIONS.map((loc, i) => {
+            const isCity = loc.type !== 'route';
             return (
-              <line key={`${aId}-${bId}`}
-                x1={`${a.x}%`} y1={`${a.y}%`}
-                x2={`${b.x}%`} y2={`${b.y}%`}
-                stroke={active ? '#d4f89a' : '#4a7a2b'}
-                strokeWidth={active ? 2.5 : 1.5}
-                strokeDasharray={active ? '' : '4,3'}
-                filter={active ? 'url(#glow)' : ''}
-              />
+              <div key={loc.id}
+                onClick={() => {
+                  if (sel === i) { setConfirm(true); travel(loc); }
+                  else { setSel(i); setConfirm(false); }
+                }}
+                style={{
+                  position: 'absolute',
+                  left: `${loc.x}%`, top: `${loc.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                  width: 14, height: 14,
+                  cursor: 'pointer',
+                  zIndex: 6,
+                }}
+              >
+                {/* Visual marker if needed (usually mapregion0 has drawn cities, but we can overlay a dot) */}
+                <div style={{
+                  width: isCity ? 8 : 4, height: isCity ? 8 : 4,
+                  backgroundColor: isCity ? '#ef4444' : '#64748b',
+                  border: '1px solid #fff',
+                  borderRadius: isCity ? '2px' : '50%',
+                  margin: 'auto',
+                  marginTop: isCity ? 3 : 5,
+                  boxShadow: '1px 1px 0 rgba(0,0,0,0.5)'
+                }} />
+              </div>
             );
           })}
-        </svg>
 
-        {/* Location markers */}
-        {LOCATIONS.map((loc, i) => {
-          const isSel = sel === i;
-          const isCurrent = loc.id === currentMapId;
-          const size = TYPE_SIZE[loc.type];
-          return (
-            <div
-              key={loc.id}
-              onClick={() => {
-                if (isSel) { setConfirm(true); setTimeout(() => { travel(loc); setConfirm(false); }, 200); }
-                else { setSel(i); setConfirm(false); }
-              }}
-              style={{
-                position: 'absolute',
-                left: `${loc.x}%`, top: `${loc.y}%`,
-                transform: 'translate(-50%, -50%)',
-                cursor: 'pointer', zIndex: 3,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-              }}
-            >
-              {/* Dot */}
-              <div style={{
-                width: isSel ? size + 6 : size,
-                height: isSel ? size + 6 : size,
-                borderRadius: '50%',
-                background: isSel ? '#fff' : TYPE_COLOR[loc.type],
-                border: `2px solid ${isSel ? TYPE_COLOR[loc.type] : isCurrent ? '#0f0' : 'rgba(0,0,0,0.5)'}`,
-                boxShadow: isSel
-                  ? `0 0 8px ${TYPE_COLOR[loc.type]}, 0 0 16px ${TYPE_COLOR[loc.type]}66`
-                  : isCurrent ? '0 0 5px #0f0' : 'none',
-                transition: 'all 0.12s ease',
-                position: 'relative',
-              }}>
-                {isCurrent && !isSel && (
-                  <div style={{
-                    position: 'absolute', top: -6, left: '50%', transform: 'translateX(-50%)',
-                    fontSize: 6, lineHeight: 1, color: '#0f0',
-                  }}>▼</div>
-                )}
-              </div>
-              {/* Label (only towns and cities) */}
-              {loc.type !== 'route' && (
-                <span style={{
-                  fontSize: 5, color: isSel ? '#fff' : isCurrent ? '#7ef' : '#a8d878',
-                  whiteSpace: 'nowrap', letterSpacing: 0,
-                  textShadow: isSel ? `0 0 6px ${TYPE_COLOR[loc.type]}` : '1px 1px 0 #0a2005',
-                }}>
-                  {loc.shortName}
-                </span>
-              )}
-              {/* Route label only when selected */}
-              {loc.type === 'route' && isSel && (
-                <span style={{ fontSize: 5, color: '#fff', whiteSpace: 'nowrap', textShadow: '1px 1px 0 #0a2005' }}>
-                  {loc.shortName}
-                </span>
-              )}
-            </div>
-          );
-        })}
+          {/* Current Location Player Head */}
+          {currentLoc && (
+            <div style={{
+              position: 'absolute',
+              left: `${currentLoc.x}%`,
+              top: `calc(${currentLoc.y}% - 12px + ${playerOffset}px)`,
+              transform: 'translate(-50%, -50%)',
+              width: 16, height: 16,
+              backgroundImage: `url(${getAssetPath(`Graphics/Pictures/mapplayer${avatarNum === '000' ? '000' : '001'}.png`)})`,
+              backgroundSize: 'cover',
+              zIndex: 4,
+            }} />
+          )}
 
-        {/* Compass */}
-        <div style={{
-          position: 'absolute', top: 8, right: 10, zIndex: 3,
-          fontSize: 7, color: '#4a7a2b',
-          display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr',
-          gap: 1, width: 30, height: 30, textAlign: 'center',
-        }}>
-          <span/><span style={{ color: '#7aaa4a' }}>N</span><span/>
-          <span style={{ color: '#7aaa4a' }}>O</span><span style={{ fontSize: 5, color: '#5a8a3a' }}>✦</span><span style={{ color: '#7aaa4a' }}>E</span>
-          <span/><span style={{ color: '#7aaa4a' }}>S</span><span/>
+          {/* Animated Cursor */}
+          <div style={{
+            position: 'absolute',
+            left: `${selectedLoc.x}%`,
+            top: `${selectedLoc.y}%`,
+            transform: 'translate(-50%, -50%)',
+            width: 24, height: 24,
+            backgroundImage: `url(${getAssetPath('Graphics/Pictures/fly_cursor.png')})`,
+            backgroundSize: 'cover',
+            zIndex: 5,
+            transition: 'left 0.2s ease-in-out, top 0.2s ease-in-out',
+            animation: confirm ? 'pulse 0.5s infinite alternate' : 'none',
+          }} />
+
         </div>
+        
       </div>
 
-      {/* Footer info panel */}
+      {/* Footer Info Panel */}
       <div style={{
-        borderTop: '3px solid #1a3a0a',
-        background: '#111',
-        padding: '6px 10px',
-        zIndex: 2,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        minHeight: 48,
+        background: '#f8f8f8',
+        borderTop: '3px solid #111',
+        padding: '8px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px',
+        minHeight: 65,
+        zIndex: 10,
+        boxShadow: '0 -2px 10px rgba(0,0,0,0.2)',
       }}>
-        <div>
-          <div style={{ fontSize: 7, color: TYPE_COLOR[selectedLoc?.type] || '#fff', marginBottom: 4 }}>
-            {selectedLoc?.name}
-          </div>
-          <div style={{ fontSize: 5, color: '#556' }}>
-            {selectedLoc?.id === currentMapId
-              ? '★ UBICACIÓN ACTUAL'
-              : confirm ? 'CONFIRMAR... [A] VIAJAR' : '[A] SELECCIONAR · [B] CERRAR'}
-          </div>
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          borderBottom: '1px dashed #ccc', paddingBottom: '4px'
+        }}>
+          <span style={{ fontSize: 9, color: '#333' }}>{selectedLoc?.name}</span>
+          <span style={{
+            fontSize: 6, color: '#fff',
+            backgroundColor: selectedLoc?.type === 'city' ? '#ef4444' : selectedLoc?.type === 'town' ? '#3b82f6' : '#64748b',
+            padding: '4px 6px', borderRadius: '4px'
+          }}>
+            {selectedLoc?.type.toUpperCase()}
+          </span>
         </div>
-        <button
-          onClick={() => navigate('city')}
-          style={{
-            background: 'none', border: '1px solid #334',
-            color: '#556', fontSize: 6, fontFamily: '"Press Start 2P"',
-            padding: '4px 8px', cursor: 'pointer',
-          }}
-        >
-          [B]
-        </button>
+        
+        <div style={{ fontSize: 7, color: '#666', lineHeight: '1.4' }}>
+          {selectedLoc?.desc}
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+          <span style={{ fontSize: 6, color: '#ef4444', animation: confirm ? 'flash 0.5s infinite' : 'none' }}>
+            {selectedLoc?.id === currentMapId ? '▶ ESTÁS AQUÍ' : confirm ? '▶ [A] VIAJANDO...' : '▶ [A] CONFIRMAR VIAJE'}
+          </span>
+          <button
+            onClick={() => navigate('city')}
+            style={{
+              background: '#e2e8f0', border: '1px solid #cbd5e1', borderRadius: 4,
+              color: '#333', fontSize: 6, fontFamily: '"Press Start 2P"',
+              padding: '6px 10px', cursor: 'pointer',
+            }}
+          >
+            [B] VOLVER
+          </button>
+        </div>
       </div>
+
+      {/* Fade out transition */}
+      {isTraveling && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundColor: '#000',
+          opacity: 1,
+          animation: 'fadeIn 0.5s forwards',
+          zIndex: 99,
+          pointerEvents: 'none'
+        }} />
+      )}
+
+      <style>{`
+        @keyframes pulse {
+          0% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+          100% { transform: translate(-50%, -50%) scale(1.1); filter: brightness(1.3); }
+        }
+        @keyframes flash {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        @keyframes fadeIn {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

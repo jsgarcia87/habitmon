@@ -68,12 +68,21 @@ export const createBattlePokemon = (speciesId, levelInput, customName = null) =>
     spDef: spd,
     speed: spe,
     types: species.types,
+    // Condición primaria de estado
     status: null,
-    statStages: { 
-      attack: 0, defense: 0, spAtk: 0, spDef: 0, speed: 0, 
-      accuracy: 0, evasion: 0 
+    sleepTurns: 0,     // turnos restantes dormido (Crystal: 1-7)
+    toxicCounter: 0,   // contador de daño tóxico escalante
+    // Condiciones volátiles (se borran al cambiar)
+    confused: false,
+    confuseTurns: 0,   // turnos restantes confundido (Crystal: 2-5)
+    leeched: false,    // afectado por Látex
+    // Pantallas defensivas propias (Reflejo / Barrera Luz)
+    screens: { reflect: 0, lightScreen: 0 },
+    statStages: {
+      attack: 0, defense: 0, spAtk: 0, spDef: 0, speed: 0,
+      accuracy: 0, evasion: 0
     },
-    moves: [] // Moves to be added based on POKEMON_MOVES data
+    moves: []
   };
 };
 

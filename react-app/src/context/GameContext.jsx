@@ -260,16 +260,12 @@ export const GameProvider = ({children}) => {
             return updated;
           });
         }
-        await cargarDatos(); 
-      } else {
-        // Fallback local en caso de error de servidor
-        setColeccion(prev => [...prev, { pokemon_id: pk_id, pokemon_nombre: pk_nombre }]);
+        await cargarDatos();
       }
       return r;
     } catch (e) {
-      console.error("Capture API failed, falling back to local state:", e);
-      setColeccion(prev => [...prev, { pokemon_id: pk_id, pokemon_nombre: pk_nombre }]);
-      return { success: true, localOnly: true };
+      console.error("Capture API failed:", e);
+      return { success: false, error: e.message };
     }
   };
 

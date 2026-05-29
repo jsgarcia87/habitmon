@@ -5,6 +5,7 @@ import { getAssetPath } from '../api/assets';
 import { safeDrawImage, drawTintedImage } from '../utils/gfxUtils';
 import { MOVE_DATA, POKEMON_MOVES } from '../data/moveData';
 import { createBattlePokemon, getPokemonByGym } from '../data/pokemonData';
+import { GYM_CONFIGS } from '../data/gymData';
 import { getEvolution } from '../data/evolutionData';
 import { POKEMON_SPECIES } from '../data/pokemonData';
 import { determineTurnOrder, processMove, processEndTurnEffects } from '../utils/battleEngine';
@@ -27,6 +28,7 @@ import VictoryOverlay from '../components/battle/VictoryOverlay';
 const INTRO_STATES = {
   ENCOUNTER_FLASH: 'encounterFlash', // 3 white flashes before battle (wild only, GSC style)
   FADE_IN:        'fadeIn',
+  VS_SCREEN:      'vsScreen',        // trainer portrait VS screen (trainer battles only)
   TRAINER_ENTER:  'trainerEnter',
   TRAINER_THROW:  'trainerThrow',
   BALL_FLY:       'ballFly',
@@ -54,6 +56,8 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const [message, setMessage] = useState('');
   const [introReady, setIntroReady] = useState(false);
   const [victoryData, setVictoryData] = useState(null);
+  // Clima global de batalla (Crystal: 5 turnos por defecto)
+  const [weather, setWeather] = useState({ type: 'none', turns: 0 });
   
   const [playerPkmn, setPlayerPkmn] = useState(null);
   const [enemyPkmn, setEnemyPkmn] = useState(null);
@@ -99,12 +103,14 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
   const enemyImgRef = useRef(null);
   const bgImgRef = useRef(null);
   const playerPkImgRef = useRef(null);
+  const enemyTrainerImgRef = useRef(null);
 
   const introRef = useRef({
     state: isWild ? INTRO_STATES.ENCOUNTER_FLASH : INTRO_STATES.FADE_IN,
     timer: 0, fadeAlpha: 1, trainerX: -80, ballVisible: false, ballX: 0, ballY: 0,
     ballAngle: 0, enemyOpacity: 0, enemyScale: 1, enemyOffsetX: 0, flashAlpha: 0,
-    enemyHudX: -200, playerHudX: 430, playerScale: 0.1, encounterFlashAlpha: 0
+    enemyHudX: -200, playerHudX: 430, playerScale: 0.1, encounterFlashAlpha: 0,
+    vsPlayerX: -120, vsEnemyX: 420, vsLogoScale: 0, vsFlashAlpha: 0, silhouetteAlpha: 0
   });
 
   const initializedRef = useRef(false);
@@ -231,6 +237,18 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       const pPk = new Image(); const starterId = String(pInst.id || 16).padStart(3, '0');
       pPk.src = getAssetPath(`Graphics/battlers/${starterId}b.png`); pPk.onload = () => { playerPkImgRef.current = pPk; };
+
+      // Load enemy trainer sprite for VS screen (gym battles only)
+      if (!isWild && gymId) {
+        // Find the gym config by matching gymId against the GYM_CONFIGS map values
+        const gymCfg = Object.values(GYM_CONFIGS).find(cfg => cfg.id === gymId) ||
+                       GYM_CONFIGS[gymId];
+        if (gymCfg?.sprite) {
+          const et = new Image();
+          et.src = getAssetPath(`Graphics/characters/${gymCfg.sprite}.png`);
+          et.onload = () => { enemyTrainerImgRef.current = et; };
+        }
+      }
     } catch (err) {
       console.error("Battle Init Error:", err);
     }
@@ -316,8 +334,46 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       }
       case INTRO_STATES.FADE_IN:
         intro.fadeAlpha = Math.max(0, 1 - intro.timer / 400);
-        if(intro.timer > 400) { intro.state = INTRO_STATES.TRAINER_ENTER; intro.timer = 0; }
+        if(intro.timer > 400) {
+          intro.fadeAlpha = 0;
+          if (!isWild) {
+            intro.state = INTRO_STATES.VS_SCREEN;
+            intro.vsPlayerX = -120; intro.vsEnemyX = 420;
+            intro.vsLogoScale = 0; intro.vsFlashAlpha = 0;
+            sfx.encounter();
+          } else {
+            intro.state = INTRO_STATES.TRAINER_ENTER;
+          }
+          intro.timer = 0;
+        }
         break;
+      case INTRO_STATES.VS_SCREEN: {
+        // Canvas is 300×200 — use fixed dims
+        const BW = 300;
+        // 0-400ms: trainers slide in from both sides
+        // 400-700ms: VS logo pops in
+        // 700-1100ms: hold
+        // 1100-1300ms: flash white → end
+        if (intro.timer < 400) {
+          const tSlide = Math.min(1, intro.timer / 400);
+          const ease = 1 - Math.pow(1 - tSlide, 3);
+          intro.vsPlayerX = -120 + ease * (BW * 0.18 + 120);
+          intro.vsEnemyX = BW + 120 - ease * (BW * 0.38 + 120);
+          intro.vsLogoScale = 0;
+        } else if (intro.timer < 700) {
+          const tLogo = Math.min(1, (intro.timer - 400) / 200);
+          intro.vsLogoScale = tLogo < 0.5 ? 2 * tLogo * tLogo : 1 - Math.pow(-2 * tLogo + 2, 2) / 2;
+          intro.vsLogoScale = Math.min(1.15, intro.vsLogoScale * 1.15);
+        } else if (intro.timer > 1100) {
+          intro.vsFlashAlpha = Math.min(1, (intro.timer - 1100) / 200);
+        }
+        if (intro.timer > 1300) {
+          intro.vsFlashAlpha = 0;
+          intro.state = INTRO_STATES.TRAINER_ENTER;
+          intro.timer = 0;
+        }
+        break;
+      }
       case INTRO_STATES.TRAINER_ENTER: {
         const t = Math.min(1, intro.timer / 800);
         const easeCubic = 1 - Math.pow(1 - t, 3); // decelerating cubic ease-out
@@ -331,6 +387,11 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       }
       case INTRO_STATES.TRAINER_THROW:
         intro.trainerFrame = Math.min(4, Math.floor(intro.timer / 100));
+        if (intro.timer > 0 && !intro.throwMsgShown) {
+          intro.throwMsgShown = true;
+          const pkName = playerPkmn?.name?.toUpperCase() || 'POKÉMON';
+          setMessage(`¡Vamos, ${pkName}!`);
+        }
         if(intro.timer > 500) { intro.ballVisible = true; intro.ballX = intro.trainerX + 40; intro.ballY = 200 * 0.65; intro.state = INTRO_STATES.BALL_FLY; intro.timer = 0; }
         break;
       case INTRO_STATES.BALL_FLY:
@@ -365,15 +426,22 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
           if (tPop < 200) { intro.playerScale = 0.1 + (tPop / 200) * 1.05; intro.playerShake = Math.sin(intro.timer * 0.1) * 2; }
           else { intro.playerScale = Math.max(1, 1.15 - ((tPop - 200) / 100) * 0.15); intro.playerShake = 0; }
         }
+        // Silhouette: Pokémon emerges as black shape first
+        intro.silhouetteAlpha = 1;
         if(intro.timer > 400) { intro.state = INTRO_STATES.POKEMON_APPEAR; intro.timer = 0; }
         break;
-      case INTRO_STATES.POKEMON_APPEAR:
-        if(intro.timer > 400) { 
+      case INTRO_STATES.POKEMON_APPEAR: {
+        // Silhouette dissolves to full color during first 350ms
+        intro.silhouetteAlpha = Math.max(0, 1 - intro.timer / 350);
+        if(intro.timer > 500) {
+          intro.silhouetteAlpha = 0;
+          setMessage('');
           const name = enemyPkmn?.name.toUpperCase() || 'ENEMIGO';
           setMessage(isWild ? `¡${name} SALVAJE APARECIÓ!` : `¡EL LÍDER TE DESAFÍA CON ${name}!`);
-          intro.state = INTRO_STATES.HUD_SLIDE; intro.timer = 0; 
+          intro.state = INTRO_STATES.HUD_SLIDE; intro.timer = 0;
         }
         break;
+      }
       case INTRO_STATES.HUD_SLIDE: {
         const t = Math.min(1, intro.timer / 400);
         const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
@@ -388,6 +456,68 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
   const drawIntro = (ctx, W, H) => {
     const intro = introRef.current;
+
+    // VS Screen — full override drawing for trainer battles intro
+    if (intro.state === INTRO_STATES.VS_SCREEN) {
+      // Split diagonal background
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, W, H);
+      // Left half (player side — warm dark red)
+      ctx.fillStyle = '#3a1a1a';
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W * 0.55, 0); ctx.lineTo(W * 0.45, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
+      // Right half (enemy side — dark blue)
+      ctx.fillStyle = '#1a1a3a';
+      ctx.beginPath(); ctx.moveTo(W, 0); ctx.lineTo(W * 0.55, 0); ctx.lineTo(W * 0.45, H); ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+
+      // Player trainer (left side) — uses back sprite
+      if (trainerImgRef.current) {
+        const img = trainerImgRef.current;
+        const frameW = img.width / 5;
+        const destW = 72, destH = Math.round(72 * img.height / frameW);
+        ctx.save();
+        ctx.translate(intro.vsPlayerX, H * 0.5 - destH * 0.5);
+        safeDrawImage(ctx, img, 0, 0, frameW, img.height, 0, 0, destW, destH);
+        ctx.restore();
+      }
+
+      // Enemy trainer (right side) — uses overworld character sprite
+      if (enemyTrainerImgRef.current) {
+        const img = enemyTrainerImgRef.current;
+        // Character sprites are 4-frame strips (down/left/right/up directions, 2 walk frames each = 8 cols × 4 rows)
+        const sprW = Math.floor(img.width / 4);
+        const sprH = Math.floor(img.height / 4);
+        const destW = 56, destH = Math.round(56 * sprH / sprW);
+        ctx.save();
+        ctx.translate(intro.vsEnemyX - destW, H * 0.5 - destH * 0.5);
+        safeDrawImage(ctx, img, 0, 0, sprW, sprH, 0, 0, destW, destH);
+        ctx.restore();
+      }
+
+      // VS logo in the center
+      if (intro.vsLogoScale > 0) {
+        ctx.save();
+        ctx.translate(W * 0.5, H * 0.5);
+        ctx.scale(intro.vsLogoScale, intro.vsLogoScale);
+        // Shadow
+        ctx.font = 'bold 22px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#000';
+        ctx.fillText('VS', 2, 2);
+        // Main text gradient
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText('VS', 0, 0);
+        ctx.restore();
+      }
+
+      // End flash
+      if (intro.vsFlashAlpha > 0) {
+        ctx.fillStyle = `rgba(255,255,255,${intro.vsFlashAlpha})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+      return;
+    }
+
     if (bgImgRef.current) safeDrawImage(ctx, bgImgRef.current, 0, 0, W, H);
     else { ctx.fillStyle = '#d8d0c0'; ctx.fillRect(0, 0, W, H); }
     const pShadowScale = Math.max(0, 1 - Math.max(0, -playerOffsetRef.current.y) / 40);
@@ -457,9 +587,17 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       ctx.translate(W * 0.22 + playerOffsetRef.current.x + (intro.playerShake || 0), H * 0.70 + playerOffsetRef.current.y);
       ctx.scale(pScale, pScale);
       
+      // Silhouette takes priority: black tint while emerging from Poké Ball
+      const silAlpha = intro.silhouetteAlpha || 0;
       const isBallOpeningFlash = intro.state === INTRO_STATES.BALL_FLASH;
-      const tintColor = playerOffsetRef.current.tintColor || (isBallOpeningFlash ? '#00f3ff' : null);
-      const tintAlpha = playerOffsetRef.current.tintAlpha || (isBallOpeningFlash ? Math.max(0, 1 - intro.timer / 400) : 0);
+      let tintColor, tintAlpha;
+      if (silAlpha > 0) {
+        tintColor = '#000000';
+        tintAlpha = silAlpha;
+      } else {
+        tintColor = playerOffsetRef.current.tintColor || (isBallOpeningFlash ? '#00f3ff' : null);
+        tintAlpha = playerOffsetRef.current.tintAlpha || (isBallOpeningFlash ? Math.max(0, 1 - intro.timer / 400) : 0);
+      }
       
       if (tintColor && tintAlpha > 0) {
         drawTintedImage(ctx, playerPkImgRef.current, 0, 0, playerPkImgRef.current.width, playerPkImgRef.current.height, -48, -48, 96, 96, tintColor, tintAlpha);
@@ -526,27 +664,53 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
     for (const side of order) {
       if (playerPkmn.hp <= 0 || enemyPkmn.hp <= 0) break;
-      const attacker = side === 'player' ? playerPkmn : enemyPkmn;
-      const defender = side === 'player' ? enemyPkmn : playerPkmn;
-      const move = side === 'player' ? pMove : eMove;
+      const attacker       = side === 'player' ? playerPkmn  : enemyPkmn;
+      const defender       = side === 'player' ? enemyPkmn   : playerPkmn;
+      const move           = side === 'player' ? pMove        : eMove;
+      const attackerSetter = side === 'player' ? setPlayerPkmn : setEnemyPkmn;
+      const defenderSetter = side === 'player' ? setEnemyPkmn  : setPlayerPkmn;
 
-      // 1. Attack message → player presses A → then animation plays
+      // 1. Mensaje de ataque + animación
       await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
       activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
-      
-      const result = processMove(attacker, defender, move);
-      
+
+      const result = processMove(attacker, defender, move, { weather });
+
       // Wait for the strike animation to hit before applying damage
       const animDelay = move.category === 'Status' ? 400 : 550;
       await new Promise(r => setTimeout(r, animDelay));
 
-      // 2. Miss / unable to move
+      // 2. Actualizar estado volátil derivado del resultado (antes de mostrar mensajes)
+      if (result.wakeUp)         attackerSetter(prev => ({ ...prev, status: null, sleepTurns: 0 }));
+      if (result.decrementSleep) attackerSetter(prev => ({ ...prev, sleepTurns: Math.max(0, (prev.sleepTurns || 1) - 1) }));
+      if (result.thawed)         attackerSetter(prev => ({ ...prev, status: null }));
+      if (result.confusionCleared) attackerSetter(prev => ({ ...prev, confused: false, confuseTurns: 0 }));
+      if (result.newConfuseTurns > 0) attackerSetter(prev => ({ ...prev, confuseTurns: result.newConfuseTurns }));
+
+      // 3. No puede moverse (sueño, congelación, parálisis) o falla
       if (result.unableToMove || result.missed) {
         await showMessage(result.unableToMove || `¡El ataque de ${attacker.name.toUpperCase()} falló!`);
         continue;
       }
 
-      // 3. Damage
+      // 4. Auto-golpe por confusión — reemplaza el movimiento normal
+      if (result.confusionSelfHit > 0) {
+        await showMessage(`¡${attacker.name.toUpperCase()} está confundido y se golpea a sí mismo!`);
+        sfx.hit();
+        isFlashingRef.current = true;
+        setTimeout(() => isFlashingRef.current = false, 100);
+        attackerSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.confusionSelfHit) }));
+        activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, {
+          text: `-${result.confusionSelfHit}`,
+          x: side === 'player' ? 300 * 0.25 : 300 * 0.75,
+          y: side === 'player' ? 200 * 0.7 - 20 : 200 * 0.35 - 20,
+          color: '#f00', duration: 800
+        }));
+        await new Promise(r => setTimeout(r, 500));
+        continue;
+      }
+
+      // 5. Daño
       if (result.damageDealt > 0) {
         if (move.type === 'FIRE') sfx.fireHit();
         else if (move.type === 'WATER' || move.type === 'ICE') sfx.waterHit();
@@ -555,11 +719,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         else sfx.hit();
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
-        if (side === 'player') {
-          setEnemyPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
-        } else {
-          setPlayerPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
-        }
+        defenderSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.damageDealt) }));
         activeAnimsRef.current.push(createAnimation(ANIM_TYPES.TEXT, {
           text: `-${result.damageDealt}`,
           x: side === 'enemy' ? 300 * 0.25 : 300 * 0.75,
@@ -568,53 +728,131 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
         }));
         await new Promise(r => setTimeout(r, 400));
 
+        if (result.hitCount > 1) await showMessage(`¡Golpeó ${result.hitCount} veces!`);
         if (result.isCritical) {
           sfx.critical();
           activeAnimsRef.current.push(createAnimation(ANIM_TYPES.CRITICAL_FLASH, { duration: 500 }));
           activeAnimsRef.current.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 600, amount: 14 }));
           await showMessage('¡Un golpe crítico!');
         }
-        if (result.effectiveness > 1) await showMessage('¡Es muy eficaz!');
+        if (result.effectiveness > 1)                          await showMessage('¡Es muy eficaz!');
         else if (result.effectiveness < 1 && result.effectiveness > 0) await showMessage('No es muy eficaz...');
-        else if (result.effectiveness === 0) await showMessage('¡No afecta!');
+        else if (result.effectiveness === 0)                   await showMessage('¡No afecta!');
       }
 
-      // 4. Secondary effects
+      // 6. Retroceso (recoil)
+      if (result.recoilDamage > 0) {
+        attackerSetter(prev => ({ ...prev, hp: Math.max(0, prev.hp - result.recoilDamage) }));
+        await showMessage(`¡${attacker.name.toUpperCase()} sufrió daño por el retroceso!`);
+      }
+
+      // 7. Efectos secundarios
       if (result.effects) {
-        const { message: effectMsg, statChanges, statusApplied } = result.effects;
-        if (statusApplied || (statChanges && statChanges.length > 0)) {
-          if (statusApplied) {
-            if (side === 'player') setEnemyPkmn(prev => ({ ...prev, status: statusApplied }));
-            else setPlayerPkmn(prev => ({ ...prev, status: statusApplied }));
+        const {
+          message: effectMsg, statChanges,
+          statusApplied, sleepTurns: sleepTurnsVal,
+          toxicApplied, confused: targetConfused,
+          healAmount, weatherSet, screenSet, leechSeed,
+        } = result.effects;
+
+        if (statusApplied) {
+          if (statusApplied === 'sleep') {
+            defenderSetter(prev => ({ ...prev, status: 'sleep', sleepTurns: sleepTurnsVal || 3 }));
+          } else {
+            defenderSetter(prev => ({ ...prev, status: statusApplied }));
           }
-          if (statChanges && statChanges.length > 0) {
-            statChanges.forEach(sc => {
-              const ts = side === 'player'
-                ? (sc.target === 'defender' ? setEnemyPkmn : setPlayerPkmn)
-                : (sc.target === 'defender' ? setPlayerPkmn : setEnemyPkmn);
-              ts(prev => ({ ...prev, statStages: { ...prev.statStages, [sc.stat]: Math.max(-6, Math.min(6, (prev.statStages?.[sc.stat] || 0) + sc.stage)) } }));
-            });
-          }
-          if (effectMsg) await showMessage(effectMsg);
         }
+        if (toxicApplied) {
+          defenderSetter(prev => ({ ...prev, status: 'toxic', toxicCounter: 1 }));
+        }
+        if (targetConfused) {
+          const confuseTurns = 2 + Math.floor(Math.random() * 4);
+          defenderSetter(prev => ({ ...prev, confused: true, confuseTurns }));
+        }
+        if (statChanges && statChanges.length > 0) {
+          statChanges.forEach(sc => {
+            const ts = sc.target === 'attacker' ? attackerSetter : defenderSetter;
+            ts(prev => ({
+              ...prev,
+              statStages: {
+                ...prev.statStages,
+                [sc.stat]: Math.max(-6, Math.min(6, (prev.statStages?.[sc.stat] || 0) + sc.stage))
+              }
+            }));
+          });
+        }
+        if (healAmount > 0) {
+          attackerSetter(prev => ({ ...prev, hp: Math.min(prev.maxHp, prev.hp + healAmount) }));
+          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.STRIKE, {
+            x: side === 'player' ? 300 * 0.22 : 300 * 0.73,
+            y: side === 'player' ? 200 * 0.70 : 200 * 0.38,
+            duration: 500, color: '#10b981'
+          }));
+        }
+        if (weatherSet) setWeather(weatherSet);
+        if (screenSet) {
+          attackerSetter(prev => ({
+            ...prev,
+            screens: { ...prev.screens, [screenSet.type]: screenSet.turns }
+          }));
+        }
+        if (leechSeed) {
+          defenderSetter(prev => ({ ...prev, leeched: true }));
+        }
+        if (effectMsg) await showMessage(effectMsg);
       }
     }
 
-    // 5. End-turn effects (poison, etc.)
+    // 8. Efectos de fin de turno (veneno, quemadura, tóxico, látex, clima)
     for (const s of ['player', 'enemy']) {
-      const pkmn = s === 'player' ? playerPkmn : enemyPkmn;
-      const setter = s === 'player' ? setPlayerPkmn : setEnemyPkmn;
+      const pkmn           = s === 'player' ? playerPkmn   : enemyPkmn;
+      const setter         = s === 'player' ? setPlayerPkmn : setEnemyPkmn;
+      const opponentSetter = s === 'player' ? setEnemyPkmn  : setPlayerPkmn;
       if (pkmn.hp > 0) {
-        for (const eff of processEndTurnEffects(pkmn)) {
+        for (const eff of processEndTurnEffects(pkmn, weather)) {
           if (eff.damage) {
             setter(prev => ({ ...prev, hp: Math.max(0, prev.hp - eff.damage) }));
             isFlashingRef.current = true;
             setTimeout(() => isFlashingRef.current = false, 100);
           }
+          if (eff.leechHeal) {
+            opponentSetter(prev => ({ ...prev, hp: Math.min(prev.maxHp, prev.hp + eff.leechHeal) }));
+          }
+          if (eff.toxicCounter) {
+            setter(prev => ({ ...prev, toxicCounter: eff.toxicCounter }));
+          }
           await showMessage(eff.message);
         }
       }
     }
+
+    // 9. Decrementar clima
+    if (weather.type !== 'none' && weather.turns > 0) {
+      const newTurns = weather.turns - 1;
+      if (newTurns <= 0) {
+        setWeather({ type: 'none', turns: 0 });
+        const weatherNames = { rain: 'la lluvia', sun: 'el sol intenso', sandstorm: 'la tormenta de arena' };
+        await showMessage(`¡Terminó ${weatherNames[weather.type] || 'el clima especial'}!`);
+      } else {
+        setWeather(prev => ({ ...prev, turns: newTurns }));
+      }
+    }
+
+    // 10. Decrementar pantallas al final del turno
+    setPlayerPkmn(prev => ({
+      ...prev,
+      screens: {
+        reflect:     Math.max(0, (prev.screens?.reflect     || 0) - 1),
+        lightScreen: Math.max(0, (prev.screens?.lightScreen || 0) - 1),
+      }
+    }));
+    setEnemyPkmn(prev => ({
+      ...prev,
+      screens: {
+        reflect:     Math.max(0, (prev.screens?.reflect     || 0) - 1),
+        lightScreen: Math.max(0, (prev.screens?.lightScreen || 0) - 1),
+      }
+    }));
 
     if (playerPkmn.hp > 0 && enemyPkmn.hp > 0) {
       setPhase(BATTLE_PHASES.SELECT);
@@ -789,11 +1027,12 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       if (isWild) {
         await showMessage(`¡${enemyPkmn.name.toUpperCase()} salvaje ataca!`);
         const enemyDmg = 8 + Math.floor(Math.random() * 8);
-        setPlayerPkmn(prev => ({ ...prev, hp: Math.max(0, prev.hp - enemyDmg) }));
+        const newPlayerHp = Math.max(0, playerPkmn.hp - enemyDmg);
+        setPlayerPkmn(prev => ({ ...prev, hp: newPlayerHp }));
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 150);
         await new Promise(r => setTimeout(r, 600));
-        if (playerPkmn.hp - enemyDmg <= 0) { endBattle(false); return; }
+        if (newPlayerHp <= 0) { endBattle(false); return; }
       }
 
       setPhase(BATTLE_PHASES.SELECT);
