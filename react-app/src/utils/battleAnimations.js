@@ -155,39 +155,15 @@ export const updateBattleAnimations = (anims, dt) => {
         break;
       }
       case ANIM_TYPES.FAINT: {
-<<<<<<< Updated upstream
-        // Organic drop with a small bounce
-        let drop = 0;
-        if (t < 0.8) {
-          const ft = t / 0.8;
-          drop = (ft * ft) * 80; // accelerating fall
-        } else {
-          const bt = (t - 0.8) / 0.2;
-          drop = 80 - Math.sin(bt * Math.PI) * 10; // bounce up slightly
-        }
-        const alpha = Math.max(0, 1 - t * 1.2); // fade slightly faster than drop
-        if (a.target === 'player') {
-          offsets.player.y    += drop;
-          offsets.player.opacity = alpha;
-          offsets.player.tintColor = '#ff3b30';
-          offsets.player.tintAlpha = t * 0.8;
-        } else {
-          offsets.enemy.y    += drop;
-          offsets.enemy.opacity = alpha;
-          offsets.enemy.tintColor = '#ff3b30';
-          offsets.enemy.tintAlpha = t * 0.8;
-        }
-=======
         // Estilo Crystal: el sprite cae hacia abajo, fuera de su plataforma.
         // No hay tinte rojo (Crystal no lo usa); el fade ocurre en el último
         // tramo, cuando el sprite ya está claramente fuera de su silueta.
-        const drop = t * 140;         // 140 px hacia abajo (saca el sprite del campo)
+        const drop = t * 140;
         const fade = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
         const tgt  = a.target === 'player' ? offsets.player : offsets.enemy;
         tgt.y       += drop;
         tgt.opacity *= Math.max(0, fade);
-        if (t >= 1) tgt.visible = false; // estado final: invisible
->>>>>>> Stashed changes
+        if (t >= 1) tgt.visible = false;
         break;
       }
       case ANIM_TYPES.THROW_POKEBALL: {

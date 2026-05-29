@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-import React, { useState, useEffect } from 'react';
-=======
 import React, { useEffect, useRef, useState } from 'react';
->>>>>>> Stashed changes
 import { getAssetPath } from '../api/assets';
 import { sfx } from '../utils/audioEngine';
 
@@ -10,45 +6,6 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
   // Ensure we have numbers. Fallback to 1/1 if data is missing to avoid NaN.
   const cur = Number(current) || 0;
   const mx = Number(max) || 100;
-<<<<<<< Updated upstream
-  
-  const [displayCur, setDisplayCur] = useState(cur);
-
-  useEffect(() => {
-    if (displayCur === cur) return;
-    
-    const diff = cur - displayCur;
-    const durationMs = 600; // 0.6s
-    let startTimestamp = null;
-    let startVal = displayCur;
-    let lastTickVal = Math.floor(displayCur);
-    
-    let rafId;
-    const updateHP = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const elapsed = timestamp - startTimestamp;
-      const t = Math.min(1, elapsed / durationMs);
-      
-      const nextVal = startVal + diff * t;
-      setDisplayCur(nextVal);
-      
-      if (Math.floor(nextVal) < lastTickVal) {
-        lastTickVal = Math.floor(nextVal);
-        sfx.dmgPop();
-      }
-      
-      if (t < 1) {
-        rafId = requestAnimationFrame(updateHP);
-      } else {
-        setDisplayCur(cur);
-      }
-    };
-    rafId = requestAnimationFrame(updateHP);
-    return () => cancelAnimationFrame(rafId);
-  }, [cur]);
-
-  const pct = Math.max(0, Math.min(100, (displayCur / mx) * 100));
-=======
 
   // Tween del número mostrado para que coincida con la animación CSS de la barra
   // (width: 0.6s). Sin esto, la barra se vacía suavemente pero el "27/40" salta.
@@ -62,7 +19,6 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
     const t0 = performance.now();
     const step = (t) => {
       const k = Math.min(1, (t - t0) / duration);
-      // ease-out cuadrática para que el tick "frene" al final
       const eased = 1 - (1 - k) * (1 - k);
       setDisplayHp(startVal + delta * eased);
       if (k < 1) animRef.current = requestAnimationFrame(step);
@@ -73,7 +29,6 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
   }, [cur]);
 
   const pct = Math.max(0, Math.min(100, (cur / mx) * 100));
->>>>>>> Stashed changes
 
   // Status colors/text
   const STATUS_MAP = {
@@ -174,11 +129,7 @@ const HPBar = ({ current, max, alignment = 'player', name = 'PKMN', level = 5, s
           fontSize: 6,
           color: '#333'
         }}>
-<<<<<<< Updated upstream
-          {Math.ceil(displayCur)}/{mx}
-=======
           {Math.ceil(displayHp)}/{mx}
->>>>>>> Stashed changes
         </div>
       )}
     </div>

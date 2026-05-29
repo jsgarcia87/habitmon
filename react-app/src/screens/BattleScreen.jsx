@@ -735,14 +735,7 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // 1. Mensaje de ataque + animación
       await showMessage(`¡${attacker.name.toUpperCase()} USÓ ${move.nombre.toUpperCase()}!`);
-<<<<<<< Updated upstream
       activeAnimsRef.current = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
-=======
-      const moveAnim = getMoveAnimation(move.id, side === 'player', 300, 200, move.type);
-      activeAnimsRef.current = moveAnim.anims;
-      const impactDelay = moveAnim.impactDelay || 280;
-      const totalDuration = moveAnim.totalDuration || (impactDelay + 400);
->>>>>>> Stashed changes
 
       const result = processMove(attacker, defender, move, { weather });
 
@@ -792,24 +785,11 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
 
       // 6. Daño — ahora sincronizado con el impacto visual
       if (result.damageDealt > 0) {
-<<<<<<< Updated upstream
         if (move.type === 'FIRE') sfx.fireHit();
         else if (move.type === 'WATER' || move.type === 'ICE') sfx.waterHit();
         else if (move.type === 'ELECTRIC') sfx.electricHit();
         else if (move.category === 'Special') sfx.specialHit();
         else sfx.hit();
-=======
-        // Si es crítico, el flash blanco se pinta JUSTO ANTES del golpe
-        // (Crystal feel: el destello aparece y luego viene el shake del defensor).
-        if (result.isCritical) {
-          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.CRITICAL_FLASH, { duration: 350 }));
-          activeAnimsRef.current.push(createAnimation(ANIM_TYPES.SCREEN_SHAKE, { duration: 500, amount: 12 }));
-          sfx.critical();
-        } else {
-          sfx.hit();
-        }
-
->>>>>>> Stashed changes
         isFlashingRef.current = true;
         setTimeout(() => isFlashingRef.current = false, 100);
 
@@ -1148,7 +1128,6 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       navigate('city');
     } else {
       sfx.faint();
-<<<<<<< Updated upstream
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, { target: 'enemy', targetX: 300 * 0.73, targetY: 200 * 0.38, duration: 1400 }));
       activeAnimsRef.current.push(createAnimation(ANIM_TYPES.HIDE_SPRITE, { target: 'enemy', duration: 99999, delay: 1400 }));
       await new Promise(r => setTimeout(r, 1600));
@@ -1156,44 +1135,6 @@ const BattleScreen = ({ navigate, battleData, aPressed }) => {
       const reward = await ganarBatalla().catch(() => ({}));
       const newLevel = gymReward?.nuevo_nivel || reward?.new_level || playerPkmn.level;
       const leveledUp = gymReward?.subio_nivel || reward?.subio_nivel;
-=======
-      activeAnimsRef.current.push(createAnimation(ANIM_TYPES.FAINT, {
-        target: 'enemy', duration: 1200, persist: true
-      }));
-
-      // OPTIMIZACIÓN clave: lanzamos las peticiones HTTP de recompensa AL
-      // MISMO TIEMPO que arranca la animación de faint. Antes se hacían
-      // SECUENCIALMENTE después de esperar 1400 ms → en redes lentas el
-      // jugador veía la pantalla "congelada" 3-5 segundos.
-      //
-      // Además: race con timeout de 5s para garantizar que setVictoryData
-      // se dispara SIEMPRE, aunque la API no responda. Sin esto, una
-      // petición que nunca resuelve dejaba la pantalla en FINISHED para
-      // siempre, sin overlay → el bug que reporta el usuario.
-      const TIMEOUT_MS = 5000;
-      const apiPromise = Promise.all([
-        !isWild
-          ? completarGimnasio(gymId, starter.starter_id, starter.starter_nombre).catch(() => ({}))
-          : Promise.resolve({}),
-        ganarBatalla().catch(() => ({}))
-      ]);
-      const timeoutPromise = new Promise(resolve =>
-        setTimeout(() => resolve([{}, {}]), TIMEOUT_MS)
-      );
-
-      // Esperamos en paralelo: la animación mínima (~1100ms) y las APIs.
-      // Cuando ambos terminan (lo que ocurra DESPUÉS), mostramos el overlay.
-      const [_, [gymReward, reward]] = await Promise.all([
-        new Promise(r => setTimeout(r, 1100)),
-        Promise.race([apiPromise, timeoutPromise])
-      ]);
-
-      const safeGym = gymReward || {};
-      const safeReward = reward || {};
-      const newLevel = safeGym.nuevo_nivel || safeReward.new_level || playerPkmn.level;
-      const leveledUp = safeGym.subio_nivel || safeReward.subio_nivel;
-
->>>>>>> Stashed changes
       setVictoryData({
         type: isWild ? 'wild' : 'gym',
         enemyName: enemyPkmn.name,
